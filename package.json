@@ -30,6 +30,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "release": "release-it"
@@ -167,10 +168,14 @@
     "@opentelemetry/core": "^1.19.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.46.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.46.0",
+    "@opentelemetry/instrumentation": "^0.46.0",
+    "@opentelemetry/instrumentation-fetch": "^0.46.0",
     "@opentelemetry/propagator-b3": "^1.19.0",
     "@opentelemetry/resources": "^1.19.0",
     "@opentelemetry/sdk-trace-base": "^1.19.0",
     "@opentelemetry/sdk-trace-web": "^1.19.0",
-    "@opentelemetry/semantic-conventions": "^1.19.0"
+    "@opentelemetry/semantic-conventions": "^1.19.0",
+    "instrumentation-document-load": "^0.0.4",
+    "middleware.io-instrumentation-xml-http-request": "^0.0.1"
   }
 }
