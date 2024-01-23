@@ -1,45 +1,35 @@
 import {
-  trace,
-  context,
-  type Span,
-  type Attributes,
-  diag,
   DiagConsoleLogger,
   DiagLogLevel,
+  context,
+  diag,
+  trace,
+  type Attributes,
+  type Span,
 } from '@opentelemetry/api';
-import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { _globalThis } from '@opentelemetry/core';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
+import GlobalAttributeAppender from './globalAttributeAppender';
 import {
   initializeNativeSdk,
-  type NativeSdKConfiguration,
   setNativeSessionId,
   testNativeCrash,
   type AppStartInfo,
+  type NativeSdKConfiguration,
 } from './native';
-import GlobalAttributeAppender from './globalAttributeAppender';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { DocumentLoadInstrumentation } from 'instrumentation-document-load';
-import { XMLHttpRequestInstrumentation } from 'middleware.io-instrumentation-xml-http-request';
-import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
-import { instrumentErrors, reportError } from './errors';
-import {
-  getGlobalAttributes,
-  getResource,
-  setGlobalAttributes,
-} from './globalAttributes';
-import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
-import { getSessionId, _generatenewSessionId } from './session';
-import { Platform } from 'react-native';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+// import { registerInstrumentations } from '@opentelemetry/instrumentation';
+// import { DocumentLoadInstrumentation } from 'instrumentation-document-load';
+// import { XMLHttpRequestInstrumentation } from 'middleware.io-instrumentation-xml-http-request';
 import { Resource } from '@opentelemetry/resources';
-import { B3Propagator } from '@opentelemetry/propagator-b3';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-import {
-  MeterProvider,
-  PeriodicExportingMetricReader,
-} from '@opentelemetry/sdk-metrics';
+import { Platform } from 'react-native';
+import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
+import { instrumentErrors, reportError } from './errors';
+import ReacNativeSpanExporter from './exporting';
+import { getResource, setGlobalAttributes } from './globalAttributes';
+import { _generatenewSessionId, getSessionId } from './session';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { instrumentXHR } from './xhr';
 
 export interface ReactNativeConfiguration {
   target: string;
@@ -48,6 +38,9 @@ export interface ReactNativeConfiguration {
   projectName: string;
   deploymentEnvironment?: string;
   appStartEnabled?: boolean;
+  enableDiskBuffering?: boolean;
+  limitDiskUsageMegabytes?: number;
+  truncationCheckpoint?: number;
   bufferTimeout?: number;
   bufferSize?: number;
   debug?: boolean;
@@ -77,6 +70,7 @@ export interface MiddlewareRumType {
 
 const DEFAULT_CONFIG = {
   appStartEnabled: true,
+  enableDiskBuffering: true,
 };
 
 let appStartInfo: AppStartInfo | null = null;
@@ -99,10 +93,10 @@ export const MiddlewareRum: MiddlewareRumType = {
       diag.debug('AppStart: end called without start');
     }
   },
-  init(configugration: ReactNativeConfiguration) {
+  init(configuration: ReactNativeConfiguration) {
     const config = {
       ...DEFAULT_CONFIG,
-      ...configugration,
+      ...configuration,
     };
 
     diag.setLogger(
@@ -140,76 +134,30 @@ export const MiddlewareRum: MiddlewareRumType = {
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
-      globalAttributes: { ...getResource() },
+      globalAttributes: {
+        [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
+        'project.name': config.projectName,
+        ...getResource(),
+      },
     };
-
-    addGlobalAttributesFromConf(config);
 
     const provider = new WebTracerProvider({
       resource: new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
+        'project.name': config.projectName,
         ...getResource(),
       }),
-    });
-    trace.setGlobalTracerProvider(provider);
-    provider.register({
-      propagator: new B3Propagator(),
     });
     provider.addSpanProcessor(new GlobalAttributeAppender());
     provider.addSpanProcessor(
-      new BatchSpanProcessor(
-        new OTLPTraceExporter({
-          url: `${config.target}/v1/traces`,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Headers': '*',
-          },
-          concurrencyLimit: 10,
-          timeoutMillis: 10000,
-        })
-      )
+      new BatchSpanProcessor(new ReacNativeSpanExporter())
     );
 
     provider.register({});
-    const collectorOptions = {
-      url: `${config.target}/v1/metrics`,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Headers': '*',
-      },
-      concurrencyLimit: 1,
-    };
-    const metricExporter = new OTLPMetricExporter(collectorOptions);
-    let meterProvider = new MeterProvider({
-      resource: new Resource({
-        ...getResource(),
-      }),
-    });
-
-    meterProvider.addMetricReader(
-      new PeriodicExportingMetricReader({
-        exporter: metricExporter,
-        exportIntervalMillis: 20000,
-      })
-    );
     this.provider = provider;
     const clientInitEnd = Date.now();
 
-    registerInstrumentations({
-      instrumentations: [
-        new DocumentLoadInstrumentation(),
-        new XMLHttpRequestInstrumentation({
-          enabled: false,
-          ignoreUrls: config.ignoreUrls,
-          propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
-        }),
-        new FetchInstrumentation({
-          enabled: false,
-          ignoreUrls: config.ignoreUrls,
-          propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
-          clearTimingResources: true,
-        }),
-      ],
-    });
+    instrumentXHR({ ignoreUrls: config.ignoreUrls });
     instrumentErrors();
 
     const nativeInit = Date.now();
@@ -221,15 +169,6 @@ export const MiddlewareRum: MiddlewareRumType = {
       nativeSdkConf.target
     );
 
-    let userStatusMetric = meterProvider
-      .getMeter('mw-counter')
-      .createCounter('user.status', {
-        description: 'User Status ',
-        unit: '',
-        valueType: 1,
-      });
-    userStatusMetric.add(1, getGlobalAttributes());
-
     initializeNativeSdk(nativeSdkConf).then((nativeAppStart) => {
       appStartInfo = nativeAppStart;
       if (Platform.OS === 'ios') {
@@ -238,7 +177,7 @@ export const MiddlewareRum: MiddlewareRumType = {
           appStartInfo.appStart || appStartInfo.moduleStart;
       }
       setNativeSessionId(getSessionId());
-      setGlobalAttributes({});
+
       if (config.appStartEnabled) {
         const tracer = provider.getTracer('AppStart');
         const nativeInitEnd = Date.now();
@@ -277,18 +216,4 @@ export const MiddlewareRum: MiddlewareRumType = {
   reportError: reportError,
   setGlobalAttributes: setGlobalAttributes,
   updateLocation: updateLocation,
-};
-
-const addGlobalAttributesFromConf = (config: ReactNativeConfiguration) => {
-  const confAttributes: Attributes = {
-    ...config.globalAttributes,
-  };
-  confAttributes.app = config.projectName;
-
-  if (config.deploymentEnvironment) {
-    confAttributes[SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT] =
-      config.deploymentEnvironment;
-  }
-
-  setGlobalAttributes(confAttributes);
 };

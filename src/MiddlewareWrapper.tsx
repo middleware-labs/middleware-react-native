@@ -12,7 +12,9 @@ export const MiddlewareWrapper: React.FC<Props> = ({
   children,
   configuration,
 }) => {
-  useEffect(() => {}, []);
+  useEffect(() => {
+    MiddlewareRum.finishAppStart();
+  }, []);
 
   if (!isInitialized) {
     MiddlewareRum.init(configuration);

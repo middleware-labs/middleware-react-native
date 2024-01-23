@@ -16,7 +16,7 @@ let session: Session = {
 };
 
 const tracer = trace.getTracer('session');
-//FIXME add conf
+
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000;
 const SESSION_TIMEOUT = 15 * 60 * 1000;
 const sessionLogging = false;

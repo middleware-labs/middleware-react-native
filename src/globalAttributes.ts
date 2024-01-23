@@ -20,6 +20,8 @@ export function getResource(): ResourceAttributes {
       '@middleware-labs/middlware-react-native',
     [SemanticResourceAttributes.TELEMETRY_SDK_VERSION]: version,
     'middleware.rumVersion': version,
+    'browser.trace': 'true',
+    'browser.mobile': 'true',
   };
 
   if (Platform.OS === 'ios') {

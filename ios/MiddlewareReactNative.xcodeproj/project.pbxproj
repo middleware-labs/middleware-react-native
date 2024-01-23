@@ -1,0 +1,733 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5CBFEF722B5E604A0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF702B5E604A0021251E /* trace.pb.swift */; };
+		5CBFEF732B5E604A0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF712B5E604A0021251E /* trace_service.pb.swift */; };
+		5CBFEF862B5E6DA60021251E /* TraceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF742B5E6DA50021251E /* TraceState.swift */; };
+		5CBFEF872B5E6DA60021251E /* SpanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF752B5E6DA50021251E /* SpanData.swift */; };
+		5CBFEF882B5E6DA60021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF772B5E6DA50021251E /* ResourceAttributes.swift */; };
+		5CBFEF892B5E6DA60021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF782B5E6DA50021251E /* Resource.swift */; };
+		5CBFEF8A2B5E6DA60021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF792B5E6DA50021251E /* EnvVarResource.swift */; };
+		5CBFEF8B2B5E6DA60021251E /* OtelTrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF7A2B5E6DA60021251E /* OtelTrace.swift */; };
+		5CBFEF8C2B5E6DA60021251E /* TraceFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF7B2B5E6DA60021251E /* TraceFlags.swift */; };
+		5CBFEF8D2B5E6DA60021251E /* TraceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF7C2B5E6DA60021251E /* TraceId.swift */; };
+		5CBFEF8E2B5E6DA60021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF7E2B5E6DA60021251E /* AttributeValue.swift */; };
+		5CBFEF8F2B5E6DA60021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF7F2B5E6DA60021251E /* AttributeSet.swift */; };
+		5CBFEF902B5E6DA60021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF802B5E6DA60021251E /* InstrumentationLibraryInfo.swift */; };
+		5CBFEF912B5E6DA60021251E /* SpanId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF812B5E6DA60021251E /* SpanId.swift */; };
+		5CBFEF922B5E6DA60021251E /* Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF822B5E6DA60021251E /* Status.swift */; };
+		5CBFEF932B5E6DA60021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF842B5E6DA60021251E /* trace.pb.swift */; };
+		5CBFEF942B5E6DA60021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF852B5E6DA60021251E /* trace_service.pb.swift */; };
+		5CBFEFA42B5E76920021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF962B5E76920021251E /* AttributeValue.swift */; };
+		5CBFEFA52B5E76920021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF972B5E76920021251E /* AttributeSet.swift */; };
+		5CBFEFA62B5E76920021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF982B5E76920021251E /* InstrumentationLibraryInfo.swift */; };
+		5CBFEFA72B5E76920021251E /* TracestateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF992B5E76920021251E /* TracestateUtils.swift */; };
+		5CBFEFA82B5E76920021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF9B2B5E76920021251E /* common.pb.swift */; };
+		5CBFEFA92B5E76920021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF9C2B5E76920021251E /* trace.pb.swift */; };
+		5CBFEFAA2B5E76920021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF9D2B5E76920021251E /* trace_service.pb.swift */; };
+		5CBFEFAB2B5E76920021251E /* SpanContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF9E2B5E76920021251E /* SpanContext.swift */; };
+		5CBFEFAC2B5E76920021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFA02B5E76920021251E /* ResourceAttributes.swift */; };
+		5CBFEFAD2B5E76920021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFA12B5E76920021251E /* Resource.swift */; };
+		5CBFEFAE2B5E76920021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFA22B5E76920021251E /* EnvVarResource.swift */; };
+		5CBFEFAF2B5E76920021251E /* SpanKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFA32B5E76920021251E /* SpanKind.swift */; };
+		5CBFEFBF2B5E7E990021251E /* StringUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB02B5E7E990021251E /* StringUtils.swift */; };
+		5CBFEFC02B5E7E990021251E /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB12B5E7E990021251E /* Version.swift */; };
+		5CBFEFC12B5E7E990021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB32B5E7E990021251E /* ResourceAttributes.swift */; };
+		5CBFEFC22B5E7E990021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB42B5E7E990021251E /* Resource.swift */; };
+		5CBFEFC32B5E7E990021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB52B5E7E990021251E /* EnvVarResource.swift */; };
+		5CBFEFC42B5E7E990021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB72B5E7E990021251E /* AttributeValue.swift */; };
+		5CBFEFC52B5E7E990021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB82B5E7E990021251E /* AttributeSet.swift */; };
+		5CBFEFC62B5E7E990021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB92B5E7E990021251E /* InstrumentationLibraryInfo.swift */; };
+		5CBFEFC72B5E7E990021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBB2B5E7E990021251E /* common.pb.swift */; };
+		5CBFEFC82B5E7E990021251E /* resource.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBC2B5E7E990021251E /* resource.pb.swift */; };
+		5CBFEFC92B5E7E990021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBD2B5E7E990021251E /* trace.pb.swift */; };
+		5CBFEFCA2B5E7E990021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */; };
+		5CBFEFDF2B5E808D0021251E /* EnvVarHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCB2B5E808D0021251E /* EnvVarHeaders.swift */; };
+		5CBFEFE02B5E808D0021251E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCC2B5E808D0021251E /* HTTPClient.swift */; };
+		5CBFEFE12B5E808D0021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCE2B5E808D0021251E /* ResourceAttributes.swift */; };
+		5CBFEFE22B5E808D0021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCF2B5E808D0021251E /* Resource.swift */; };
+		5CBFEFE32B5E808D0021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */; };
+		5CBFEFE42B5E808D0021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD22B5E808D0021251E /* common.pb.swift */; };
+		5CBFEFE52B5E808D0021251E /* resource.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD32B5E808D0021251E /* resource.pb.swift */; };
+		5CBFEFE62B5E808D0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD42B5E808D0021251E /* trace.pb.swift */; };
+		5CBFEFE72B5E808D0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */; };
+		5CBFEFE82B5E808D0021251E /* OtlpHttpTraceExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */; };
+		5CBFEFE92B5E808D0021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD82B5E808D0021251E /* AttributeValue.swift */; };
+		5CBFEFEA2B5E808D0021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD92B5E808D0021251E /* AttributeSet.swift */; };
+		5CBFEFEB2B5E808D0021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFDA2B5E808D0021251E /* InstrumentationLibraryInfo.swift */; };
+		5CBFEFEC2B5E808D0021251E /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFDB2B5E808D0021251E /* Lock.swift */; };
+		5CBFEFED2B5E808D0021251E /* OtlpHttpExporterBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFDC2B5E808D0021251E /* OtlpHttpExporterBase.swift */; };
+		5CBFEFEE2B5E808D0021251E /* SpanExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFDD2B5E808D0021251E /* SpanExporter.swift */; };
+		5CBFEFEF2B5E808D0021251E /* OtlpConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFDE2B5E808D0021251E /* OtlpConfiguration.swift */; };
+		5CBFF0032B5EEC1E0021251E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF02B5EEC1D0021251E /* Constants.swift */; };
+		5CBFF0042B5EEC1E0021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF22B5EEC1D0021251E /* ResourceAttributes.swift */; };
+		5CBFF0052B5EEC1E0021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF32B5EEC1D0021251E /* Resource.swift */; };
+		5CBFF0062B5EEC1E0021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF42B5EEC1D0021251E /* EnvVarResource.swift */; };
+		5CBFF0072B5EEC1E0021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF62B5EEC1D0021251E /* common.pb.swift */; };
+		5CBFF0082B5EEC1E0021251E /* resource.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF72B5EEC1D0021251E /* resource.pb.swift */; };
+		5CBFF0092B5EEC1E0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF82B5EEC1D0021251E /* trace.pb.swift */; };
+		5CBFF00A2B5EEC1E0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFF92B5EEC1D0021251E /* trace_service.pb.swift */; };
+		5CBFF00B2B5EEC1E0021251E /* TraceProtoUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFFA2B5EEC1D0021251E /* TraceProtoUtils.swift */; };
+		5CBFF00C2B5EEC1E0021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFFC2B5EEC1D0021251E /* AttributeValue.swift */; };
+		5CBFF00D2B5EEC1E0021251E /* ResourceAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFFD2B5EEC1D0021251E /* ResourceAdapter.swift */; };
+		5CBFF00E2B5EEC1E0021251E /* CommonAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFFE2B5EEC1D0021251E /* CommonAdapter.swift */; };
+		5CBFF00F2B5EEC1E0021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFFF2B5EEC1D0021251E /* AttributeSet.swift */; };
+		5CBFF0102B5EEC1E0021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFF0002B5EEC1D0021251E /* InstrumentationLibraryInfo.swift */; };
+		5CBFF0112B5EEC1E0021251E /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFF0012B5EEC1E0021251E /* Headers.swift */; };
+		5CBFF0122B5EEC1E0021251E /* SpanAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFF0022B5EEC1E0021251E /* SpanAdapter.swift */; };
+		F4FF95D7245B92E800C19C63 /* MiddlewareReactNative.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* MiddlewareReactNative.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58B511D91A9E6C8500147676 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		134814201AA4EA6300B7C361 /* libMiddlewareReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMiddlewareReactNative.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C7417892B5969C50085D10C /* SpanToDiskExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanToDiskExporter.swift; sourceTree = "<group>"; };
+		5C74178A2B5969C50085D10C /* RWLocked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RWLocked.swift; sourceTree = "<group>"; };
+		5C74178B2B5969C50085D10C /* ZipkinTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipkinTransform.swift; sourceTree = "<group>"; };
+		5C74178C2B5969C50085D10C /* SpanDb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanDb.swift; sourceTree = "<group>"; };
+		5C74178D2B5969C50085D10C /* NetworkType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkType.swift; sourceTree = "<group>"; };
+		5C74178E2B5969C50085D10C /* BandwidthTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandwidthTracker.swift; sourceTree = "<group>"; };
+		5C74178F2B5969C50085D10C /* CrashReporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReporting.swift; sourceTree = "<group>"; };
+		5C7417902B5969C50085D10C /* SpanOps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanOps.swift; sourceTree = "<group>"; };
+		5C7417912B5969C50085D10C /* OtelTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtelTransform.swift; sourceTree = "<group>"; };
+		5C7417922B5969C50085D10C /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		5C7417932B5969C50085D10C /* DeviceStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStats.swift; sourceTree = "<group>"; };
+		5C7417952B597B480085D10C /* SpanFromDiskExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanFromDiskExport.swift; sourceTree = "<group>"; };
+		5CBFEF702B5E604A0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEF712B5E604A0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEF742B5E6DA50021251E /* TraceState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceState.swift; sourceTree = "<group>"; };
+		5CBFEF752B5E6DA50021251E /* SpanData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanData.swift; sourceTree = "<group>"; };
+		5CBFEF772B5E6DA50021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
+		5CBFEF782B5E6DA50021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		5CBFEF792B5E6DA50021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
+		5CBFEF7A2B5E6DA60021251E /* OtelTrace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtelTrace.swift; sourceTree = "<group>"; };
+		5CBFEF7B2B5E6DA60021251E /* TraceFlags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceFlags.swift; sourceTree = "<group>"; };
+		5CBFEF7C2B5E6DA60021251E /* TraceId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceId.swift; sourceTree = "<group>"; };
+		5CBFEF7E2B5E6DA60021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
+		5CBFEF7F2B5E6DA60021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
+		5CBFEF802B5E6DA60021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
+		5CBFEF812B5E6DA60021251E /* SpanId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanId.swift; sourceTree = "<group>"; };
+		5CBFEF822B5E6DA60021251E /* Status.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Status.swift; sourceTree = "<group>"; };
+		5CBFEF842B5E6DA60021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEF852B5E6DA60021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEF962B5E76920021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
+		5CBFEF972B5E76920021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
+		5CBFEF982B5E76920021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
+		5CBFEF992B5E76920021251E /* TracestateUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TracestateUtils.swift; sourceTree = "<group>"; };
+		5CBFEF9B2B5E76920021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
+		5CBFEF9C2B5E76920021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEF9D2B5E76920021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEF9E2B5E76920021251E /* SpanContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanContext.swift; sourceTree = "<group>"; };
+		5CBFEFA02B5E76920021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
+		5CBFEFA12B5E76920021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		5CBFEFA22B5E76920021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
+		5CBFEFA32B5E76920021251E /* SpanKind.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanKind.swift; sourceTree = "<group>"; };
+		5CBFEFB02B5E7E990021251E /* StringUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringUtils.swift; sourceTree = "<group>"; };
+		5CBFEFB12B5E7E990021251E /* Version.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
+		5CBFEFB32B5E7E990021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
+		5CBFEFB42B5E7E990021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		5CBFEFB52B5E7E990021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
+		5CBFEFB72B5E7E990021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
+		5CBFEFB82B5E7E990021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
+		5CBFEFB92B5E7E990021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
+		5CBFEFBB2B5E7E990021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
+		5CBFEFBC2B5E7E990021251E /* resource.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resource.pb.swift; sourceTree = "<group>"; };
+		5CBFEFBD2B5E7E990021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEFCB2B5E808D0021251E /* EnvVarHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarHeaders.swift; sourceTree = "<group>"; };
+		5CBFEFCC2B5E808D0021251E /* HTTPClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
+		5CBFEFCE2B5E808D0021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
+		5CBFEFCF2B5E808D0021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
+		5CBFEFD22B5E808D0021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
+		5CBFEFD32B5E808D0021251E /* resource.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resource.pb.swift; sourceTree = "<group>"; };
+		5CBFEFD42B5E808D0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtlpHttpTraceExporter.swift; sourceTree = "<group>"; };
+		5CBFEFD82B5E808D0021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
+		5CBFEFD92B5E808D0021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
+		5CBFEFDA2B5E808D0021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
+		5CBFEFDB2B5E808D0021251E /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
+		5CBFEFDC2B5E808D0021251E /* OtlpHttpExporterBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtlpHttpExporterBase.swift; sourceTree = "<group>"; };
+		5CBFEFDD2B5E808D0021251E /* SpanExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanExporter.swift; sourceTree = "<group>"; };
+		5CBFEFDE2B5E808D0021251E /* OtlpConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtlpConfiguration.swift; sourceTree = "<group>"; };
+		5CBFEFF02B5EEC1D0021251E /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		5CBFEFF22B5EEC1D0021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
+		5CBFEFF32B5EEC1D0021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		5CBFEFF42B5EEC1D0021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
+		5CBFEFF62B5EEC1D0021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
+		5CBFEFF72B5EEC1D0021251E /* resource.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resource.pb.swift; sourceTree = "<group>"; };
+		5CBFEFF82B5EEC1D0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
+		5CBFEFF92B5EEC1D0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
+		5CBFEFFA2B5EEC1D0021251E /* TraceProtoUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceProtoUtils.swift; sourceTree = "<group>"; };
+		5CBFEFFC2B5EEC1D0021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
+		5CBFEFFD2B5EEC1D0021251E /* ResourceAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAdapter.swift; sourceTree = "<group>"; };
+		5CBFEFFE2B5EEC1D0021251E /* CommonAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonAdapter.swift; sourceTree = "<group>"; };
+		5CBFEFFF2B5EEC1D0021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
+		5CBFF0002B5EEC1D0021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
+		5CBFF0012B5EEC1E0021251E /* Headers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
+		5CBFF0022B5EEC1E0021251E /* SpanAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanAdapter.swift; sourceTree = "<group>"; };
+		B3E7B5891CC2AC0600A0062D /* MiddlewareReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiddlewareReactNative.m; sourceTree = "<group>"; };
+		F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MiddlewareReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
+		F4FF95D6245B92E800C19C63 /* MiddlewareReactNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareReactNative.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		58B511D81A9E6C8500147676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		134814211AA4EA7D00B7C361 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				134814201AA4EA6300B7C361 /* libMiddlewareReactNative.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		58B511D21A9E6C8500147676 = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFFB2B5EEC1D0021251E /* Common */,
+				5CBFEFF02B5EEC1D0021251E /* Constants.swift */,
+				5CBFF0012B5EEC1E0021251E /* Headers.swift */,
+				5CBFEFF52B5EEC1D0021251E /* proto */,
+				5CBFEFF12B5EEC1D0021251E /* Resources */,
+				5CBFF0022B5EEC1E0021251E /* SpanAdapter.swift */,
+				5CBFEFFA2B5EEC1D0021251E /* TraceProtoUtils.swift */,
+				5CBFEFDB2B5E808D0021251E /* Lock.swift */,
+				5CBFEFDE2B5E808D0021251E /* OtlpConfiguration.swift */,
+				5CBFEFDC2B5E808D0021251E /* OtlpHttpExporterBase.swift */,
+				5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */,
+				5CBFEF6F2B5E5EA80021251E /* proto */,
+				5CBFEF7D2B5E6DA60021251E /* Common */,
+				5CBFEF952B5E76920021251E /* Common */,
+				5CBFEF9A2B5E76920021251E /* proto */,
+				5CBFEFB62B5E7E990021251E /* Common */,
+				5CBFEFBA2B5E7E990021251E /* proto */,
+				5CBFEFD12B5E808D0021251E /* proto */,
+				5CBFEF9F2B5E76920021251E /* Resources */,
+				5CBFEFB22B5E7E990021251E /* Resources */,
+				5CBFEFD72B5E808D0021251E /* Common */,
+				5CBFEFCB2B5E808D0021251E /* EnvVarHeaders.swift */,
+				5CBFEFCC2B5E808D0021251E /* HTTPClient.swift */,
+				5CBFEFCD2B5E808D0021251E /* Resources */,
+				5CBFEFDD2B5E808D0021251E /* SpanExporter.swift */,
+				5CBFEFB02B5E7E990021251E /* StringUtils.swift */,
+				5CBFEFB12B5E7E990021251E /* Version.swift */,
+				5CBFEF9E2B5E76920021251E /* SpanContext.swift */,
+				5CBFEFA32B5E76920021251E /* SpanKind.swift */,
+				5CBFEF992B5E76920021251E /* TracestateUtils.swift */,
+				5CBFEF7A2B5E6DA60021251E /* OtelTrace.swift */,
+				5CBFEF832B5E6DA60021251E /* proto */,
+				5CBFEF762B5E6DA50021251E /* Resources */,
+				5CBFEF752B5E6DA50021251E /* SpanData.swift */,
+				5CBFEF812B5E6DA60021251E /* SpanId.swift */,
+				5CBFEF822B5E6DA60021251E /* Status.swift */,
+				5CBFEF7B2B5E6DA60021251E /* TraceFlags.swift */,
+				5CBFEF7C2B5E6DA60021251E /* TraceId.swift */,
+				5CBFEF742B5E6DA50021251E /* TraceState.swift */,
+				5C7417952B597B480085D10C /* SpanFromDiskExport.swift */,
+				5C74178E2B5969C50085D10C /* BandwidthTracker.swift */,
+				5C74178F2B5969C50085D10C /* CrashReporting.swift */,
+				5C7417932B5969C50085D10C /* DeviceStats.swift */,
+				5C7417922B5969C50085D10C /* Globals.swift */,
+				5C74178D2B5969C50085D10C /* NetworkType.swift */,
+				5C7417912B5969C50085D10C /* OtelTransform.swift */,
+				5C74178A2B5969C50085D10C /* RWLocked.swift */,
+				5C74178C2B5969C50085D10C /* SpanDb.swift */,
+				5C7417902B5969C50085D10C /* SpanOps.swift */,
+				5C7417892B5969C50085D10C /* SpanToDiskExporter.swift */,
+				5C74178B2B5969C50085D10C /* ZipkinTransform.swift */,
+				F4FF95D6245B92E800C19C63 /* MiddlewareReactNative.swift */,
+				B3E7B5891CC2AC0600A0062D /* MiddlewareReactNative.m */,
+				F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */,
+				134814211AA4EA7D00B7C361 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5CBFEF6F2B5E5EA80021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF712B5E604A0021251E /* trace_service.pb.swift */,
+				5CBFEF702B5E604A0021251E /* trace.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEF762B5E6DA50021251E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF772B5E6DA50021251E /* ResourceAttributes.swift */,
+				5CBFEF782B5E6DA50021251E /* Resource.swift */,
+				5CBFEF792B5E6DA50021251E /* EnvVarResource.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5CBFEF7D2B5E6DA60021251E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF7E2B5E6DA60021251E /* AttributeValue.swift */,
+				5CBFEF7F2B5E6DA60021251E /* AttributeSet.swift */,
+				5CBFEF802B5E6DA60021251E /* InstrumentationLibraryInfo.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		5CBFEF832B5E6DA60021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF842B5E6DA60021251E /* trace.pb.swift */,
+				5CBFEF852B5E6DA60021251E /* trace_service.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEF952B5E76920021251E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF962B5E76920021251E /* AttributeValue.swift */,
+				5CBFEF972B5E76920021251E /* AttributeSet.swift */,
+				5CBFEF982B5E76920021251E /* InstrumentationLibraryInfo.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		5CBFEF9A2B5E76920021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEF9B2B5E76920021251E /* common.pb.swift */,
+				5CBFEF9C2B5E76920021251E /* trace.pb.swift */,
+				5CBFEF9D2B5E76920021251E /* trace_service.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEF9F2B5E76920021251E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFA02B5E76920021251E /* ResourceAttributes.swift */,
+				5CBFEFA12B5E76920021251E /* Resource.swift */,
+				5CBFEFA22B5E76920021251E /* EnvVarResource.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5CBFEFB22B5E7E990021251E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFB32B5E7E990021251E /* ResourceAttributes.swift */,
+				5CBFEFB42B5E7E990021251E /* Resource.swift */,
+				5CBFEFB52B5E7E990021251E /* EnvVarResource.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5CBFEFB62B5E7E990021251E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFB72B5E7E990021251E /* AttributeValue.swift */,
+				5CBFEFB82B5E7E990021251E /* AttributeSet.swift */,
+				5CBFEFB92B5E7E990021251E /* InstrumentationLibraryInfo.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		5CBFEFBA2B5E7E990021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFBB2B5E7E990021251E /* common.pb.swift */,
+				5CBFEFBC2B5E7E990021251E /* resource.pb.swift */,
+				5CBFEFBD2B5E7E990021251E /* trace.pb.swift */,
+				5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEFCD2B5E808D0021251E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFCE2B5E808D0021251E /* ResourceAttributes.swift */,
+				5CBFEFCF2B5E808D0021251E /* Resource.swift */,
+				5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5CBFEFD12B5E808D0021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFD22B5E808D0021251E /* common.pb.swift */,
+				5CBFEFD32B5E808D0021251E /* resource.pb.swift */,
+				5CBFEFD42B5E808D0021251E /* trace.pb.swift */,
+				5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEFD72B5E808D0021251E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFD82B5E808D0021251E /* AttributeValue.swift */,
+				5CBFEFD92B5E808D0021251E /* AttributeSet.swift */,
+				5CBFEFDA2B5E808D0021251E /* InstrumentationLibraryInfo.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		5CBFEFF12B5EEC1D0021251E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFF22B5EEC1D0021251E /* ResourceAttributes.swift */,
+				5CBFEFF32B5EEC1D0021251E /* Resource.swift */,
+				5CBFEFF42B5EEC1D0021251E /* EnvVarResource.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5CBFEFF52B5EEC1D0021251E /* proto */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFF62B5EEC1D0021251E /* common.pb.swift */,
+				5CBFEFF72B5EEC1D0021251E /* resource.pb.swift */,
+				5CBFEFF82B5EEC1D0021251E /* trace.pb.swift */,
+				5CBFEFF92B5EEC1D0021251E /* trace_service.pb.swift */,
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
+		5CBFEFFB2B5EEC1D0021251E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				5CBFEFFC2B5EEC1D0021251E /* AttributeValue.swift */,
+				5CBFEFFD2B5EEC1D0021251E /* ResourceAdapter.swift */,
+				5CBFEFFE2B5EEC1D0021251E /* CommonAdapter.swift */,
+				5CBFEFFF2B5EEC1D0021251E /* AttributeSet.swift */,
+				5CBFF0002B5EEC1D0021251E /* InstrumentationLibraryInfo.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		58B511DA1A9E6C8500147676 /* MiddlewareReactNative */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "MiddlewareReactNative" */;
+			buildPhases = (
+				58B511D71A9E6C8500147676 /* Sources */,
+				58B511D81A9E6C8500147676 /* Frameworks */,
+				58B511D91A9E6C8500147676 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MiddlewareReactNative;
+			packageProductDependencies = (
+			);
+			productName = RCTDataManager;
+			productReference = 134814201AA4EA6300B7C361 /* libMiddlewareReactNative.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		58B511D31A9E6C8500147676 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = Facebook;
+				TargetAttributes = {
+					58B511DA1A9E6C8500147676 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "MiddlewareReactNative" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+			);
+			mainGroup = 58B511D21A9E6C8500147676;
+			packageReferences = (
+			);
+			productRefGroup = 58B511D21A9E6C8500147676;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				58B511DA1A9E6C8500147676 /* MiddlewareReactNative */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		58B511D71A9E6C8500147676 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CBFF00B2B5EEC1E0021251E /* TraceProtoUtils.swift in Sources */,
+				5CBFEFED2B5E808D0021251E /* OtlpHttpExporterBase.swift in Sources */,
+				5CBFEFC42B5E7E990021251E /* AttributeValue.swift in Sources */,
+				5CBFF00D2B5EEC1E0021251E /* ResourceAdapter.swift in Sources */,
+				5CBFF0062B5EEC1E0021251E /* EnvVarResource.swift in Sources */,
+				5CBFEFEE2B5E808D0021251E /* SpanExporter.swift in Sources */,
+				5CBFEFAA2B5E76920021251E /* trace_service.pb.swift in Sources */,
+				5CBFF00C2B5EEC1E0021251E /* AttributeValue.swift in Sources */,
+				5CBFEFC62B5E7E990021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5CBFEF8E2B5E6DA60021251E /* AttributeValue.swift in Sources */,
+				5CBFEFC12B5E7E990021251E /* ResourceAttributes.swift in Sources */,
+				5CBFEFC72B5E7E990021251E /* common.pb.swift in Sources */,
+				5CBFEFE02B5E808D0021251E /* HTTPClient.swift in Sources */,
+				5CBFEF722B5E604A0021251E /* trace.pb.swift in Sources */,
+				5CBFEFA42B5E76920021251E /* AttributeValue.swift in Sources */,
+				5CBFEF8A2B5E6DA60021251E /* EnvVarResource.swift in Sources */,
+				5CBFEF732B5E604A0021251E /* trace_service.pb.swift in Sources */,
+				5CBFEF942B5E6DA60021251E /* trace_service.pb.swift in Sources */,
+				5CBFEFAF2B5E76920021251E /* SpanKind.swift in Sources */,
+				5CBFEFC82B5E7E990021251E /* resource.pb.swift in Sources */,
+				5CBFEFA82B5E76920021251E /* common.pb.swift in Sources */,
+				5CBFEFEB2B5E808D0021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5CBFEFC52B5E7E990021251E /* AttributeSet.swift in Sources */,
+				5CBFEF8C2B5E6DA60021251E /* TraceFlags.swift in Sources */,
+				5CBFEFDF2B5E808D0021251E /* EnvVarHeaders.swift in Sources */,
+				5CBFF0102B5EEC1E0021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5CBFF0112B5EEC1E0021251E /* Headers.swift in Sources */,
+				5CBFEFA92B5E76920021251E /* trace.pb.swift in Sources */,
+				5CBFF00A2B5EEC1E0021251E /* trace_service.pb.swift in Sources */,
+				5CBFEF882B5E6DA60021251E /* ResourceAttributes.swift in Sources */,
+				5CBFEFEF2B5E808D0021251E /* OtlpConfiguration.swift in Sources */,
+				5CBFEFAB2B5E76920021251E /* SpanContext.swift in Sources */,
+				F4FF95D7245B92E800C19C63 /* MiddlewareReactNative.swift in Sources */,
+				5CBFEFC02B5E7E990021251E /* Version.swift in Sources */,
+				5CBFEFE12B5E808D0021251E /* ResourceAttributes.swift in Sources */,
+				5CBFEFAD2B5E76920021251E /* Resource.swift in Sources */,
+				5CBFEFCA2B5E7E990021251E /* trace_service.pb.swift in Sources */,
+				5CBFEFA52B5E76920021251E /* AttributeSet.swift in Sources */,
+				5CBFEFBF2B5E7E990021251E /* StringUtils.swift in Sources */,
+				5CBFF00F2B5EEC1E0021251E /* AttributeSet.swift in Sources */,
+				5CBFEF872B5E6DA60021251E /* SpanData.swift in Sources */,
+				5CBFF00E2B5EEC1E0021251E /* CommonAdapter.swift in Sources */,
+				5CBFF0042B5EEC1E0021251E /* ResourceAttributes.swift in Sources */,
+				5CBFEFE32B5E808D0021251E /* EnvVarResource.swift in Sources */,
+				5CBFEF862B5E6DA60021251E /* TraceState.swift in Sources */,
+				5CBFF0032B5EEC1E0021251E /* Constants.swift in Sources */,
+				5CBFEF8B2B5E6DA60021251E /* OtelTrace.swift in Sources */,
+				5CBFF0122B5EEC1E0021251E /* SpanAdapter.swift in Sources */,
+				5CBFEFE62B5E808D0021251E /* trace.pb.swift in Sources */,
+				5CBFEFE22B5E808D0021251E /* Resource.swift in Sources */,
+				5CBFEF902B5E6DA60021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5CBFF0052B5EEC1E0021251E /* Resource.swift in Sources */,
+				5CBFEFC32B5E7E990021251E /* EnvVarResource.swift in Sources */,
+				5CBFEFE42B5E808D0021251E /* common.pb.swift in Sources */,
+				5CBFEFEC2B5E808D0021251E /* Lock.swift in Sources */,
+				5CBFEFEA2B5E808D0021251E /* AttributeSet.swift in Sources */,
+				5CBFF0082B5EEC1E0021251E /* resource.pb.swift in Sources */,
+				5CBFEFE82B5E808D0021251E /* OtlpHttpTraceExporter.swift in Sources */,
+				5CBFEF922B5E6DA60021251E /* Status.swift in Sources */,
+				5CBFF0092B5EEC1E0021251E /* trace.pb.swift in Sources */,
+				5CBFEF932B5E6DA60021251E /* trace.pb.swift in Sources */,
+				5CBFEF8F2B5E6DA60021251E /* AttributeSet.swift in Sources */,
+				5CBFF0072B5EEC1E0021251E /* common.pb.swift in Sources */,
+				5CBFEFE72B5E808D0021251E /* trace_service.pb.swift in Sources */,
+				5CBFEFA62B5E76920021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5CBFEFC92B5E7E990021251E /* trace.pb.swift in Sources */,
+				5CBFEFE52B5E808D0021251E /* resource.pb.swift in Sources */,
+				5CBFEF912B5E6DA60021251E /* SpanId.swift in Sources */,
+				5CBFEFAC2B5E76920021251E /* ResourceAttributes.swift in Sources */,
+				5CBFEFAE2B5E76920021251E /* EnvVarResource.swift in Sources */,
+				5CBFEFA72B5E76920021251E /* TracestateUtils.swift in Sources */,
+				5CBFEF892B5E6DA60021251E /* Resource.swift in Sources */,
+				5CBFEFE92B5E808D0021251E /* AttributeValue.swift in Sources */,
+				5CBFEF8D2B5E6DA60021251E /* TraceId.swift in Sources */,
+				5CBFEFC22B5E7E990021251E /* Resource.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		58B511ED1A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		58B511EE1A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		58B511F01A9E6C8500147676 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = MiddlewareReactNative;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MiddlewareReactNative-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		58B511F11A9E6C8500147676 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = MiddlewareReactNative;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "MiddlewareReactNative-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "MiddlewareReactNative" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511ED1A9E6C8500147676 /* Debug */,
+				58B511EE1A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "MiddlewareReactNative" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				58B511F01A9E6C8500147676 /* Debug */,
+				58B511F11A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 58B511D31A9E6C8500147676 /* Project object */;
+}

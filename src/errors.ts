@@ -1,4 +1,4 @@
-import { trace } from '@opentelemetry/api';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 
 const STACK_LIMIT = 4096;
 const MESSAGE_LIMIT = 1024;
@@ -14,24 +14,47 @@ export const reportError = (error: any, isFatal?: boolean) => {
   const msg = error.message || error.toString();
 
   const attributes = {
-    'exception.isFatal': isFatal,
-    'exception.message': limitLen(msg, MESSAGE_LIMIT),
-    'exception.object': useful(error.name)
+    'error.isFatal': isFatal,
+    'error.message': limitLen(msg, MESSAGE_LIMIT),
+    'error.name': useful(error.name)
       ? error.name
       : error.constructor && error.constructor.name
       ? error.constructor.name
       : 'Error',
     'exception': true, //TODO do we use this?
     'component': 'error',
+    'event.type': 'error',
+    'type': 'reactNativeError',
   };
 
   if (error.stack && useful(error.stack)) {
-    (attributes as any)['exception.stacktrace'] = limitLen(
+    (attributes as any)['error.stack'] = limitLen(
       error.stack.toString(),
       STACK_LIMIT
     );
   }
-  tracer.startSpan('error', { attributes }).end();
+
+  const errorSpan = tracer.startSpan(attributes['error.message'], {
+    attributes,
+  });
+  if (error.stack && useful(error.stack)) {
+    const limitStack = limitLen(error.stack.toString(), STACK_LIMIT);
+    errorSpan.setStatus({
+      code: SpanStatusCode.ERROR,
+      message: limitStack,
+    });
+    errorSpan.recordException({
+      code: SpanStatusCode.ERROR,
+      message: limitLen(msg, MESSAGE_LIMIT),
+      name: useful(error.name)
+        ? error.name
+        : error.constructor && error.constructor.name
+        ? error.constructor.name
+        : 'Error',
+      stack: limitStack,
+    });
+  }
+  errorSpan.end();
 };
 
 const limitLen = (s: string, cap: number): string => {
