@@ -38,6 +38,7 @@ export default class ReacNativeSpanExporter implements SpanExporter {
       endTime: hrTimeToMilliseconds(span.endTime),
       parentSpanId: span.parentSpanId || '0000000000000000',
       attributes: span.attributes,
+      resource: span.resource,
       events: JSON.stringify(span.events),
       duration: span.duration,
       ended: span.ended,

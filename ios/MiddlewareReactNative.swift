@@ -15,20 +15,20 @@ class MiddlewareReactNative: NSObject {
 //      spanExporter = SpanToDiskExporter(spanDb: db, limitDiskUsageMegabytes: limitDiskUsageMegabytes, truncationCheckpoint: truncationCheckpoint)
 //      initializeCrashReporting(exporter: spanExporter)
 //
-//      do {
-//          appStartTime = try processStartTime()
-//          print("Process appStartTime \(appStartTime)")
-//      } catch {
-//          // ignore
-//      }
-//
+     do {
+         appStartTime = try processStartTime()
+         print("Process appStartTime \(appStartTime)")
+     } catch {
+        //  ignore
+     }
+
       let target = config["target"] as? String
-//
+
       if target == nil {
           reject("error", "Missing target URL", nil)
           return
       }
-//
+
       let accountKey = config["accountKey"] as? String
 
       if accountKey == nil {
