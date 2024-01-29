@@ -10110,7 +10110,7 @@ __metadata:
 
 "middleware-react-native@file:..::locator=middleware-react-native-example%40workspace%3Aexample":
   version: 0.1.0
-  resolution: "middleware-react-native@file:..#..::hash=f10cb4&locator=middleware-react-native-example%40workspace%3Aexample"
+  resolution: "middleware-react-native@file:..#..::hash=ba3ec0&locator=middleware-react-native-example%40workspace%3Aexample"
   dependencies:
     "@opentelemetry/api": ^1.7.0
     "@opentelemetry/core": 1.20.0
@@ -10129,7 +10129,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 875b58f04194c895224a0d4841ac481b2896212f218ac6c7df8a2f842d6635f4a4cf46fc71e7df004a47710655b3557c8fdd1f63981ae1307a08d5f8a7ebbed4
+  checksum: 0d0edd680c5573fe3418d75cdf08428d88b98edcb71e8af3398d12938b24114f7b51c83d203896f5bed2cfe4e30a4e17b077b6bcbac8b42d4b2eaf04fc036034
   languageName: node
   linkType: hard
 
