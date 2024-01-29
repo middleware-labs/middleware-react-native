@@ -10098,6 +10098,7 @@ __metadata:
     "@react-navigation/native": ^6.1.9
     "@react-navigation/native-stack": ^6.9.17
     babel-plugin-module-resolver: ^5.0.0
+    middleware-react-native: "file:.."
     pod-install: ^0.1.0
     react: 18.2.0
     react-native: 0.73.1
@@ -10106,6 +10107,31 @@ __metadata:
     react-native-screens: ^3.29.0
   languageName: unknown
   linkType: soft
+
+"middleware-react-native@file:..::locator=middleware-react-native-example%40workspace%3Aexample":
+  version: 0.1.0
+  resolution: "middleware-react-native@file:..#..::hash=f10cb4&locator=middleware-react-native-example%40workspace%3Aexample"
+  dependencies:
+    "@opentelemetry/api": ^1.7.0
+    "@opentelemetry/core": 1.20.0
+    "@opentelemetry/exporter-metrics-otlp-http": ^0.46.0
+    "@opentelemetry/exporter-trace-otlp-http": ^0.46.0
+    "@opentelemetry/instrumentation": ^0.46.0
+    "@opentelemetry/instrumentation-fetch": ^0.46.0
+    "@opentelemetry/otlp-transformer": ^0.47.0
+    "@opentelemetry/propagator-b3": ^1.20.0
+    "@opentelemetry/resources": 1.20.0
+    "@opentelemetry/sdk-trace-base": 1.20.0
+    "@opentelemetry/sdk-trace-web": 1.20.0
+    "@opentelemetry/semantic-conventions": 1.20.0
+    instrumentation-document-load: ^0.0.4
+    middleware.io-instrumentation-xml-http-request: ^0.0.1
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 875b58f04194c895224a0d4841ac481b2896212f218ac6c7df8a2f842d6635f4a4cf46fc71e7df004a47710655b3557c8fdd1f63981ae1307a08d5f8a7ebbed4
+  languageName: node
+  linkType: hard
 
 "middleware-react-native@workspace:.":
   version: 0.0.0-use.local
