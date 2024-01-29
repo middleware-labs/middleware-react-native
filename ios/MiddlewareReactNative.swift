@@ -1,69 +1,95 @@
+import os
 fileprivate var spanExporter: SpanExporter? = nil
+
 
 @objc(MiddlewareReactNative)
 class MiddlewareReactNative: NSObject {
-  private var appStartTime = Date()
-  private var otlpTraceExporter: OtlpHttpTraceExporter? = nil
-  private var globalAttributes: Dictionary<String, Any> = [:]
-  @objc(initialize:withResolver:withRejecter:)
-  func initialize(config: Dictionary<String, Any>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-     do {
-         appStartTime = try processStartTime()
-         print("Process appStartTime \(appStartTime)")
-     } catch {
-        //  ignore
-     }
+    private var appStartTime = Date()
+    private var otlpTraceExporter: OtlpHttpTraceExporter? = nil
+    
+    private var otlpLogExporter: OtlpHttpLogExporter? = nil
+    private var globalAttributes: Dictionary<String, Any> = [:]
+    private var newGlobalAttributes: [String: AttributeValue] = [:]
+    @objc(initialize:withResolver:withRejecter:)
+    func initialize(config: Dictionary<String, Any>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
+        do {
+            appStartTime = try processStartTime()
+            print("Process appStartTime \(appStartTime)")
+        } catch {
+            //  ignore
+        }
+        
+        let target = config["target"] as? String
+        
+        if target == nil {
+            reject("error", "Missing target URL", nil)
+            return
+        }
+        
+        let accountKey = config["accountKey"] as? String
+        
+        if accountKey == nil {
+            reject("error", "Missing account key", nil)
+            return
+        }
+        var targetTrace = target!
+        targetTrace += "/v1/traces"
+        
+        var targetLogs = target! + "/v1/logs"
+        
+        self.globalAttributes = config["globalAttributes"] as! [String: Any]
+        globalAttributes["mw.account_key"] = String(accountKey!)
+        self.newGlobalAttributes = convertToAttributeValue(dictionary: globalAttributes)
 
-      let target = config["target"] as? String
-
-      if target == nil {
-          reject("error", "Missing target URL", nil)
-          return
-      }
-
-      let accountKey = config["accountKey"] as? String
-
-      if accountKey == nil {
-          reject("error", "Missing account key", nil)
-          return
-      }
-      var targetTrace = target!
-      targetTrace += "/v1/traces"
-      
-      self.globalAttributes = config["globalAttributes"] as! [String: Any]
-
-      otlpTraceExporter = OtlpHttpTraceExporter(
-                  endpoint: URL(string: targetTrace)!,
-                  config: OtlpConfiguration(timeout: TimeInterval(10000),
-                                            headers: [
-                                              ("Origin","sdk.middleware.io"),
-                                              ("Access-Control-Allow-Headers", "*"),
-                                              ("Authorization", accountKey!),
-                                            ]
-                                           ),
-                  envVarHeaders: [
-                    ("Origin","sdk.middleware.io"),
-                    ("Access-Control-Allow-Headers", "*"),
-                    ("Authorization", accountKey!),
-                  ]
-              )
-      initializeCrashReporting(exporter: otlpTraceExporter!, attributes: globalAttributes)
-      initializeNetworkTypeMonitoring()
-      resolve(["moduleStart": appStartTime.timeIntervalSince1970 * 1000])
+        otlpTraceExporter = OtlpHttpTraceExporter(
+            endpoint: URL(string: targetTrace)!,
+            config: OtlpConfiguration(timeout: TimeInterval(10000),
+                                      headers: [
+                                        ("Origin","sdk.middleware.io"),
+                                        ("Access-Control-Allow-Headers", "*"),
+                                        ("Authorization", accountKey!),
+                                      ]
+                                     ),
+            envVarHeaders: [
+                ("Origin","sdk.middleware.io"),
+                ("Access-Control-Allow-Headers", "*"),
+                ("Authorization", accountKey!),
+            ]
+        )
+        
+        
+        otlpLogExporter = OtlpHttpLogExporter(
+            endpoint: URL(string: targetLogs)!,
+            config: OtlpConfiguration(timeout: TimeInterval(10000),
+                                      headers: [
+                                        ("Origin","sdk.middleware.io"),
+                                        ("Access-Control-Allow-Headers", "*"),
+                                        ("Authorization", accountKey!),
+                                      ]
+                                     ),
+            envVarHeaders: [
+                ("Origin","sdk.middleware.io"),
+                ("Access-Control-Allow-Headers", "*"),
+                ("Authorization", accountKey!),
+            ]
+        )
+        initializeCrashReporting(exporter: otlpTraceExporter!, attributes: newGlobalAttributes)
+        initializeNetworkTypeMonitoring()
+        resolve(["moduleStart": appStartTime.timeIntervalSince1970 * 1000])
     }
-
+    
     @objc(export:withResolver:withRejecter:)
     func export(spans: Array<Dictionary<String, Any>>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
         resolve(otlpTraceExporter?.export(spans: OtelTransform.toOtelSpans(spans: spans, attributes: self.globalAttributes)))
     }
-
+    
     @objc(nativeCrash)
     func nativeCrash() -> Void {
         print("Native crash")
         let x: Int? = nil
         print(x! as Any);
     }
-
+    
     @objc(setSessionId:withResolver:withRejecter:)
     func setSessionId(id: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         Globals.setSessionId(id)
@@ -76,7 +102,72 @@ class MiddlewareReactNative: NSObject {
         setGlobalAttributesInternally(attributes: attributes)
         resolve(true)
     }
-
+    
+    @objc(info:withResolver:withRejecter:)
+    func info(message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        if #available(iOS 14.0, *) {
+            let logger = Logger()
+            logger.info("\(message)")
+            otlpLogExporter?.export(logRecords: [
+                ReadableLogRecord(resource: Resource(attributes: newGlobalAttributes),
+                                  instrumentationScopeInfo: InstrumentationScopeInfo(),
+                                  timestamp: Date(),
+                                  severity: Severity.info,
+                                  attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
+            ])
+        }
+        resolve(true)
+    }
+    
+    @objc(error:withResolver:withRejecter:)
+    func error(message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        if #available(iOS 14.0, *) {
+            let logger = Logger()
+            logger.error("\(message)")
+            otlpLogExporter?.export(logRecords: [
+                ReadableLogRecord(resource: Resource(attributes: newGlobalAttributes),
+                                  instrumentationScopeInfo: InstrumentationScopeInfo(),
+                                  timestamp: Date(),
+                                  severity: Severity.error,
+                                  attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
+            ])
+        }
+        resolve(true)
+    }
+    
+    @objc(debug:withResolver:withRejecter:)
+    func debug(message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        if #available(iOS 14.0, *) {
+            let logger = Logger()
+            logger.debug("\(message)")
+            otlpLogExporter?.export(logRecords: [
+                ReadableLogRecord(resource: Resource(attributes: newGlobalAttributes),
+                                  instrumentationScopeInfo: InstrumentationScopeInfo(),
+                                  timestamp: Date(),
+                                  severity: Severity.debug,
+                                  attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
+            ])
+        }
+        resolve(true)
+    }
+    
+    @objc(warn:withResolver:withRejecter:)
+    func warn(message: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        if #available(iOS 14.0, *) {
+            let logger = Logger()
+            logger.warning("\(message)")
+            otlpLogExporter?.export(logRecords: [
+                ReadableLogRecord(resource: Resource(attributes: newGlobalAttributes),
+                                  instrumentationScopeInfo: InstrumentationScopeInfo(),
+                                  timestamp: Date(),
+                                  severity: Severity.warn,
+                                  body: AttributeValue(message), 
+                                  attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
+            ])
+        }
+        resolve(true)
+    }
+    
     private func setGlobalAttributesInternally(attributes: Dictionary<String, Any>) {
         let newAttribs: [String: String] = attributes.compactMapValues { v in
             switch v {
@@ -92,10 +183,10 @@ class MiddlewareReactNative: NSObject {
                 return nil
             }
         }
-
+        
         Globals.setGlobalAttributes(newAttribs)
     }
-
+    
     private func processStartTime() throws -> Date {
         let name = "kern.proc.pid"
         var len: size_t = 4
@@ -118,4 +209,30 @@ class MiddlewareReactNative: NSObject {
         let ti: TimeInterval = Double(startTime.tv_sec) + (Double(startTime.tv_usec) / 1e6)
         return Date(timeIntervalSince1970: ti)
     }
+    
+    private func convertToAttributeValue(dictionary: [String: Any]) -> [String: AttributeValue] {
+        var attributeValues: [String: AttributeValue] = [:]
+        
+        for (key, value) in dictionary {
+            let attributeValue: AttributeValue
+            
+            if let stringValue = value as? String {
+                attributeValue = AttributeValue.string(stringValue)
+            } else if let intValue = value as? Int {
+                attributeValue = AttributeValue.int(intValue)
+            } else if let doubleValue = value as? Double {
+                attributeValue = AttributeValue.double(doubleValue)
+            } else if let boolValue = value as? Bool {
+                attributeValue = AttributeValue.bool(boolValue)
+            } else {
+                // Handle other types as needed
+                fatalError("Unsupported data type for key: \(key)")
+            }
+            attributeValues[key] = attributeValue
+        }
+        
+        return attributeValues
+    }
+    
+    
 }

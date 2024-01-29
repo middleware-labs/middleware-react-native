@@ -46,6 +46,8 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   private CurrentNetworkProvider currentNetworkProvider;
   private String nativeSessionId;
 
+  private static final String TAG = "MiddlewareReactNative";
+
   public MiddlewareReactNativeModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.moduleStartTime = System.currentTimeMillis();
@@ -161,6 +163,26 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   public void setGlobalAttributes(ReadableMap attributeMap) {
     Attributes attributesFromMap = attributesFromMap(attributeMap);
     setGlobalAttributes(attributesFromMap);
+  }
+
+  @ReactMethod
+  public void info(String message) {
+    Middleware.getInstance().i(TAG, message);
+  }
+
+  @ReactMethod
+  public void warn(String message) {
+    Middleware.getInstance().w(TAG, message);
+  }
+
+  @ReactMethod
+  public void error(String message) {
+    Middleware.getInstance().e(TAG, message);
+  }
+
+  @ReactMethod
+  public void debug(String message) {
+    Middleware.getInstance().d(TAG, message);
   }
 
   private void setGlobalAttributes(Attributes attributes) {

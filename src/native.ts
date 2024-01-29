@@ -58,3 +58,19 @@ export const setNativeGlobalAttributes = (
 export const testNativeCrash = () => {
   MiddlewareReactNative.nativeCrash();
 };
+
+export const info = (message: String) => {
+  MiddlewareReactNative.info(message);
+};
+
+export const error = (message: String) => {
+  MiddlewareReactNative.error(message);
+};
+
+export const warn = (message: String) => {
+  MiddlewareReactNative.warn(message);
+};
+
+export const debug = (message: String) => {
+  MiddlewareReactNative.debug(message);
+};

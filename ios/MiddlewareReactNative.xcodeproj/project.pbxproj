@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */; };
+		5C91D2EA2B67EFFB00BE5854 /* OtlpHttpLogExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2E72B67EFFA00BE5854 /* OtlpHttpLogExporter.swift */; };
+		5C91D2EB2B67EFFB00BE5854 /* LogRecordAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2E82B67EFFB00BE5854 /* LogRecordAdapter.swift */; };
+		5C91D2EC2B67EFFB00BE5854 /* LogRecordExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2E92B67EFFB00BE5854 /* LogRecordExporter.swift */; };
+		5C91D2EF2B67F00500BE5854 /* logs_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2ED2B67F00500BE5854 /* logs_service.pb.swift */; };
+		5C91D2F02B67F00500BE5854 /* logs.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2EE2B67F00500BE5854 /* logs.pb.swift */; };
 		5CBFEF722B5E604A0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF702B5E604A0021251E /* trace.pb.swift */; };
 		5CBFEF732B5E604A0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF712B5E604A0021251E /* trace_service.pb.swift */; };
 		5CBFEF862B5E6DA60021251E /* TraceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF742B5E6DA50021251E /* TraceState.swift */; };
@@ -45,19 +50,11 @@
 		5CBFEFC42B5E7E990021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB72B5E7E990021251E /* AttributeValue.swift */; };
 		5CBFEFC52B5E7E990021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB82B5E7E990021251E /* AttributeSet.swift */; };
 		5CBFEFC62B5E7E990021251E /* InstrumentationLibraryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFB92B5E7E990021251E /* InstrumentationLibraryInfo.swift */; };
-		5CBFEFC72B5E7E990021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBB2B5E7E990021251E /* common.pb.swift */; };
-		5CBFEFC82B5E7E990021251E /* resource.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBC2B5E7E990021251E /* resource.pb.swift */; };
-		5CBFEFC92B5E7E990021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBD2B5E7E990021251E /* trace.pb.swift */; };
-		5CBFEFCA2B5E7E990021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */; };
 		5CBFEFDF2B5E808D0021251E /* EnvVarHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCB2B5E808D0021251E /* EnvVarHeaders.swift */; };
 		5CBFEFE02B5E808D0021251E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCC2B5E808D0021251E /* HTTPClient.swift */; };
 		5CBFEFE12B5E808D0021251E /* ResourceAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCE2B5E808D0021251E /* ResourceAttributes.swift */; };
 		5CBFEFE22B5E808D0021251E /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFCF2B5E808D0021251E /* Resource.swift */; };
 		5CBFEFE32B5E808D0021251E /* EnvVarResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */; };
-		5CBFEFE42B5E808D0021251E /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD22B5E808D0021251E /* common.pb.swift */; };
-		5CBFEFE52B5E808D0021251E /* resource.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD32B5E808D0021251E /* resource.pb.swift */; };
-		5CBFEFE62B5E808D0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD42B5E808D0021251E /* trace.pb.swift */; };
-		5CBFEFE72B5E808D0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */; };
 		5CBFEFE82B5E808D0021251E /* OtlpHttpTraceExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */; };
 		5CBFEFE92B5E808D0021251E /* AttributeValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD82B5E808D0021251E /* AttributeValue.swift */; };
 		5CBFEFEA2B5E808D0021251E /* AttributeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEFD92B5E808D0021251E /* AttributeSet.swift */; };
@@ -112,6 +109,11 @@
 		5C7417932B5969C50085D10C /* DeviceStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStats.swift; sourceTree = "<group>"; };
 		5C7417952B597B480085D10C /* SpanFromDiskExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanFromDiskExport.swift; sourceTree = "<group>"; };
 		5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
+		5C91D2E72B67EFFA00BE5854 /* OtlpHttpLogExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtlpHttpLogExporter.swift; sourceTree = "<group>"; };
+		5C91D2E82B67EFFB00BE5854 /* LogRecordAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogRecordAdapter.swift; sourceTree = "<group>"; };
+		5C91D2E92B67EFFB00BE5854 /* LogRecordExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogRecordExporter.swift; sourceTree = "<group>"; };
+		5C91D2ED2B67F00500BE5854 /* logs_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = logs_service.pb.swift; sourceTree = "<group>"; };
+		5C91D2EE2B67F00500BE5854 /* logs.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = logs.pb.swift; sourceTree = "<group>"; };
 		5CBFEF702B5E604A0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
 		5CBFEF712B5E604A0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
 		5CBFEF742B5E6DA50021251E /* TraceState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceState.swift; sourceTree = "<group>"; };
@@ -149,19 +151,11 @@
 		5CBFEFB72B5E7E990021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
 		5CBFEFB82B5E7E990021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
 		5CBFEFB92B5E7E990021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
-		5CBFEFBB2B5E7E990021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
-		5CBFEFBC2B5E7E990021251E /* resource.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resource.pb.swift; sourceTree = "<group>"; };
-		5CBFEFBD2B5E7E990021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
-		5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
 		5CBFEFCB2B5E808D0021251E /* EnvVarHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarHeaders.swift; sourceTree = "<group>"; };
 		5CBFEFCC2B5E808D0021251E /* HTTPClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		5CBFEFCE2B5E808D0021251E /* ResourceAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResourceAttributes.swift; sourceTree = "<group>"; };
 		5CBFEFCF2B5E808D0021251E /* Resource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
 		5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnvVarResource.swift; sourceTree = "<group>"; };
-		5CBFEFD22B5E808D0021251E /* common.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
-		5CBFEFD32B5E808D0021251E /* resource.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = resource.pb.swift; sourceTree = "<group>"; };
-		5CBFEFD42B5E808D0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
-		5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
 		5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OtlpHttpTraceExporter.swift; sourceTree = "<group>"; };
 		5CBFEFD82B5E808D0021251E /* AttributeValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeValue.swift; sourceTree = "<group>"; };
 		5CBFEFD92B5E808D0021251E /* AttributeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeSet.swift; sourceTree = "<group>"; };
@@ -213,6 +207,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				5C91D2E62B67EF3C00BE5854 /* log */,
 				5CBFEFFB2B5EEC1D0021251E /* Common */,
 				5CBFEFF02B5EEC1D0021251E /* Constants.swift */,
 				5CBFF0012B5EEC1E0021251E /* Headers.swift */,
@@ -223,14 +218,13 @@
 				5CBFEFDB2B5E808D0021251E /* Lock.swift */,
 				5CBFEFDE2B5E808D0021251E /* OtlpConfiguration.swift */,
 				5CBFEFDC2B5E808D0021251E /* OtlpHttpExporterBase.swift */,
+				5C91D2E72B67EFFA00BE5854 /* OtlpHttpLogExporter.swift */,
 				5CBFEFD62B5E808D0021251E /* OtlpHttpTraceExporter.swift */,
 				5CBFEF6F2B5E5EA80021251E /* proto */,
 				5CBFEF7D2B5E6DA60021251E /* Common */,
 				5CBFEF952B5E76920021251E /* Common */,
 				5CBFEF9A2B5E76920021251E /* proto */,
 				5CBFEFB62B5E7E990021251E /* Common */,
-				5CBFEFBA2B5E7E990021251E /* proto */,
-				5CBFEFD12B5E808D0021251E /* proto */,
 				5CBFEF9F2B5E76920021251E /* Resources */,
 				5CBFEFB22B5E7E990021251E /* Resources */,
 				5CBFEFD72B5E808D0021251E /* Common */,
@@ -269,6 +263,15 @@
 				F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		5C91D2E62B67EF3C00BE5854 /* log */ = {
+			isa = PBXGroup;
+			children = (
+				5C91D2E82B67EFFB00BE5854 /* LogRecordAdapter.swift */,
+				5C91D2E92B67EFFB00BE5854 /* LogRecordExporter.swift */,
+			);
+			path = log;
 			sourceTree = "<group>";
 		};
 		5CBFEF6F2B5E5EA80021251E /* proto */ = {
@@ -359,17 +362,6 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		5CBFEFBA2B5E7E990021251E /* proto */ = {
-			isa = PBXGroup;
-			children = (
-				5CBFEFBB2B5E7E990021251E /* common.pb.swift */,
-				5CBFEFBC2B5E7E990021251E /* resource.pb.swift */,
-				5CBFEFBD2B5E7E990021251E /* trace.pb.swift */,
-				5CBFEFBE2B5E7E990021251E /* trace_service.pb.swift */,
-			);
-			path = proto;
-			sourceTree = "<group>";
-		};
 		5CBFEFCD2B5E808D0021251E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -378,17 +370,6 @@
 				5CBFEFD02B5E808D0021251E /* EnvVarResource.swift */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		5CBFEFD12B5E808D0021251E /* proto */ = {
-			isa = PBXGroup;
-			children = (
-				5CBFEFD22B5E808D0021251E /* common.pb.swift */,
-				5CBFEFD32B5E808D0021251E /* resource.pb.swift */,
-				5CBFEFD42B5E808D0021251E /* trace.pb.swift */,
-				5CBFEFD52B5E808D0021251E /* trace_service.pb.swift */,
-			);
-			path = proto;
 			sourceTree = "<group>";
 		};
 		5CBFEFD72B5E808D0021251E /* Common */ = {
@@ -414,6 +395,8 @@
 		5CBFEFF52B5EEC1D0021251E /* proto */ = {
 			isa = PBXGroup;
 			children = (
+				5C91D2ED2B67F00500BE5854 /* logs_service.pb.swift */,
+				5C91D2EE2B67F00500BE5854 /* logs.pb.swift */,
 				5CBFEFF62B5EEC1D0021251E /* common.pb.swift */,
 				5CBFEFF72B5EEC1D0021251E /* resource.pb.swift */,
 				5CBFEFF82B5EEC1D0021251E /* trace.pb.swift */,
@@ -501,13 +484,15 @@
 				5CBFEFC42B5E7E990021251E /* AttributeValue.swift in Sources */,
 				5CBFF00D2B5EEC1E0021251E /* ResourceAdapter.swift in Sources */,
 				5CBFF0062B5EEC1E0021251E /* EnvVarResource.swift in Sources */,
+				5C91D2EF2B67F00500BE5854 /* logs_service.pb.swift in Sources */,
 				5CBFEFEE2B5E808D0021251E /* SpanExporter.swift in Sources */,
 				5CBFEFAA2B5E76920021251E /* trace_service.pb.swift in Sources */,
+				5C91D2EB2B67EFFB00BE5854 /* LogRecordAdapter.swift in Sources */,
 				5CBFF00C2B5EEC1E0021251E /* AttributeValue.swift in Sources */,
 				5CBFEFC62B5E7E990021251E /* InstrumentationLibraryInfo.swift in Sources */,
 				5CBFEF8E2B5E6DA60021251E /* AttributeValue.swift in Sources */,
 				5CBFEFC12B5E7E990021251E /* ResourceAttributes.swift in Sources */,
-				5CBFEFC72B5E7E990021251E /* common.pb.swift in Sources */,
+				5C91D2EC2B67EFFB00BE5854 /* LogRecordExporter.swift in Sources */,
 				5CBFEFE02B5E808D0021251E /* HTTPClient.swift in Sources */,
 				5CBFEF722B5E604A0021251E /* trace.pb.swift in Sources */,
 				5CBFEFA42B5E76920021251E /* AttributeValue.swift in Sources */,
@@ -515,7 +500,7 @@
 				5CBFEF732B5E604A0021251E /* trace_service.pb.swift in Sources */,
 				5CBFEF942B5E6DA60021251E /* trace_service.pb.swift in Sources */,
 				5CBFEFAF2B5E76920021251E /* SpanKind.swift in Sources */,
-				5CBFEFC82B5E7E990021251E /* resource.pb.swift in Sources */,
+				5C91D2F02B67F00500BE5854 /* logs.pb.swift in Sources */,
 				5CBFEFA82B5E76920021251E /* common.pb.swift in Sources */,
 				5CBFEFEB2B5E808D0021251E /* InstrumentationLibraryInfo.swift in Sources */,
 				5CBFEFC52B5E7E990021251E /* AttributeSet.swift in Sources */,
@@ -532,7 +517,6 @@
 				5CBFEFC02B5E7E990021251E /* Version.swift in Sources */,
 				5CBFEFE12B5E808D0021251E /* ResourceAttributes.swift in Sources */,
 				5CBFEFAD2B5E76920021251E /* Resource.swift in Sources */,
-				5CBFEFCA2B5E7E990021251E /* trace_service.pb.swift in Sources */,
 				5CBFEFA52B5E76920021251E /* AttributeSet.swift in Sources */,
 				5CBFEFBF2B5E7E990021251E /* StringUtils.swift in Sources */,
 				5CBFF00F2B5EEC1E0021251E /* AttributeSet.swift in Sources */,
@@ -544,12 +528,10 @@
 				5CBFF0032B5EEC1E0021251E /* Constants.swift in Sources */,
 				5CBFEF8B2B5E6DA60021251E /* OtelTrace.swift in Sources */,
 				5CBFF0122B5EEC1E0021251E /* SpanAdapter.swift in Sources */,
-				5CBFEFE62B5E808D0021251E /* trace.pb.swift in Sources */,
 				5CBFEFE22B5E808D0021251E /* Resource.swift in Sources */,
 				5CBFEF902B5E6DA60021251E /* InstrumentationLibraryInfo.swift in Sources */,
 				5CBFF0052B5EEC1E0021251E /* Resource.swift in Sources */,
 				5CBFEFC32B5E7E990021251E /* EnvVarResource.swift in Sources */,
-				5CBFEFE42B5E808D0021251E /* common.pb.swift in Sources */,
 				5CBFEFEC2B5E808D0021251E /* Lock.swift in Sources */,
 				5CBFEFEA2B5E808D0021251E /* AttributeSet.swift in Sources */,
 				5CBFF0082B5EEC1E0021251E /* resource.pb.swift in Sources */,
@@ -560,10 +542,8 @@
 				5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */,
 				5CBFEF8F2B5E6DA60021251E /* AttributeSet.swift in Sources */,
 				5CBFF0072B5EEC1E0021251E /* common.pb.swift in Sources */,
-				5CBFEFE72B5E808D0021251E /* trace_service.pb.swift in Sources */,
 				5CBFEFA62B5E76920021251E /* InstrumentationLibraryInfo.swift in Sources */,
-				5CBFEFC92B5E7E990021251E /* trace.pb.swift in Sources */,
-				5CBFEFE52B5E808D0021251E /* resource.pb.swift in Sources */,
+				5C91D2EA2B67EFFB00BE5854 /* OtlpHttpLogExporter.swift in Sources */,
 				5CBFEF912B5E6DA60021251E /* SpanId.swift in Sources */,
 				5CBFEFAC2B5E76920021251E /* ResourceAttributes.swift in Sources */,
 				5CBFEFAE2B5E76920021251E /* EnvVarResource.swift in Sources */,

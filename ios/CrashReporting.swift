@@ -6,34 +6,10 @@ private var customDataDictionary = RWLocked<[String: String]>(initialValue: [:])
 private var spanExporter: OtlpHttpTraceExporter? = nil
 private var globalAttributes: [String: AttributeValue] = [:]
 
-func convertToAttributeValue(dictionary: [String: Any]) -> [String: AttributeValue] {
-    var attributeValues: [String: AttributeValue] = [:]
-
-    for (key, value) in dictionary {
-        let attributeValue: AttributeValue
-
-        if let stringValue = value as? String {
-            attributeValue = AttributeValue.string(stringValue)
-        } else if let intValue = value as? Int {
-            attributeValue = AttributeValue.int(intValue)
-        } else if let doubleValue = value as? Double {
-            attributeValue = AttributeValue.double(doubleValue)
-        } else if let boolValue = value as? Bool {
-            attributeValue = AttributeValue.bool(boolValue)
-        } else {
-            // Handle other types as needed
-            fatalError("Unsupported data type for key: \(key)")
-        }
-        attributeValues[key] = attributeValue
-    }
-
-    return attributeValues
-}
-
-func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [String: Any]) {
+func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [String: AttributeValue]) {
     spanExporter = exporter
     var startupSpan = newSpan(name: "CrashReportingInit")
-    globalAttributes = convertToAttributeValue(dictionary: attributes)
+    globalAttributes = attributes
     startupSpan.settingResource(Resource(attributes: globalAttributes))
     var attributes: [String: AttributeValue] = globalAttributes
     attributes["component"] = AttributeValue("appstart")

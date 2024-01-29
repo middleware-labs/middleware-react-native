@@ -17,6 +17,10 @@ import {
   testNativeCrash,
   type AppStartInfo,
   type NativeSdKConfiguration,
+  info,
+  warn,
+  debug,
+  error,
 } from './native';
 import { Resource } from '@opentelemetry/resources';
 import { Platform } from 'react-native';
@@ -63,6 +67,10 @@ export interface MiddlewareRumType {
   reportError: (err: any, isFatal?: boolean) => void;
   setGlobalAttributes: (attributes: Attributes) => void;
   updateLocation: (latitude: number, longitude: number) => void;
+  info: (message: String) => void;
+  debug: (message: String) => void;
+  warn: (message: String) => void;
+  error: (message: String) => void;
 }
 
 const DEFAULT_CONFIG = {
@@ -87,6 +95,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       this.appStartSpan.end();
     } else {
       this.appStartEnd = Date.now();
+      MiddlewareRum.debug('AppStart: end called without start');
       diag.debug('AppStart: end called without start');
     }
   },
@@ -203,6 +212,7 @@ export const MiddlewareRum: MiddlewareRumType = {
 
         if (this.appStartEnd !== null) {
           diag.debug('AppStart: using manual end');
+          MiddlewareRum.debug('AppStart: using manual end');
           this.appStartSpan.end(this.appStartEnd);
         }
       }
@@ -215,4 +225,8 @@ export const MiddlewareRum: MiddlewareRumType = {
   reportError: reportError,
   setGlobalAttributes: setGlobalAttributes,
   updateLocation: updateLocation,
+  info: info,
+  error: error,
+  debug: debug,
+  warn: warn,
 };

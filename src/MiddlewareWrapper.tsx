@@ -20,6 +20,7 @@ export const MiddlewareWrapper: React.FC<Props> = ({
     MiddlewareRum.init(configuration);
     isInitialized = true;
   } else {
+    MiddlewareRum.info('Middleware Already Initialized');
     console.log('Already initialized');
   }
 
