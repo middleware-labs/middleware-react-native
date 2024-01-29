@@ -18,10 +18,10 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Lint files
-        run: npm run lint
+        run: yarn run lint
 
       - name: Typecheck files
-        run: npm run typecheck
+        run: yarn run typecheck
 
   test:
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run unit tests
-        run: npm test --maxWorkers=2 --coverage
+        run: yarn test --maxWorkers=2 --coverage
 
   build-library:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build package
-        run: npm run prepare
+        run: yarn run prepare
 
   build-android:
     runs-on: ubuntu-latest
@@ -99,7 +99,7 @@ jobs:
 
       - name: Build example for Android
         run: |
-          npx turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
 
   build-ios:
     runs-on: macos-latest
@@ -142,10 +142,10 @@ jobs:
       - name: Install cocoapods
         if: env.turbo_cache_hit != 1 && steps.cocoapods-cache.outputs.cache-hit != 'true'
         run: |
-          npx pod-install example/ios
+          yarn pod-install example/ios
         env:
           NO_FLIPPER: 1
 
       - name: Build example for iOS
         run: |
-          npx turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+          yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
