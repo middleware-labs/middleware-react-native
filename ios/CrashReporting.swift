@@ -3,12 +3,39 @@ import CrashReporter
 
 var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary = RWLocked<[String: String]>(initialValue: [:])
-private var spanExporter: SpanExporter? = nil
+private var spanExporter: OtlpHttpTraceExporter? = nil
+private var globalAttributes: [String: AttributeValue] = [:]
 
-func initializeCrashReporting(exporter: SpanExporter) {
+func convertToAttributeValue(dictionary: [String: Any]) -> [String: AttributeValue] {
+    var attributeValues: [String: AttributeValue] = [:]
+
+    for (key, value) in dictionary {
+        let attributeValue: AttributeValue
+
+        if let stringValue = value as? String {
+            attributeValue = AttributeValue.string(stringValue)
+        } else if let intValue = value as? Int {
+            attributeValue = AttributeValue.int(intValue)
+        } else if let doubleValue = value as? Double {
+            attributeValue = AttributeValue.double(doubleValue)
+        } else if let boolValue = value as? Bool {
+            attributeValue = AttributeValue.bool(boolValue)
+        } else {
+            // Handle other types as needed
+            fatalError("Unsupported data type for key: \(key)")
+        }
+        attributeValues[key] = attributeValue
+    }
+
+    return attributeValues
+}
+
+func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [String: Any]) {
     spanExporter = exporter
     var startupSpan = newSpan(name: "CrashReportingInit")
-    var attributes: [String: AttributeValue] = [:]
+    globalAttributes = convertToAttributeValue(dictionary: attributes)
+    startupSpan.settingResource(Resource(attributes: globalAttributes))
+    var attributes: [String: AttributeValue] = globalAttributes
     attributes["component"] = AttributeValue("appstart")
     defer {
         endSpan(exporter: spanExporter!, startupSpan)
@@ -112,19 +139,19 @@ func loadPendingCrashReport(_ data: Data!) throws {
     }
     // Turn the report into a span
     var span = newSpan(name: exceptionType ?? "unknown")
-    var attributes: [String: AttributeValue] = [
-        "component": AttributeValue("crash"),
-        "crash.app.version" : AttributeValue(
-            report.applicationInfo.applicationMarketingVersion),
-        "error" : AttributeValue(true),
-        "exception.type" : AttributeValue(exceptionType ?? "unknown"),
-        "crash.address" : AttributeValue(report.signalInfo.address.description),
-    ]
-    
+    var attributes: [String: AttributeValue] = globalAttributes
+    span.settingResource(Resource(attributes: globalAttributes))
+    attributes["component"] = AttributeValue("crash")
+    attributes["crash.app.version"] = AttributeValue(
+        report.applicationInfo.applicationMarketingVersion)
+    attributes["error"] = AttributeValue("true")
+    attributes["exception.type"] = AttributeValue(exceptionType ?? "unknown")
+    attributes["crash.address"] = AttributeValue(report.signalInfo.address.description)
 
     if report.customData != nil {
         let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as? [String: String]
-        if customData != nil {
+        if customData != nil { 
+            attributes["session.id"] =  AttributeValue(customData!["sessionId"] ?? "")
             attributes["crash.rumSessionId"] =  AttributeValue(customData!["sessionId"] ?? "")
             
             attributes["crash.batteryLevel"] =  AttributeValue(customData!["batteryLevel"] ?? "0")
@@ -138,8 +165,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
         }
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
-    
-    span.settingEvents([SpanData.Event(name: "crash.timestamp", timestamp: anyToTimestamp(report.systemInfo.timestamp))])
+    let events = [SpanData.Event(name: "crash.timestamp", timestamp: anyToTimestamp(report.systemInfo.timestamp), attributes: attributes )]
+    span.settingEvents(events)
+    span.settingTotalRecordedEvents(events.count)
     for case let thread as PLCrashReportThreadInfo in report.threads where thread.crashed {
         attributes["exception.stacktrace"] =  AttributeValue(crashedThreadToStack(report: report, thread: thread))
         break
@@ -149,6 +177,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
         attributes["exception.message"] =  AttributeValue(report.exceptionInfo.exceptionReason)
     }
     span.settingAttributes(attributes)
+    span.settingTotalAttributeCount(attributes.count)
     
     endSpan(exporter: spanExporter!, span)
 }

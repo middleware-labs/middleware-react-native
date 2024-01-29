@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */; };
 		5CBFEF722B5E604A0021251E /* trace.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF702B5E604A0021251E /* trace.pb.swift */; };
 		5CBFEF732B5E604A0021251E /* trace_service.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF712B5E604A0021251E /* trace_service.pb.swift */; };
 		5CBFEF862B5E6DA60021251E /* TraceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBFEF742B5E6DA50021251E /* TraceState.swift */; };
@@ -110,6 +111,7 @@
 		5C7417922B5969C50085D10C /* Globals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		5C7417932B5969C50085D10C /* DeviceStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStats.swift; sourceTree = "<group>"; };
 		5C7417952B597B480085D10C /* SpanFromDiskExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanFromDiskExport.swift; sourceTree = "<group>"; };
+		5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtensions.swift; sourceTree = "<group>"; };
 		5CBFEF702B5E604A0021251E /* trace.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace.pb.swift; sourceTree = "<group>"; };
 		5CBFEF712B5E604A0021251E /* trace_service.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = trace_service.pb.swift; sourceTree = "<group>"; };
 		5CBFEF742B5E6DA50021251E /* TraceState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TraceState.swift; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 		5CBFEFFB2B5EEC1D0021251E /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */,
 				5CBFEFFC2B5EEC1D0021251E /* AttributeValue.swift */,
 				5CBFEFFD2B5EEC1D0021251E /* ResourceAdapter.swift */,
 				5CBFEFFE2B5EEC1D0021251E /* CommonAdapter.swift */,
@@ -554,6 +557,7 @@
 				5CBFEF922B5E6DA60021251E /* Status.swift in Sources */,
 				5CBFF0092B5EEC1E0021251E /* trace.pb.swift in Sources */,
 				5CBFEF932B5E6DA60021251E /* trace.pb.swift in Sources */,
+				5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */,
 				5CBFEF8F2B5E6DA60021251E /* AttributeSet.swift in Sources */,
 				5CBFF0072B5EEC1E0021251E /* common.pb.swift in Sources */,
 				5CBFEFE72B5E808D0021251E /* trace_service.pb.swift in Sources */,

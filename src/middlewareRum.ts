@@ -18,9 +18,6 @@ import {
   type AppStartInfo,
   type NativeSdKConfiguration,
 } from './native';
-// import { registerInstrumentations } from '@opentelemetry/instrumentation';
-// import { DocumentLoadInstrumentation } from 'instrumentation-document-load';
-// import { XMLHttpRequestInstrumentation } from 'middleware.io-instrumentation-xml-http-request';
 import { Resource } from '@opentelemetry/resources';
 import { Platform } from 'react-native';
 import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
@@ -135,9 +132,11 @@ export const MiddlewareRum: MiddlewareRumType = {
       serviceName: config.serviceName,
       projectName: config.projectName,
       globalAttributes: {
+        ...getResource(),
         [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
         'project.name': config.projectName,
-        ...getResource(),
+        'session.id': getSessionId(),
+        ...config.globalAttributes,
       },
     };
 

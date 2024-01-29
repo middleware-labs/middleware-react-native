@@ -35,11 +35,15 @@ public extension SpanExporter {
 }
 
 func newSpan(name: String) -> SpanData {
-    return SpanData(traceId: TraceId.random(), spanId: SpanId.random(), 
+    return SpanData(traceId: TraceId.random(),
+                    spanId: SpanId.random(),
+                    parentSpanId: SpanId.invalid,
                     name: name,
-                    kind: SpanKind.client, startTime: Date(),
+                    kind: SpanKind.internal,
+                    startTime: Date(),
                     events: [],
-                    endTime: Date())
+                    endTime: Date(),
+                    totalRecordedEvents: 0)
     //    return OtelSpan(
     //    traceId: traceId(),
     //    parentId: nil,
@@ -52,7 +56,7 @@ func newSpan(name: String) -> SpanData {
     //    events: [])
 }
 
-func endSpan(exporter: SpanExporter, _ span: SpanData) {
+func endSpan(exporter: OtlpHttpTraceExporter, _ span: SpanData) {
     var newSpan = span
     newSpan.settingEndTime(Date())
     _ = exporter.export(spans: [newSpan])

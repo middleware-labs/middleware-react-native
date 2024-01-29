@@ -7,14 +7,6 @@ class MiddlewareReactNative: NSObject {
   private var globalAttributes: Dictionary<String, Any> = [:]
   @objc(initialize:withResolver:withRejecter:)
   func initialize(config: Dictionary<String, Any>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-//      let enableDiskBuffering = config["enableDiskBuffering"] as? Bool ?? true 
-//      let limitDiskUsageMegabytes = config["limitDiskUsageMegabytes"] as? Int64 ?? 25
-//      let truncationCheckpoint = config["truncationCheckpoint"] as? Int64 ?? 1
-//          
-//      let db = SpanDb(enableDiskBuffering: enableDiskBuffering)
-//      spanExporter = SpanToDiskExporter(spanDb: db, limitDiskUsageMegabytes: limitDiskUsageMegabytes, truncationCheckpoint: truncationCheckpoint)
-//      initializeCrashReporting(exporter: spanExporter)
-//
      do {
          appStartTime = try processStartTime()
          print("Process appStartTime \(appStartTime)")
@@ -39,8 +31,7 @@ class MiddlewareReactNative: NSObject {
       targetTrace += "/v1/traces"
       
       self.globalAttributes = config["globalAttributes"] as! [String: Any]
-//      initializeNetworkTypeMonitoring()
-//      SpanFromDiskExport.start(spanDb: db, endpoint: targetTrace, accountKey: accountKey!)
+
       otlpTraceExporter = OtlpHttpTraceExporter(
                   endpoint: URL(string: targetTrace)!,
                   config: OtlpConfiguration(timeout: TimeInterval(10000),
@@ -56,6 +47,8 @@ class MiddlewareReactNative: NSObject {
                     ("Authorization", accountKey!),
                   ]
               )
+      initializeCrashReporting(exporter: otlpTraceExporter!, attributes: globalAttributes)
+      initializeNetworkTypeMonitoring()
       resolve(["moduleStart": appStartTime.timeIntervalSince1970 * 1000])
     }
 

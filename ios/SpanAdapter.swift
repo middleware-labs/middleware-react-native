@@ -5,7 +5,6 @@
 
 import Foundation
 
-let nanosecondsPerSecond: Int64 = 1_000_000_000_000
 public struct SpanAdapter {
     public static func toProtoResourceSpans(spanDataList: [SpanData]) -> [Opentelemetry_Proto_Trace_V1_ResourceSpans] {
         let resourceAndScopeMap = groupByResourceAndScope(spanDataList: spanDataList)
@@ -48,8 +47,8 @@ public struct SpanAdapter {
         protoSpan.name = spanData.name
         protoSpan.kind = toProtoSpanKind(kind: spanData.kind)
         
-        protoSpan.startTimeUnixNano = UInt64(spanData.startTime.timeIntervalSince1970 * Double(nanosecondsPerSecond))
-        protoSpan.endTimeUnixNano = UInt64(spanData.endTime.timeIntervalSince1970 * Double(nanosecondsPerSecond))
+        protoSpan.startTimeUnixNano = spanData.startTime.timeIntervalSince1970.toNanoseconds
+        protoSpan.endTimeUnixNano = spanData.endTime.timeIntervalSince1970.toNanoseconds
         spanData.attributes.forEach {
             protoSpan.attributes.append(CommonAdapter.toProtoAttribute(key: $0.key, attributeValue: $0.value))
         }
@@ -85,7 +84,7 @@ public struct SpanAdapter {
     public static func toProtoSpanEvent(event: SpanData.Event) -> Opentelemetry_Proto_Trace_V1_Span.Event {
         var protoEvent = Opentelemetry_Proto_Trace_V1_Span.Event()
         protoEvent.name = event.name
-        protoEvent.timeUnixNano = UInt64(event.timestamp.timeIntervalSince1970 * Double(nanosecondsPerSecond))
+        protoEvent.timeUnixNano = event.timestamp.timeIntervalSince1970.toNanoseconds
         event.attributes.forEach {
             protoEvent.attributes.append(CommonAdapter.toProtoAttribute(key: $0.key, attributeValue: $0.value))
         }
