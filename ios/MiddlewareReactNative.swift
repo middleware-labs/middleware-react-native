@@ -113,6 +113,7 @@ class MiddlewareReactNative: NSObject {
                                   instrumentationScopeInfo: InstrumentationScopeInfo(),
                                   timestamp: Date(),
                                   severity: Severity.info,
+                                  body: AttributeValue(message),
                                   attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
             ])
         }
@@ -129,6 +130,7 @@ class MiddlewareReactNative: NSObject {
                                   instrumentationScopeInfo: InstrumentationScopeInfo(),
                                   timestamp: Date(),
                                   severity: Severity.error,
+                                  body: AttributeValue(message),
                                   attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
             ])
         }
@@ -145,6 +147,7 @@ class MiddlewareReactNative: NSObject {
                                   instrumentationScopeInfo: InstrumentationScopeInfo(),
                                   timestamp: Date(),
                                   severity: Severity.debug,
+                                  body: AttributeValue(message),
                                   attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
             ])
         }
@@ -161,7 +164,7 @@ class MiddlewareReactNative: NSObject {
                                   instrumentationScopeInfo: InstrumentationScopeInfo(),
                                   timestamp: Date(),
                                   severity: Severity.warn,
-                                  body: AttributeValue(message), 
+                                  body: AttributeValue(message),
                                   attributes: ["TAG" : AttributeValue("MiddlewareReactNative")])
             ])
         }
