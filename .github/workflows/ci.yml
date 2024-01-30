@@ -137,4 +137,4 @@ jobs:
           cd example && yarn install
 
       - name: Build for iOS
-        run: make build-for-testing-ios  
+        run: make build-ios  
