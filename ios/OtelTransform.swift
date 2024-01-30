@@ -82,7 +82,7 @@ struct OtelTransform {
         let traceId = otelSpan["traceId"] as? String ?? "00000000000000000000000000000000"
         let spanId = otelSpan["spanId"] as? String ?? "0000000000000000"
         let name = otelSpan["name"] as? String ?? "unknown"
-        let events = otelSpan["events"] as? String
+        let events = otelSpan["events"] as? [Dictionary<String, Any>] ?? []
         let status = otelSpan["status"] as? Dictionary<String, Any> ?? [:]
         let jsTags = otelSpan["attributes"] as? Dictionary<String, Any> ?? [:]
         let startTime = anyToTimestamp(otelSpan["startTime"])
@@ -120,6 +120,19 @@ struct OtelTransform {
             }
         }
         
+        var newEvents: [SpanData.Event] = []
+        if(events.count > 0) {
+            for event in events {
+                let eventName = event["name"] as! String
+                let timestamp = anyToTimestamp(event["time"])
+                let eventAttributes = event["attributes"] as? Dictionary<String, Any> ?? [:]
+                let newEventAttributes = Globals.convertToAttributeValue(dictionary: eventAttributes)
+                newEvents.append(SpanData.Event(name: eventName, timestamp: timestamp, attributes: newEventAttributes))
+            }
+            
+        }
+        
+        
         return SpanData(traceId: TraceId(fromHexString: traceId),
                         spanId: SpanId(id: UInt64(spanId, radix: 16) ?? 0),
                         parentSpanId: parentId != nil ? SpanId(id: UInt64(parentId!, radix: 16) ?? 0) : nil,
@@ -128,7 +141,9 @@ struct OtelTransform {
                         kind: transformKind(otelSpan["kind"] as? Int ?? 0),
                         startTime: startTime,
                         attributes: attributes,
+                        events: newEvents,
                         endTime: endTime,
+                        totalRecordedEvents: newEvents.count,
                         totalAttributeCount: attributes.count
         )
     }

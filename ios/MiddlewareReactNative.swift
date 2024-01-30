@@ -39,7 +39,7 @@ class MiddlewareReactNative: NSObject {
         
         self.globalAttributes = config["globalAttributes"] as! [String: Any]
         globalAttributes["mw.account_key"] = String(accountKey!)
-        self.newGlobalAttributes = convertToAttributeValue(dictionary: globalAttributes)
+        self.newGlobalAttributes = Globals.convertToAttributeValue(dictionary: globalAttributes)
 
         otlpTraceExporter = OtlpHttpTraceExporter(
             endpoint: URL(string: targetTrace)!,
@@ -212,30 +212,4 @@ class MiddlewareReactNative: NSObject {
         let ti: TimeInterval = Double(startTime.tv_sec) + (Double(startTime.tv_usec) / 1e6)
         return Date(timeIntervalSince1970: ti)
     }
-    
-    private func convertToAttributeValue(dictionary: [String: Any]) -> [String: AttributeValue] {
-        var attributeValues: [String: AttributeValue] = [:]
-        
-        for (key, value) in dictionary {
-            let attributeValue: AttributeValue
-            
-            if let stringValue = value as? String {
-                attributeValue = AttributeValue.string(stringValue)
-            } else if let intValue = value as? Int {
-                attributeValue = AttributeValue.int(intValue)
-            } else if let doubleValue = value as? Double {
-                attributeValue = AttributeValue.double(doubleValue)
-            } else if let boolValue = value as? Bool {
-                attributeValue = AttributeValue.bool(boolValue)
-            } else {
-                // Handle other types as needed
-                fatalError("Unsupported data type for key: \(key)")
-            }
-            attributeValues[key] = attributeValue
-        }
-        
-        return attributeValues
-    }
-    
-    
 }

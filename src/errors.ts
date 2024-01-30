@@ -21,7 +21,6 @@ export const reportError = (error: any, isFatal?: boolean) => {
       : error.constructor && error.constructor.name
       ? error.constructor.name
       : 'Error',
-    'exception': true, //TODO do we use this?
     'component': 'error',
     'event.type': 'error',
     'type': 'reactNativeError',

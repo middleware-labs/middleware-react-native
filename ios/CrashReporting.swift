@@ -115,12 +115,13 @@ func loadPendingCrashReport(_ data: Data!) throws {
     }
     // Turn the report into a span
     var span = newSpan(name: exceptionType ?? "unknown")
-    var attributes: [String: AttributeValue] = globalAttributes
+    var attributes: [String: AttributeValue] = [:]
     span.settingResource(Resource(attributes: globalAttributes))
     attributes["component"] = AttributeValue("crash")
     attributes["crash.app.version"] = AttributeValue(
         report.applicationInfo.applicationMarketingVersion)
     attributes["error"] = AttributeValue("true")
+    attributes["event.type"] = AttributeValue("error")
     attributes["exception.type"] = AttributeValue(exceptionType ?? "unknown")
     attributes["crash.address"] = AttributeValue(report.signalInfo.address.description)
 
