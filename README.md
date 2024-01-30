@@ -1,21 +1,115 @@
-# middleware-react-native
+# Middleware React Native SDK
 
-Middleware React Native real user monitoring SDK
+Middleware React Native Real User Monitoring SDK
 
-## Installation
+---
+<p align="center">
+  <a href="https://github.com/middleware-labs/middleware-react-native/releases">
+    <img alt="Build Status" src="https://img.shields.io/badge/status-beta-orange">
+  </a>
+  <a href="https://github.com/middleware-labs/middleware-react-native/releases">
+    <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/middleware-labs/middleware-react-native?include_prereleases&style=flat">
+  </a>
+  <a href="https://github.com/middleware-labs/middleware-react-native/actions/workflows/build.yml">
+    <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/middleware-labs/middleware-react-native/ci.yml?branch=main&style=flat">
+  </a>
+</p>
+
+---
+
+## Features
+
+- AutoInstrumentation HTTP Monitoring
+- AutoInstrumentaion JS Errors
+- AutoInstrumenation navigation tracking for `react-navigation`
+- AutoInstrumenation native crash errors
+- Custom Instrumenation using OpenTelemetry
+- Custom logging
+- RUM Session Tracking
+
+## Documentation
+
+
+### Compatibility & Requirements
+
+Middleware React Native for Mobile supports React Native 0.68 and higher.
+
+The library is also compatible with the following frameworks and libraries:
+
+- Expo framework
+- React Navigation 5 and 6
+
+### Installation
 
 ```sh
 yarn add @middleware.io/middleware-react-native
 ```
 
-## Usage
+### Usage
 
 ```js
-import { multiply } from 'middleware-react-native';
+import { MiddlewareWrapper, type ReactNativeConfiguration } from '@middleware.io/middleware-react-native';
+        
+const MiddlewareConfig: ReactNativeConfiguration = {
+    serviceName: 'Mobile-SDK-ReactNative',
+    projectName: '$Mobile-SDK-ReactNative',
+    accountKey: '<middleware-account-key>',
+    target: '<target-url>',
+    deploymentEnvironment: 'PROD',
+    globalAttributes: {
+        name: '<your-name>',
+    },
+};
 
-// ...
+export default function App() { 
+    return (
+      <MiddlewareWrapper configuration={MiddlewareConfig}>
+        // Application Components
+      </MiddlewareWrapper>
+    );
+  }
+```
 
-const result = await multiply(3, 7);
+### Custom logging
+
+You can add custom logs such as debug, error, warn, info these logs will be shown on Middleware Logs Dashboard
+
+```typescript
+MiddlewareRum.debug("I am debug");
+MiddlewareRum.error("I am error");
+MiddlewareRum.info("I am info");
+MiddlewareRum.warn("I am warn");
+```
+
+### Setting Global Attributes
+You can set global attributes by calling `setGlobalAttributes` function.
+
+```typescript
+MiddlewareRum.setGlobalAttributes({
+    "name": "Middleware",
+    "app.version": "1.0.0",
+    "custom_key": "some value"
+});
+```
+
+### Reporting custom errors
+
+You can report handled errors, exceptions, and messages using the `reportError` function
+
+```typescript
+try{
+    throw new Error("I am error")
+} catch (err) {
+    MiddlewareRum.reportError(err);
+}
+```
+
+### Updating location information
+
+You can set latitude & longitde as global attributes.
+
+```typescript
+MiddlewareRum.updateLocation(latitude: number, longitude: number)
 ```
 
 ## Contributing
