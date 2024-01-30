@@ -16,9 +16,9 @@ build-ios:
 
 .PHONY: build-for-testing-ios
 build-for-testing-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build-for-testing | xcbeautify
+	set -o pipefail && cd example/ios && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build-for-testing | xcbeautify
 
 .PHONY: test-ios
 test-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test | xcbeautify
+	set -o pipefail && cd example/ios && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test | xcbeautify
 
