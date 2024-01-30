@@ -1,7 +1,7 @@
 import {
   MiddlewareWrapper,
   type ReactNativeConfiguration,
-} from 'middleware-react-native';
+} from '@middleware.io/middleware-react-native';
 import * as React from 'react';
 
 import {

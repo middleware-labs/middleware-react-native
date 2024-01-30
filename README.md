@@ -5,7 +5,7 @@ Middleware React Native real user monitoring SDK
 ## Installation
 
 ```sh
-npm install middleware-react-native
+yarn add @middleware.io/middleware-react-native
 ```
 
 ## Usage
