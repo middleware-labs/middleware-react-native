@@ -4,7 +4,7 @@ XCODEBUILD_OPTIONS_IOS = \
 	-configuration Debug \
 	-destination platform='iOS Simulator,name=iPhone 14,OS=latest' \
 	-scheme $(PROJECT_NAME) \
-	-workspace .
+	-workspace MiddlewareReactNativeExample.xcworkspace
 
 .PHONY: setup-brew
 setup-brew:
