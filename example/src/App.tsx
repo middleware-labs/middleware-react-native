@@ -11,6 +11,7 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Details from './Details';
 import Home from './Home';
+import { startNavigationTracking } from '../../src/trackNavigation';
 
 const MiddlewareConfig: ReactNativeConfiguration = {
   serviceName: 'Mobile-SDK-iOS',
@@ -34,9 +35,9 @@ export default function App() {
     <MiddlewareWrapper configuration={MiddlewareConfig}>
       <NavigationContainer
         ref={navigationRef}
-        // onReady={() => {
-        //   startNavigationTrackin(navigationRef);
-        // }}
+        onReady={() => {
+          startNavigationTracking(navigationRef);
+        }}
       >
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home} />
