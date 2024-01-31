@@ -196,9 +196,11 @@ public func anyToTimestamp(_ v: Any?) -> Date {
     
     switch v {
     case is Double:
-        return Date(timeIntervalSince1970: (v as! Double) / 1e6)
+        return Date(timeIntervalSince1970: (v as! Double) / 1e9)
     case is Int:
-        return Date(timeIntervalSince1970: Double(v as! Int) / 1e6)
+        return Date(timeIntervalSince1970: Double(v as! Int) / 1e9)
+    case is String:
+        return Date(timeIntervalSince1970: Double(v as! String)! / 1e9)
     default:
         return Date()
     }
