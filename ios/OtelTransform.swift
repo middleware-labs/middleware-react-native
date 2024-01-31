@@ -121,7 +121,7 @@ struct OtelTransform {
             }
         }
         
-        attributes[ResourceAttributes.deviceModelName.rawValue] = AttributeValue(Device.current.description! as String)
+        attributes[ResourceAttributes.deviceModelName.rawValue] = AttributeValue(Device.current.description as String)
         let bundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         let bundleShortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let appVersion = bundleShortVersion ?? bundleVersion
