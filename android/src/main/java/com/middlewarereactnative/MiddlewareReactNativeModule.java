@@ -31,6 +31,7 @@ import io.middleware.android.sdk.exporters.MiddlewareSpanExporter;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.TraceFlags;
@@ -107,6 +108,18 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       } catch (InterruptedException e) {}
       throw new RuntimeException("test crash");
     }).start();
+  }
+
+  @ReactMethod
+  public void nativeAnr() {
+    for (int i = 1; i <= 25; i++) {
+      try {
+        Thread.sleep(1000);
+        Middleware.getInstance().i("MiddlewareReactNative", "Sleeping Count : " + i);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   @ReactMethod

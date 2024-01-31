@@ -1,3 +1,4 @@
+import { MiddlewareRum } from '@middleware.io/middleware-react-native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
@@ -55,6 +56,12 @@ export default function Details() {
         onPress={customFetch}
         accessibilityLabel="fetchCustom"
         testID="fetchCustom"
+      />
+      <Button
+        title="Application Not Responding"
+        onPress={MiddlewareRum._testNativeAnr}
+        accessibilityLabel="applicationNotResponding"
+        testID="applicationNotResponding"
       />
     </View>
   );

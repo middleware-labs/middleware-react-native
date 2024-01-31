@@ -21,6 +21,7 @@ import {
   warn,
   debug,
   error,
+  testNativeAnr,
 } from './native';
 import { Resource } from '@opentelemetry/resources';
 import { Platform } from 'react-native';
@@ -64,6 +65,7 @@ export interface MiddlewareRumType {
   provider?: WebTracerProvider;
   _generatenewSessionId: () => void;
   _testNativeCrash: () => void;
+  _testNativeAnr: () => void;
   reportError: (err: any, isFatal?: boolean) => void;
   setGlobalAttributes: (attributes: Attributes) => void;
   updateLocation: (latitude: number, longitude: number) => void;
@@ -225,6 +227,7 @@ export const MiddlewareRum: MiddlewareRumType = {
   },
   _generatenewSessionId: _generatenewSessionId,
   _testNativeCrash: testNativeCrash,
+  _testNativeAnr: testNativeAnr,
   reportError: reportError,
   setGlobalAttributes: setGlobalAttributes,
   updateLocation: updateLocation,

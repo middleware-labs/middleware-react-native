@@ -54,6 +54,7 @@ export default function Home({ navigation }: { navigation: any }) {
     const span = tracer.startSpan('click', { startTime: now });
     span.setAttributes({
       'component': 'user-interaction',
+      'event.type': 'click',
       'workflow.name': 'CUSTOM_SPAN_1',
     });
     span.end(now + 5000);
