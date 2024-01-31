@@ -68,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libMiddlewareReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMiddlewareReactNative.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C075C6D2B6A9D5A00D2EDC5 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		5C7417892B5969C50085D10C /* SpanToDiskExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanToDiskExporter.swift; sourceTree = "<group>"; };
 		5C74178A2B5969C50085D10C /* RWLocked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RWLocked.swift; sourceTree = "<group>"; };
 		5C74178C2B5969C50085D10C /* SpanDb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanDb.swift; sourceTree = "<group>"; };
@@ -150,6 +151,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				5C075C6D2B6A9D5A00D2EDC5 /* Device.swift */,
 				5C91D2E62B67EF3C00BE5854 /* log */,
 				5CBFEFFB2B5EEC1D0021251E /* Common */,
 				5CBFEFF02B5EEC1D0021251E /* Constants.swift */,

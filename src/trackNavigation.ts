@@ -35,7 +35,7 @@ function createUiSpan(current: string, previous?: string) {
   setGlobalAttributes({ [SCREEN_NAME]: current });
   const span = tracer.startSpan('Created');
   span.setAttribute('component', 'ui');
-  span.setAttribute('event.type', 'app_acitivity');
+  span.setAttribute('event.type', 'app_activity');
   if (previous) {
     span.setAttribute(LAST_SCREEN_NAME, previous);
   }
