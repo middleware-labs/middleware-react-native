@@ -1,10 +1,10 @@
 package com.middlewarereactnative;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 public class SpanMapReader extends MapReader {
   public final ReadableMap map;
-
   public SpanMapReader(ReadableMap map) {
     this.map = map;
   }
@@ -29,11 +29,11 @@ public class SpanMapReader extends MapReader {
     return Keys.PARENT_SPAN_ID.get(map);
   }
 
-  public Long getStartEpochMillis() {
+  public Long getStartTimeNanos() {
     return Keys.START_TIME.getLong(map);
   }
 
-  public Long getEndEpochMillis() {
+  public Long getEndTimeNanos() {
     return Keys.END_TIME.getLong(map);
   }
 
@@ -42,6 +42,9 @@ public class SpanMapReader extends MapReader {
   }
 
   public ReadableMap getResource() { return  Keys.RESOURCE.getMap(map); }
+
+  public ReadableArray getEvents() { return  map.getArray("events"); }
+
   private interface Keys {
     StringKey NAME = new StringKey("name");
     StringKey TRACE_ID = new StringKey("traceId");
@@ -51,7 +54,6 @@ public class SpanMapReader extends MapReader {
     NumberKey START_TIME = new NumberKey("startTime");
     NumberKey END_TIME = new NumberKey("endTime");
     MapKey ATTRIBUTES = new MapKey("attributes");
-
     MapKey RESOURCE = new MapKey("resource");
   }
 }

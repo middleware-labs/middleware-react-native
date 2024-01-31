@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.middleware.android.sdk.Middleware;
 import io.middleware.android.sdk.exporters.MiddlewareSpanExporter;
@@ -35,6 +36,7 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.TraceFlags;
 import io.opentelemetry.api.trace.TraceState;
 import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.data.EventData;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.data.StatusData;
 
@@ -144,8 +146,13 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       attributes = attributes.toBuilder().put("session.id", sessionId).build();
       Attributes resourceAttributes = attributesFromMap(mapReader.getResource().getMap("_attributes"));
       resourceAttributes = resourceAttributes.toBuilder().put("session.id", sessionId).build();
-      final ReactSpanData spanData = new ReactSpanData(spanProperties, attributes, context, parentContext,
-        Collections.emptyList(), Resource.create(resourceAttributes));
+      final ReactSpanData spanData = new ReactSpanData(
+        spanProperties,
+        attributes,
+        context,
+        parentContext,
+        spanProperties.events,
+        Resource.create(resourceAttributes));
       spanDataList.add(spanData);
     }
     middlewareSpanExporter.export(spanDataList);
@@ -222,19 +229,32 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
 
   private ReactSpanProperties propertiesFromMap(SpanMapReader mapReader) {
     String name = mapReader.getName();
-    Long startEpochMillis = mapReader.getStartEpochMillis();
-    Long endEpochMillis = mapReader.getEndEpochMillis();
+    Long startTimeNanos = mapReader.getStartTimeNanos();
+    Long endTimeNanos = mapReader.getEndTimeNanos();
 
-    if (name == null || startEpochMillis == null || endEpochMillis == null) {
+    final ReadableArray readerEvents = mapReader.getEvents();
+    final List<EventData> newEvents = new ArrayList<>();
+    for(int index = 0; index < readerEvents.size(); index++) {
+      final ReadableMap readableMap = readerEvents.getMap(index);
+      final EventData eventData = EventData.create(
+        Long.parseLong(Objects.requireNonNull(readableMap.getString("time"))),
+        Objects.requireNonNull(readableMap.getString("name")),
+        attributesFromMap(readableMap.getMap("attributes"))
+      );
+      newEvents.add(eventData);
+    }
+
+    if (name == null || startTimeNanos == null || endTimeNanos == null) {
       return null;
     }
 
     return new ReactSpanProperties(
       name,
       SpanKind.INTERNAL,
+      newEvents,
       StatusData.ok(),
-      millisToNanos(startEpochMillis),
-      millisToNanos(endEpochMillis)
+      startTimeNanos,
+      endTimeNanos
     );
   }
 

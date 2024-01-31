@@ -62,9 +62,8 @@ public abstract class MapReader {
     public ReadableMap getMap(ReadableMap map) {
       if (map.hasKey(key) && map.getType(key) == ReadableType.Map) {
         return map.getMap(key);
-      } else {
-        return null;
       }
+      return null;
     }
   }
 }

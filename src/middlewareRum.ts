@@ -146,8 +146,11 @@ export const MiddlewareRum: MiddlewareRumType = {
         'project.name': config.projectName,
         'session.id': getSessionId(),
         ...config.globalAttributes,
+        'deployment.environment': config.deploymentEnvironment,
       },
     };
+
+    setGlobalAttributes(nativeSdkConf.globalAttributes ?? {});
 
     const provider = new WebTracerProvider({
       resource: new Resource({
