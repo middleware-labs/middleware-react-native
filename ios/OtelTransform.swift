@@ -1,4 +1,5 @@
 import Foundation
+import DeviceKit
 
 class OtelEndpoint: Encodable {
     var serviceName: String
@@ -120,6 +121,12 @@ struct OtelTransform {
             }
         }
         
+        attributes[ResourceAttributes.deviceModelName.rawValue] = AttributeValue(Device.current.description! as String)
+        let bundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        let bundleShortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let appVersion = bundleShortVersion ?? bundleVersion
+        attributes["app.version"] = AttributeValue(appVersion!)
+        
         var newEvents: [SpanData.Event] = []
         if(events.count > 0) {
             for event in events {
@@ -129,7 +136,6 @@ struct OtelTransform {
                 let newEventAttributes = Globals.convertToAttributeValue(dictionary: eventAttributes)
                 newEvents.append(SpanData.Event(name: eventName, timestamp: timestamp, attributes: newEventAttributes))
             }
-            
         }
         
         
