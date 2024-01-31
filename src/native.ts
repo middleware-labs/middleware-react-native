@@ -59,6 +59,10 @@ export const testNativeCrash = () => {
   MiddlewareReactNative.nativeCrash();
 };
 
+export const testNativeAnr = () => {
+  MiddlewareReactNative.nativeAnr();
+};
+
 export const info = (message: String) => {
   MiddlewareReactNative.info(message);
 };
