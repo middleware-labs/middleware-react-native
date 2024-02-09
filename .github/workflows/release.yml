@@ -19,8 +19,6 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org
-      - name: set version
-        run: npm version ${{ github.event.inputs.version }}
       - name: publish
         run: npm publish --access public
         env:
