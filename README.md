@@ -7,6 +7,7 @@ Middleware React Native Real User Monitoring SDK
   <a href="https://github.com/middleware-labs/middleware-react-native/releases">
     <img alt="Build Status" src="https://img.shields.io/badge/status-beta-orange">
   </a>
+   <img alt="NPM Version" src="https://img.shields.io/npm/v/%40middleware.io%2Fmiddleware-react-native?color=green&link=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40middleware.io%2Fmiddleware-react-native">
   <a href="https://github.com/middleware-labs/middleware-react-native/releases">
     <img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/middleware-labs/middleware-react-native?include_prereleases&style=flat">
   </a>
