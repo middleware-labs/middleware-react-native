@@ -15,12 +15,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.middlewarereactnative.network.CurrentNetwork;
-import com.middlewarereactnative.network.CurrentNetworkAttributesExtractor;
-import com.middlewarereactnative.network.CurrentNetworkProvider;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +27,6 @@ import io.middleware.android.sdk.exporters.MiddlewareSpanExporter;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
-import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.TraceFlags;
@@ -46,7 +41,6 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   public static final String NAME = "MiddlewareReactNative";
   private final long moduleStartTime;
   private MiddlewareSpanExporter middlewareSpanExporter;
-  private CurrentNetworkProvider currentNetworkProvider;
   private String nativeSessionId;
 
   private static final String TAG = "MiddlewareReactNative";
@@ -84,12 +78,10 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .setRumAccessToken(accountKey)
       .setGlobalAttributes(attributesFromMap(globalAttributes))
       .setDeploymentEnvironment(deploymentEnvironment)
-      .disableNetworkMonitor()
       .disableActivityLifecycleMonitoring()
       .build((Application) getReactApplicationContext().getApplicationContext().getApplicationContext());
 
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
-    currentNetworkProvider = CurrentNetworkProvider.createAndStart((Application) getReactApplicationContext().getApplicationContext());
     WritableMap appStartInfo = Arguments.createMap();
     double appStart = (double) MiddlewarePreferenceProvider.getAppStartTime();
     AppStartTracker appStartTracker = AppStartTracker.getInstance();
@@ -132,10 +124,6 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
 
     List<SpanData> spanDataList = new ArrayList<>();
 
-    CurrentNetwork network = currentNetworkProvider.refreshNetworkStatus();
-    CurrentNetworkAttributesExtractor networkAttributesExtractor = new CurrentNetworkAttributesExtractor();
-    Attributes networkAttributes = networkAttributesExtractor.extract(network);
-
     for (int i = 0; i < spanMaps.size(); i++) {
       ReadableMap spanMap = spanMaps.getMap(i);
       SpanMapReader mapReader = new SpanMapReader(spanMap);
@@ -155,7 +143,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       }
 
       final String sessionId = nativeSessionId != null ? nativeSessionId : Middleware.getInstance().getRumSessionId();
-      Attributes attributes = attributesFromMap(mapReader.getAttributes()).toBuilder().putAll(networkAttributes).build();
+      Attributes attributes = attributesFromMap(mapReader.getAttributes());
       attributes = attributes.toBuilder().put("session.id", sessionId).build();
       Attributes resourceAttributes = attributesFromMap(mapReader.getResource().getMap("_attributes"));
       resourceAttributes = resourceAttributes.toBuilder().put("session.id", sessionId).build();
@@ -171,7 +159,6 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     middlewareSpanExporter.export(spanDataList);
     promise.resolve(true);
   }
-
 
   @ReactMethod
   public void setSessionId(String sessionId) {
