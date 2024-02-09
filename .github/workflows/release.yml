@@ -17,8 +17,10 @@ jobs:
       - name: node
         uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 18
           registry-url: https://registry.npmjs.org
+      - name: install
+        run: npm install
       - name: publish
         run: npm publish --access public
         env:
