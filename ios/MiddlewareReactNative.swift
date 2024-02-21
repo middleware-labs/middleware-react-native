@@ -6,7 +6,7 @@ fileprivate var spanExporter: SpanExporter? = nil
 class MiddlewareReactNative: NSObject {
     private var appStartTime = Date()
     private var otlpTraceExporter: OtlpHttpTraceExporter? = nil
-    
+    private var networkCheckTimer: Timer?
     private var otlpLogExporter: OtlpHttpLogExporter? = nil
     private var globalAttributes: Dictionary<String, Any> = [:]
     private var newGlobalAttributes: [String: AttributeValue] = [:]
@@ -75,6 +75,27 @@ class MiddlewareReactNative: NSObject {
         )
         initializeCrashReporting(exporter: otlpTraceExporter!, attributes: newGlobalAttributes)
         initializeNetworkTypeMonitoring()
+        
+        let isRecordingEnabled = config["sessionRecording"] as? String
+        if((isRecordingEnabled) != nil && isRecordingEnabled == "true") {
+            var trackerState = CheckState.cantStart
+            if(NetworkReachability.isNetworkAvailable()) {
+                trackerState = CheckState.canStart
+            }
+            self.networkCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (_) in
+                if trackerState == CheckState.canStart {
+                    let captureSettings = getCaptureSettings(fps: 3, quality: "standard")
+                    ScreenshotManager.shared.setSettings(settings: captureSettings)
+                    ScreenshotManager.shared.start(target: target!, token: accountKey)
+                    self.networkCheckTimer?.invalidate()
+                }
+                if trackerState == CheckState.cantStart {
+                    self.networkCheckTimer?.invalidate()
+                }
+            })
+            self.networkCheckTimer?.fire()
+        }
+        
         resolve(["moduleStart": appStartTime.timeIntervalSince1970 * 1000])
     }
     

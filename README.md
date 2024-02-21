@@ -27,6 +27,7 @@ Middleware React Native Real User Monitoring SDK
 - Custom Instrumenation using OpenTelemetry
 - Custom logging
 - RUM Session Tracking
+- Session Recording
 
 ## Documentation
 
@@ -111,6 +112,24 @@ You can set latitude & longitde as global attributes.
 
 ```typescript
 MiddlewareRum.updateLocation(latitude: number, longitude: number)
+```
+
+### Enable session recording
+
+To enable session recording pass `sessionRecording: true` configuration as follows - 
+
+```js
+const MiddlewareConfig: ReactNativeConfiguration = {
+    serviceName: 'Mobile-SDK-ReactNative',
+    projectName: '$Mobile-SDK-ReactNative',
+    accountKey: '<middleware-account-key>',
+    target: '<target-url>',
+    sessionRecording: true,
+    deploymentEnvironment: 'PROD',
+    globalAttributes: {
+        name: '<your-name>',
+    },
+};
 ```
 
 ## Contributing

@@ -38,6 +38,7 @@ export interface ReactNativeConfiguration {
   accountKey: string;
   serviceName: string;
   projectName: string;
+  sessionRecording: boolean;
   deploymentEnvironment?: string;
   appStartEnabled?: boolean;
   enableDiskBuffering?: boolean;
@@ -142,6 +143,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
+      sessionRecording: String(config.sessionRecording),
       globalAttributes: {
         ...getResource(),
         [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,

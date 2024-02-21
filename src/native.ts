@@ -21,6 +21,7 @@ const MiddlewareReactNative = NativeModules.MiddlewareReactNative
 export interface NativeSdKConfiguration {
   target: string;
   accountKey: string;
+  sessionRecording: string;
   globalAttributes?: object;
   serviceName: string;
   projectName: string;
