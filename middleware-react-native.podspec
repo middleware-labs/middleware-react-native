@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
   s.dependency "DeviceKit", "~> 4.0"
   s.dependency "PLCrashReporter", "~> 1.11"
   s.dependency "SwiftProtobuf"
+  s.dependency "SWCompression"
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
