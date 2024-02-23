@@ -132,6 +132,16 @@ const MiddlewareConfig: ReactNativeConfiguration = {
 };
 ```
 
+#### Sanitizing views in session recording
+
+Views will get blurred hiding sensitive information in session recording.
+
+```js
+<MiddlewareSanitizedView>
+  <Component/>
+</MiddlewareSanitizedView>
+```
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
