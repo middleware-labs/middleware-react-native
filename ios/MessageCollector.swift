@@ -14,36 +14,46 @@ class MessageCollector: NSObject {
     private let messagesQueue = OperationQueue()
     private var target: String?
     private var token: String?
+    private var sendInterval: Timer?
+    
     
     init(target: String?, token: String?) {
         self.target = target
         self.token = token
     }
-
+    
+    func start() {
+        sendInterval = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { [weak self] _ in
+            self?.flush()
+        })
+        messagesQueue.maxConcurrentOperationCount = 1
+    }
+    
     func stop() {
+        sendInterval?.invalidate()
         self.flush()
     }
-
+    
     func sendImagesBatch(batch: Data, fileName: String) {
         self.imagesWaiting.append(BatchArch(name: fileName, data: batch))
         messagesQueue.addOperation {
             self.flushImages()
         }
     }
-
+    
     @objc func flush() {
         messagesQueue.addOperation {
             self.flushImages()
         }
     }
-
+    
     private func flushImages() {
         let images = imagesWaiting.first
         guard !imagesWaiting.isEmpty, let images = images else { return }
         imagesWaiting.remove(at: 0)
         
         imagesSending.append(images)
-
+        
         DebugUtils.log("Sending images \(images.name) \(images.data.count)")
         NetworkManager(target: self.target!, token: self.token!).sendImages(sessionId: Globals.getSessionId(), images: images.data, name: images.name) { (success) in
             self.imagesSending.removeAll { (waiting) -> Bool in

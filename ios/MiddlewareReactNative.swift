@@ -82,11 +82,13 @@ class MiddlewareReactNative: NSObject {
             if(NetworkReachability.isNetworkAvailable()) {
                 trackerState = CheckState.canStart
             }
+            let sessionStartTs = UInt64(Date().timeIntervalSince1970 * 1000)
             self.networkCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (_) in
                 if trackerState == CheckState.canStart {
+                    MessageCollector(target: target!, token: accountKey).start()
                     let captureSettings = getCaptureSettings(fps: 3, quality: "standard")
                     ScreenshotManager.shared.setSettings(settings: captureSettings)
-                    ScreenshotManager.shared.start(target: target!, token: accountKey)
+                    ScreenshotManager.shared.start(startTs: sessionStartTs, target: target!, token: accountKey)
                     self.networkCheckTimer?.invalidate()
                 }
                 if trackerState == CheckState.cantStart {

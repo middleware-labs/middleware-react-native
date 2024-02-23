@@ -1,4 +1,7 @@
-import { MiddlewareRum } from '@middleware.io/middleware-react-native';
+import {
+  MiddlewareRum,
+  MiddlewareSanitizedView,
+} from '@middleware.io/middleware-react-native';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
@@ -46,11 +49,14 @@ export default function Details() {
         accessibilityLabel="jsError"
         testID="jsError"
       />
-      <TextInput
-        style={styles.input}
-        onChangeText={setCustomUrl}
-        value={customUrl}
-      />
+      <MiddlewareSanitizedView>
+        <TextInput
+          style={styles.input}
+          onChangeText={setCustomUrl}
+          value={customUrl}
+        />
+      </MiddlewareSanitizedView>
+
       <Button
         title="Fetch custom"
         onPress={customFetch}

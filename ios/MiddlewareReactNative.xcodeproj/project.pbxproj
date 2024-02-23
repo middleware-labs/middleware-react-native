@@ -142,6 +142,8 @@
 		5CBFF0002B5EEC1D0021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
 		5CBFF0012B5EEC1E0021251E /* Headers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
 		5CBFF0022B5EEC1E0021251E /* SpanAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanAdapter.swift; sourceTree = "<group>"; };
+		5CECE3082B888E15006CBF5D /* NativeSanitizedViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeSanitizedViewManager.m; sourceTree = "<group>"; };
+		5CECE3092B888E59006CBF5D /* NativeSanitizedViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSanitizedViewManager.swift; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* MiddlewareReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiddlewareReactNative.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MiddlewareReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* MiddlewareReactNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareReactNative.swift; sourceTree = "<group>"; };
@@ -169,6 +171,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				5CECE3092B888E59006CBF5D /* NativeSanitizedViewManager.swift */,
+				5CECE3082B888E15006CBF5D /* NativeSanitizedViewManager.m */,
 				5C43085E2B83DB0700D44264 /* DebugUtils.swift */,
 				5C43085C2B83D48900D44264 /* NetworkReachability.swift */,
 				5C4308592B83D46800D44264 /* NetworkManager.swift */,

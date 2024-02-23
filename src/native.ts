@@ -1,7 +1,7 @@
 import { NativeModules, Platform } from 'react-native';
 import type { Attributes } from '@opentelemetry/api';
 
-const LINKING_ERROR =
+export const LINKING_ERROR =
   `The package '@middleware.io/middleware-react-native' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
