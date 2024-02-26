@@ -1,6 +1,6 @@
 {
   "name": "@middleware.io/middleware-react-native",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Middleware React Native real user monitoring SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -166,17 +166,9 @@
   "dependencies": {
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/core": "1.20.0",
-    "@opentelemetry/exporter-metrics-otlp-http": "^0.46.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.46.0",
-    "@opentelemetry/instrumentation": "^0.46.0",
-    "@opentelemetry/instrumentation-fetch": "^0.46.0",
-    "@opentelemetry/otlp-transformer": "^0.47.0",
-    "@opentelemetry/propagator-b3": "^1.20.0",
     "@opentelemetry/resources": "1.20.0",
     "@opentelemetry/sdk-trace-base": "1.20.0",
     "@opentelemetry/sdk-trace-web": "1.20.0",
-    "@opentelemetry/semantic-conventions": "1.20.0",
-    "instrumentation-document-load": "^0.0.4",
-    "middleware.io-instrumentation-xml-http-request": "^0.0.1"
+    "@opentelemetry/semantic-conventions": "1.20.0"
   }
 }
