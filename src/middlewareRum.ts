@@ -24,7 +24,6 @@ import {
   testNativeAnr,
 } from './native';
 import { Resource } from '@opentelemetry/resources';
-import { Platform } from 'react-native';
 import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
 import { instrumentErrors, reportError } from './errors';
 import ReacNativeSpanExporter from './exporting';
@@ -186,11 +185,8 @@ export const MiddlewareRum: MiddlewareRumType = {
 
     initializeNativeSdk(nativeSdkConf).then((nativeAppStart) => {
       appStartInfo = nativeAppStart;
-      if (Platform.OS === 'ios') {
-        appStartInfo.isColdStart = appStartInfo.isColdStart || true;
-        appStartInfo.appStart =
-          appStartInfo.appStart || appStartInfo.moduleStart;
-      }
+      appStartInfo.isColdStart = appStartInfo.isColdStart || true;
+      appStartInfo.appStart = appStartInfo.appStart || appStartInfo.moduleStart;
       setNativeSessionId(getSessionId());
 
       if (config.appStartEnabled) {
