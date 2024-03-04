@@ -116,7 +116,7 @@ MiddlewareRum.updateLocation(latitude: number, longitude: number)
 
 ### Enable session recording
 
-To enable session recording pass `sessionRecording: true` configuration as follows - 
+By default session recording is enabled, to disable session recording pass `sessionRecording: false` configuration as follows - 
 
 ```js
 const MiddlewareConfig: ReactNativeConfiguration = {
@@ -124,7 +124,7 @@ const MiddlewareConfig: ReactNativeConfiguration = {
     projectName: '$Mobile-SDK-ReactNative',
     accountKey: '<middleware-account-key>',
     target: '<target-url>',
-    sessionRecording: true,
+    sessionRecording: false,
     deploymentEnvironment: 'PROD',
     globalAttributes: {
         name: '<your-name>',

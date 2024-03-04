@@ -1,7 +1,5 @@
 import {
-  Platform,
   UIManager,
-  View,
   requireNativeComponent,
   type ViewProps,
 } from 'react-native';
@@ -41,5 +39,4 @@ const NativeSanitizedView =
         throw new Error('NativeSanitizedView; ' + LINKING_ERROR);
       };
 
-export const MiddlewareSanitizedView =
-  Platform.OS === 'ios' ? NativeSanitizedView : View;
+export const MiddlewareSanitizedView = NativeSanitizedView;

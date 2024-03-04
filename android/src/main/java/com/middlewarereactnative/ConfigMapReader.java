@@ -26,6 +26,10 @@ public class ConfigMapReader extends MapReader {
     return Keys.SERVICE_NAME.get(map);
   }
 
+  public String getSessionRecording() {
+    return Keys.SESSION_RECORDING.get(map);
+  }
+
   public String getDeploymentEnvironment() {
     return Keys.DEPLOYMENT_ENVIRONMENT.get(map);
   }
@@ -39,6 +43,7 @@ public class ConfigMapReader extends MapReader {
     StringKey ACCOUNT_KEY = new StringKey("accountKey");
     StringKey PROJECT_NAME = new StringKey("projectName");
     StringKey SERVICE_NAME = new StringKey("serviceName");
+    StringKey SESSION_RECORDING = new StringKey("sessionRecording");
     StringKey DEPLOYMENT_ENVIRONMENT = new StringKey("deploymentEnvironment");
     MapKey GLOBAL_ATTRIBUTES = new MapKey("globalAttributes");
   }
