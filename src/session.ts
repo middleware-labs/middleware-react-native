@@ -18,7 +18,7 @@ let session: Session = {
 const tracer = trace.getTracer('session');
 
 const MAX_SESSION_AGE = 4 * 60 * 60 * 1000;
-const SESSION_TIMEOUT = 15 * 60 * 1000;
+const SESSION_TIMEOUT = 5 * 60 * 1000;
 const sessionLogging = false;
 let lastActivityTime = Date.now();
 const State = {

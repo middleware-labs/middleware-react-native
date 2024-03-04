@@ -17,7 +17,8 @@ const MiddlewareConfig: ReactNativeConfiguration = {
   serviceName: 'Mobile-SDK-iOS',
   projectName: 'Mobile-SDK-iOS',
   accountKey: '<access-key>',
-  target: 'https://<targe>',
+  target: '<target-url>',
+  sessionRecording: true,
   debug: true,
   deploymentEnvironment: 'PROD',
   globalAttributes: {

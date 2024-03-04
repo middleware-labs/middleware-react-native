@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C43084E2B83D2A400D44264 /* ScreenshotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C43084D2B83D2A400D44264 /* ScreenshotManager.swift */; };
+		5C4308502B83D2EB00D44264 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C43084F2B83D2EB00D44264 /* UIImageExtension.swift */; };
+		5C4308522B83D31700D44264 /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4308512B83D31700D44264 /* UIViewExtension.swift */; };
+		5C4308542B83D33700D44264 /* Swizzling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4308532B83D33700D44264 /* Swizzling.swift */; };
+		5C4308562B83D42E00D44264 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4308552B83D42E00D44264 /* Data.swift */; };
+		5C4308582B83D44E00D44264 /* MessageCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4308572B83D44E00D44264 /* MessageCollector.swift */; };
+		5C43085A2B83D46800D44264 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4308592B83D46800D44264 /* NetworkManager.swift */; };
+		5C43085D2B83D48900D44264 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C43085C2B83D48900D44264 /* NetworkReachability.swift */; };
+		5C43085F2B83DB0700D44264 /* DebugUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C43085E2B83DB0700D44264 /* DebugUtils.swift */; };
 		5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7CF7972B679760002E56C8 /* SwiftExtensions.swift */; };
 		5C91D2EA2B67EFFB00BE5854 /* OtlpHttpLogExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2E72B67EFFA00BE5854 /* OtlpHttpLogExporter.swift */; };
 		5C91D2EB2B67EFFB00BE5854 /* LogRecordAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C91D2E82B67EFFB00BE5854 /* LogRecordAdapter.swift */; };
@@ -69,6 +78,15 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libMiddlewareReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMiddlewareReactNative.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C075C6D2B6A9D5A00D2EDC5 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		5C43084D2B83D2A400D44264 /* ScreenshotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotManager.swift; sourceTree = "<group>"; };
+		5C43084F2B83D2EB00D44264 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
+		5C4308512B83D31700D44264 /* UIViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
+		5C4308532B83D33700D44264 /* Swizzling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Swizzling.swift; sourceTree = "<group>"; };
+		5C4308552B83D42E00D44264 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		5C4308572B83D44E00D44264 /* MessageCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollector.swift; sourceTree = "<group>"; };
+		5C4308592B83D46800D44264 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		5C43085C2B83D48900D44264 /* NetworkReachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
+		5C43085E2B83DB0700D44264 /* DebugUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUtils.swift; sourceTree = "<group>"; };
 		5C7417892B5969C50085D10C /* SpanToDiskExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanToDiskExporter.swift; sourceTree = "<group>"; };
 		5C74178A2B5969C50085D10C /* RWLocked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RWLocked.swift; sourceTree = "<group>"; };
 		5C74178C2B5969C50085D10C /* SpanDb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpanDb.swift; sourceTree = "<group>"; };
@@ -124,6 +142,8 @@
 		5CBFF0002B5EEC1D0021251E /* InstrumentationLibraryInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentationLibraryInfo.swift; sourceTree = "<group>"; };
 		5CBFF0012B5EEC1E0021251E /* Headers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
 		5CBFF0022B5EEC1E0021251E /* SpanAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpanAdapter.swift; sourceTree = "<group>"; };
+		5CECE3082B888E15006CBF5D /* NativeSanitizedViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NativeSanitizedViewManager.m; sourceTree = "<group>"; };
+		5CECE3092B888E59006CBF5D /* NativeSanitizedViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeSanitizedViewManager.swift; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* MiddlewareReactNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MiddlewareReactNative.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MiddlewareReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* MiddlewareReactNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareReactNative.swift; sourceTree = "<group>"; };
@@ -151,6 +171,15 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				5CECE3092B888E59006CBF5D /* NativeSanitizedViewManager.swift */,
+				5CECE3082B888E15006CBF5D /* NativeSanitizedViewManager.m */,
+				5C43085E2B83DB0700D44264 /* DebugUtils.swift */,
+				5C43085C2B83D48900D44264 /* NetworkReachability.swift */,
+				5C4308592B83D46800D44264 /* NetworkManager.swift */,
+				5C4308572B83D44E00D44264 /* MessageCollector.swift */,
+				5C4308552B83D42E00D44264 /* Data.swift */,
+				5C43084D2B83D2A400D44264 /* ScreenshotManager.swift */,
+				5C43084C2B83D20E00D44264 /* extensions */,
 				5C075C6D2B6A9D5A00D2EDC5 /* Device.swift */,
 				5C91D2E62B67EF3C00BE5854 /* log */,
 				5CBFEFFB2B5EEC1D0021251E /* Common */,
@@ -196,6 +225,16 @@
 				F4FF95D5245B92E700C19C63 /* MiddlewareReactNative-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		5C43084C2B83D20E00D44264 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5C43084F2B83D2EB00D44264 /* UIImageExtension.swift */,
+				5C4308512B83D31700D44264 /* UIViewExtension.swift */,
+				5C4308532B83D33700D44264 /* Swizzling.swift */,
+			);
+			path = extensions;
 			sourceTree = "<group>";
 		};
 		5C91D2E62B67EF3C00BE5854 /* log */ = {
@@ -313,18 +352,24 @@
 				5CBFF0062B5EEC1E0021251E /* EnvVarResource.swift in Sources */,
 				5C91D2EF2B67F00500BE5854 /* logs_service.pb.swift in Sources */,
 				5CBFEFEE2B5E808D0021251E /* SpanExporter.swift in Sources */,
+				5C4308522B83D31700D44264 /* UIViewExtension.swift in Sources */,
 				5C91D2EB2B67EFFB00BE5854 /* LogRecordAdapter.swift in Sources */,
 				5CBFF00C2B5EEC1E0021251E /* AttributeValue.swift in Sources */,
 				5C91D2EC2B67EFFB00BE5854 /* LogRecordExporter.swift in Sources */,
 				5CBFEFE02B5E808D0021251E /* HTTPClient.swift in Sources */,
 				5C91D2F32B68BDCE00BE5854 /* Severity.swift in Sources */,
+				5C4308502B83D2EB00D44264 /* UIImageExtension.swift in Sources */,
 				5CBFEFAF2B5E76920021251E /* SpanKind.swift in Sources */,
 				5C91D2F02B67F00500BE5854 /* logs.pb.swift in Sources */,
 				5CBFEF8C2B5E6DA60021251E /* TraceFlags.swift in Sources */,
+				5C43085A2B83D46800D44264 /* NetworkManager.swift in Sources */,
 				5CBFEFDF2B5E808D0021251E /* EnvVarHeaders.swift in Sources */,
 				5CBFF0102B5EEC1E0021251E /* InstrumentationLibraryInfo.swift in Sources */,
+				5C4308582B83D44E00D44264 /* MessageCollector.swift in Sources */,
 				5CBFF0112B5EEC1E0021251E /* Headers.swift in Sources */,
+				5C43085F2B83DB0700D44264 /* DebugUtils.swift in Sources */,
 				5CBFF00A2B5EEC1E0021251E /* trace_service.pb.swift in Sources */,
+				5C43085D2B83D48900D44264 /* NetworkReachability.swift in Sources */,
 				5CBFEFEF2B5E808D0021251E /* OtlpConfiguration.swift in Sources */,
 				5CBFEFAB2B5E76920021251E /* SpanContext.swift in Sources */,
 				F4FF95D7245B92E800C19C63 /* MiddlewareReactNative.swift in Sources */,
@@ -336,7 +381,9 @@
 				5CBFF00E2B5EEC1E0021251E /* CommonAdapter.swift in Sources */,
 				5CBFF0042B5EEC1E0021251E /* ResourceAttributes.swift in Sources */,
 				5CBFEF862B5E6DA60021251E /* TraceState.swift in Sources */,
+				5C4308562B83D42E00D44264 /* Data.swift in Sources */,
 				5CBFF0032B5EEC1E0021251E /* Constants.swift in Sources */,
+				5C4308542B83D33700D44264 /* Swizzling.swift in Sources */,
 				5CBFEF8B2B5E6DA60021251E /* OtelTrace.swift in Sources */,
 				5CBFF0122B5EEC1E0021251E /* SpanAdapter.swift in Sources */,
 				5CBFF0052B5EEC1E0021251E /* Resource.swift in Sources */,
@@ -348,6 +395,7 @@
 				5CBFF0092B5EEC1E0021251E /* trace.pb.swift in Sources */,
 				5C7CF7982B679760002E56C8 /* SwiftExtensions.swift in Sources */,
 				5CBFF0072B5EEC1E0021251E /* common.pb.swift in Sources */,
+				5C43084E2B83D2A400D44264 /* ScreenshotManager.swift in Sources */,
 				5C91D2EA2B67EFFB00BE5854 /* OtlpHttpLogExporter.swift in Sources */,
 				5CBFEF912B5E6DA60021251E /* SpanId.swift in Sources */,
 				5CBFEFA72B5E76920021251E /* TracestateUtils.swift in Sources */,

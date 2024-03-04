@@ -24,7 +24,6 @@ import {
   testNativeAnr,
 } from './native';
 import { Resource } from '@opentelemetry/resources';
-import { Platform } from 'react-native';
 import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
 import { instrumentErrors, reportError } from './errors';
 import ReacNativeSpanExporter from './exporting';
@@ -38,6 +37,7 @@ export interface ReactNativeConfiguration {
   accountKey: string;
   serviceName: string;
   projectName: string;
+  sessionRecording?: boolean;
   deploymentEnvironment?: string;
   appStartEnabled?: boolean;
   enableDiskBuffering?: boolean;
@@ -142,6 +142,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
+      sessionRecording: String(config.sessionRecording || true),
       globalAttributes: {
         ...getResource(),
         [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
@@ -184,11 +185,8 @@ export const MiddlewareRum: MiddlewareRumType = {
 
     initializeNativeSdk(nativeSdkConf).then((nativeAppStart) => {
       appStartInfo = nativeAppStart;
-      if (Platform.OS === 'ios') {
-        appStartInfo.isColdStart = appStartInfo.isColdStart || true;
-        appStartInfo.appStart =
-          appStartInfo.appStart || appStartInfo.moduleStart;
-      }
+      appStartInfo.isColdStart = appStartInfo.isColdStart || true;
+      appStartInfo.appStart = appStartInfo.appStart || appStartInfo.moduleStart;
       setNativeSessionId(getSessionId());
 
       if (config.appStartEnabled) {

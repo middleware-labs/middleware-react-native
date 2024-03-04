@@ -63,6 +63,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     final String accountKey = mapReader.getAccountKey();
     final String projectName = mapReader.getProjectName();
     final String serviceName = mapReader.getServiceName();
+    final String sessionRecording = mapReader.getSessionRecording();
     final String deploymentEnvironment = mapReader.getDeploymentEnvironment();
     final ReadableMap globalAttributes = mapReader.getGlobalAttributes();
 
@@ -79,7 +80,12 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .setGlobalAttributes(attributesFromMap(globalAttributes))
       .setDeploymentEnvironment(deploymentEnvironment)
       .disableActivityLifecycleMonitoring()
-      .build((Application) getReactApplicationContext().getApplicationContext().getApplicationContext());
+      .build(Objects.requireNonNull(getReactApplicationContext().getCurrentActivity()).getApplication());
+
+    if("true".equals(sessionRecording)) {
+      Middleware middleware = Middleware.getInstance();
+      middleware.startNativeRecording(getCurrentActivity());
+    }
 
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
     WritableMap appStartInfo = Arguments.createMap();
@@ -162,7 +168,9 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setSessionId(String sessionId) {
-    Middleware.getInstance().setGlobalAttribute(AttributeKey.stringKey("session.id"), sessionId);
+    Middleware middleware = Middleware.getInstance();
+    middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), sessionId);
+    middleware.setNativeSessionId(sessionId);
     this.nativeSessionId = sessionId;
   }
 
