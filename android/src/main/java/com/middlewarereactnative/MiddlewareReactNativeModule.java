@@ -80,9 +80,9 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .setGlobalAttributes(attributesFromMap(globalAttributes))
       .setDeploymentEnvironment(deploymentEnvironment)
       .disableActivityLifecycleMonitoring()
-      .build(Objects.requireNonNull(getReactApplicationContext().getCurrentActivity()).getApplication());
+      .build((Application) getReactApplicationContext().getApplicationContext());
 
-    if("true".equals(sessionRecording)) {
+    if (Boolean.TRUE.toString().equals(sessionRecording)) {
       Middleware middleware = Middleware.getInstance();
       middleware.startNativeRecording(getCurrentActivity());
     }
@@ -103,7 +103,8 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     new Thread(() -> {
       try {
         Thread.sleep(2000);
-      } catch (InterruptedException e) {}
+      } catch (InterruptedException e) {
+      }
       throw new RuntimeException("test crash");
     }).start();
   }
@@ -242,7 +243,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
 
     final ReadableArray readerEvents = mapReader.getEvents();
     final List<EventData> newEvents = new ArrayList<>();
-    for(int index = 0; index < readerEvents.size(); index++) {
+    for (int index = 0; index < readerEvents.size(); index++) {
       final ReadableMap readableMap = readerEvents.getMap(index);
       final EventData eventData = EventData.create(
         Long.parseLong(Objects.requireNonNull(readableMap.getString("time"))),
