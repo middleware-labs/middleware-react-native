@@ -82,7 +82,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .disableActivityLifecycleMonitoring()
       .build((Application) getReactApplicationContext().getApplicationContext());
 
-    if ("true".equals(sessionRecording)) {
+    if (Boolean.TRUE.toString().equals(sessionRecording)) {
       Middleware middleware = Middleware.getInstance();
       middleware.startNativeRecording(getCurrentActivity());
     }
