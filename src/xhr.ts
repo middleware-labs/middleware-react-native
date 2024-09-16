@@ -47,7 +47,7 @@ export function instrumentXHR(config: XhrConfig) {
     if (attrs) {
       const spanName = `HTTP ${(
         attrs[SemanticAttributes.HTTP_METHOD]! as string
-      ).toUpperCase()}`;
+      ).toUpperCase()} ${attrs[SemanticAttributes.HTTP_URL]! as string}`;
 
       const span = tracer.startSpan(spanName, {
         attributes: attrs,
