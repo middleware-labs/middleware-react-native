@@ -19,7 +19,7 @@ export function getResource(): ResourceAttributes {
     [SemanticResourceAttributes.TELEMETRY_SDK_NAME]:
       '@middleware-labs/middlware-react-native',
     [SemanticResourceAttributes.TELEMETRY_SDK_VERSION]: version,
-    'mw_agent': 'true',
+    'mw.rum': 'true',
     'mw.rum.sdk.version': version,
     'browser.trace': 'true',
   };
