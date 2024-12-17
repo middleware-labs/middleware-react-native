@@ -10,7 +10,6 @@ import {
 import { _globalThis } from '@opentelemetry/core';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
-import GlobalAttributeAppender from './globalAttributeAppender';
 import {
   initializeNativeSdk,
   setNativeSessionId,
@@ -31,6 +30,7 @@ import { getResource, setGlobalAttributes } from './globalAttributes';
 import { _generatenewSessionId, getSessionId } from './session';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { instrumentXHR } from './xhr';
+import GlobalAttributeAppender from './globalAttributeAppender';
 
 export interface ReactNativeConfiguration {
   target: string;
@@ -159,10 +159,20 @@ export const MiddlewareRum: MiddlewareRumType = {
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
         'project.name': config.projectName,
+        'session.id': getSessionId(),
         ...getResource(),
       }),
     });
     provider.addSpanProcessor(new GlobalAttributeAppender());
+
+    Object.defineProperty(provider.resource.attributes, 'session.id', {
+      get() {
+        return getSessionId();
+      },
+      configurable: true,
+      enumerable: true,
+    });
+
     provider.addSpanProcessor(
       new BatchSpanProcessor(new ReacNativeSpanExporter())
     );
