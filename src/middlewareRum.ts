@@ -30,6 +30,7 @@ import { getResource, setGlobalAttributes } from './globalAttributes';
 import { _generatenewSessionId, getSessionId } from './session';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { instrumentXHR } from './xhr';
+import GlobalAttributeAppender from './globalAttributeAppender';
 
 export interface ReactNativeConfiguration {
   target: string;
@@ -162,6 +163,7 @@ export const MiddlewareRum: MiddlewareRumType = {
         ...getResource(),
       }),
     });
+    provider.addSpanProcessor(new GlobalAttributeAppender());
 
     Object.defineProperty(provider.resource.attributes, 'session.id', {
       get() {
