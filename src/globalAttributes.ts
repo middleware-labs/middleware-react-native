@@ -26,10 +26,12 @@ export function getResource(): ResourceAttributes {
 
   if (Platform.OS === 'ios') {
     resourceAttrs[SemanticResourceAttributes.OS_NAME] = 'iOS';
+    resourceAttrs.os = 'iOS';
     resourceAttrs[SemanticResourceAttributes.OS_VERSION] =
       platformConstants.osVersion;
   } else {
     resourceAttrs[SemanticResourceAttributes.OS_NAME] = 'Android';
+    resourceAttrs.os = 'Android';
     resourceAttrs[SemanticResourceAttributes.OS_TYPE] = 'linux';
     resourceAttrs[SemanticResourceAttributes.OS_VERSION] =
       platformConstants.Release;

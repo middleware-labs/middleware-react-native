@@ -150,6 +150,7 @@ export const MiddlewareRum: MiddlewareRumType = {
         'session.id': getSessionId(),
         ...config.globalAttributes,
         'deployment.environment': config.deploymentEnvironment,
+        'recording': config.sessionRecording ? '1' : '0',
       },
     };
 

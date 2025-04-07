@@ -1,5 +1,7 @@
 package com.middlewarereactnative;
 
+import static io.middleware.android.sdk.utils.Constants.LOG_TAG;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import io.middleware.android.sdk.Middleware;
+import io.middleware.android.sdk.builders.MiddlewareBuilder;
 import io.middleware.android.sdk.exporters.MiddlewareSpanExporter;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -72,19 +75,24 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    Middleware.builder()
+    MiddlewareBuilder builder = Middleware.builder()
       .setTarget(target)
       .setProjectName(projectName)
       .setServiceName(serviceName)
       .setRumAccessToken(accountKey)
       .setGlobalAttributes(attributesFromMap(globalAttributes))
       .setDeploymentEnvironment(deploymentEnvironment)
-      .disableActivityLifecycleMonitoring()
-      .build((Application) getReactApplicationContext().getApplicationContext());
+      .disableActivityLifecycleMonitoring();
+
+    if (!Boolean.TRUE.toString().equals(sessionRecording)) {
+      builder.disableSessionRecording();
+    }
+
+    final Middleware middleware = builder.build((Application) getReactApplicationContext().getApplicationContext());
 
     if (Boolean.TRUE.toString().equals(sessionRecording)) {
-      Middleware middleware = Middleware.getInstance();
       middleware.startNativeRecording(getCurrentActivity());
+      Log.d(LOG_TAG, "Middleware Session Recording started");
     }
 
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();

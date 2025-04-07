@@ -116,13 +116,16 @@ func loadPendingCrashReport(_ data: Data!) throws {
     // Turn the report into a span
     var span = newSpan(name: exceptionType ?? "unknown")
     var attributes: [String: AttributeValue] = [:]
+    span.settingStatus(.error(description: "error"))
     span.settingResource(Resource(attributes: globalAttributes))
     attributes["component"] = AttributeValue("crash")
     attributes["crash.app.version"] = AttributeValue(
         report.applicationInfo.applicationMarketingVersion)
     attributes["error"] = AttributeValue("true")
     attributes["event.type"] = AttributeValue("error")
-    attributes["exception.type"] = AttributeValue(exceptionType ?? "unknown")
+    attributes["exception.type"] = AttributeValue(exceptionType!)
+    attributes["error.type"] = attributes["exception.type"]
+    attributes["error.name"] = attributes["error.type"]
     attributes["crash.address"] = AttributeValue(report.signalInfo.address.description)
 
     if report.customData != nil {
@@ -152,7 +155,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         attributes["exception.type"] =  AttributeValue(report.exceptionInfo.exceptionName)
         attributes["exception.message"] =  AttributeValue(report.exceptionInfo.exceptionReason)
+        attributes["error.message"] = attributes["exception.message"]
     }
+    attributes["error.type"] = attributes["exception.type"]
     span.settingAttributes(attributes)
     span.settingTotalAttributeCount(attributes.count)
     

@@ -79,3 +79,4 @@ lib/
 
 .build/
 ios/.build
+middleware-android
