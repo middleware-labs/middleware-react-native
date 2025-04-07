@@ -14,10 +14,10 @@ import Home from './Home';
 import { startNavigationTracking } from '../../src/trackNavigation';
 
 const MiddlewareConfig: ReactNativeConfiguration = {
-  serviceName: 'Mobile-SDK-iOS',
-  projectName: 'Mobile-SDK-iOS',
-  accountKey: '<access-key>',
-  target: '<target-url>',
+  serviceName: 'middleware-react-native',
+  projectName: 'middleware-react-native',
+  accountKey: 'rxglcfozmhcvgsgvbcrqxivfeogczvdrxkey',
+  target: 'https://p2i13hg.middleware.io',
   sessionRecording: true,
   debug: true,
   deploymentEnvironment: 'PROD',
@@ -30,7 +30,11 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   React.useEffect(() => {}, []);
-
+  console.log('Developing');
+  console.log('Developing');
+  console.log('Developing');
+  console.log('eveloping');
+  console.log('Developing');
   const navigationRef = useNavigationContainerRef();
   return (
     <MiddlewareWrapper configuration={MiddlewareConfig}>

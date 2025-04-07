@@ -1,0 +1,98 @@
+plugins {
+    id 'com.android.library'
+    id "com.vanniktech.maven.publish" version "0.25.3"
+}
+
+mavenPublishing {
+    coordinates("io.github.middleware-labs", "android-sdk", "2.0.10")
+
+    pom {
+        name = "Middleware Android RUM SDK"
+        description = "Middleware Android RUM SDK"
+        inceptionYear = "2023"
+        url = "https://github.com/middleware-labs/middleware-android"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "middleware-labs"
+                name = "Middleware"
+                url = "https://github.com/middleware-labs/"
+            }
+        }
+        scm {
+            url = "https://github.com/middleware-labs/middleware-android"
+            connection = "scm:git:git://github.com/middleware-labs/middleware-android.git"
+            developerConnection = "scm:git:ssh://git@github.com/middleware-labs/middleware-android.git"
+        }
+    }
+}
+android {
+    namespace 'io.middleware.android.sdk'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 21
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        configureEach {
+            resValue("string", "rum.version", "${project.version}")
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+}
+
+dependencies {
+    api platform('io.opentelemetry:opentelemetry-bom:1.48.0')
+    implementation 'io.opentelemetry:opentelemetry-exporter-logging:1.48.0'
+    implementation('io.opentelemetry.android:android-agent:0.10.0-alpha') {
+        exclude group: 'io.opentelemetry.contrib', module: 'opentelemetry-disk-buffering'
+    }
+    implementation 'io.opentelemetry.android:session:0.10.0-alpha'
+    implementation 'io.opentelemetry.android:common:0.10.0-alpha'
+    implementation 'io.opentelemetry.contrib:opentelemetry-disk-buffering:1.31.0-alpha'
+    implementation('io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.14.0')
+    implementation('io.opentelemetry:opentelemetry-exporter-otlp:1.48.0')
+    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation('io.opentelemetry:opentelemetry-extension-trace-propagators:1.48.0')
+    api "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation("io.opentelemetry.instrumentation:opentelemetry-okhttp-3.0")
+    implementation('org.apache.commons:commons-compress:1.26.0') {
+        exclude group: 'commons-io', module: 'commons-io'
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+    }
+    implementation 'commons-io:commons-io:2.14.0'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
+    implementation 'commons-codec:commons-codec:1.16.0'
+    testImplementation('org.mockito:mockito-core:5.7.0')
+    testImplementation('org.mockito:mockito-junit-jupiter:5.7.0')
+    testImplementation(platform('org.junit:junit-bom:5.11.2'))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.vintage:junit-vintage-engine")
+    testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
+    testImplementation('org.robolectric:robolectric:4.11.1')
+    testImplementation("androidx.test:core:1.6.1")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+}

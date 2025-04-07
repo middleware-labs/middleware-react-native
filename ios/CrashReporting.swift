@@ -117,12 +117,14 @@ func loadPendingCrashReport(_ data: Data!) throws {
     var span = newSpan(name: exceptionType ?? "unknown")
     var attributes: [String: AttributeValue] = [:]
     span.settingResource(Resource(attributes: globalAttributes))
+    span.settingStatus(.error(description: "error"))
     attributes["component"] = AttributeValue("crash")
     attributes["crash.app.version"] = AttributeValue(
         report.applicationInfo.applicationMarketingVersion)
-    attributes["error"] = AttributeValue("true")
     attributes["event.type"] = AttributeValue("error")
-    attributes["exception.type"] = AttributeValue(exceptionType ?? "unknown")
+    attributes["exception.type"] = AttributeValue(exceptionType!)
+    attributes["error.type"] = attributes["exception.type"]
+    attributes["error.name"] = attributes["error.type"]
     attributes["crash.address"] = AttributeValue(report.signalInfo.address.description)
 
     if report.customData != nil {
@@ -130,12 +132,8 @@ func loadPendingCrashReport(_ data: Data!) throws {
         if customData != nil { 
             attributes["session.id"] =  AttributeValue(customData!["sessionId"] ?? "")
             attributes["crash.rumSessionId"] =  AttributeValue(customData!["sessionId"] ?? "")
-            
             attributes["crash.batteryLevel"] =  AttributeValue(customData!["batteryLevel"] ?? "0")
-            
             attributes["crash.freeDiskSpace"] =  AttributeValue(customData!["freeDiskSpace"] ?? "0")
-            
-    
             attributes["crash.freeMemory"] =  AttributeValue(customData!["freeMemory"] ?? "0")
         } else {
             attributes["crash.rumSessionId"] =  AttributeValue( String(decoding: report.customData, as: UTF8.self))
@@ -152,7 +150,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         attributes["exception.type"] =  AttributeValue(report.exceptionInfo.exceptionName)
         attributes["exception.message"] =  AttributeValue(report.exceptionInfo.exceptionReason)
+        attributes["error.message"] = attributes["exception.message"]
     }
+    attributes["error.type"] = attributes["exception.type"]
     span.settingAttributes(attributes)
     span.settingTotalAttributeCount(attributes.count)
     

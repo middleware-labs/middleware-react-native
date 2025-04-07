@@ -84,7 +84,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
 
     if (Boolean.TRUE.toString().equals(sessionRecording)) {
       Middleware middleware = Middleware.getInstance();
-      middleware.startNativeRecording(getCurrentActivity());
+      //middleware.startRecording();
     }
 
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
