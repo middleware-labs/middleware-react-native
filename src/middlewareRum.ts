@@ -137,7 +137,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       return;
     }
 
-    let sessionRecording: string | undefined;
+    let sessionRecording: string;
     if (config.sessionRecording) {
       sessionRecording = 'true';
     } else if (config.sessionRecording === false) {
