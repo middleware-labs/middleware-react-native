@@ -137,12 +137,21 @@ export const MiddlewareRum: MiddlewareRumType = {
       return;
     }
 
+    let sessionRecording: string | undefined;
+    if (config.sessionRecording) {
+      sessionRecording = "true";
+    } else if (config.sessionRecording === false) {
+      sessionRecording = "false";
+    } else {
+      sessionRecording = "true";
+    }
+
     const nativeSdkConf: NativeSdKConfiguration = {
       target: config.target,
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
-      sessionRecording: String(config.sessionRecording || true),
+      sessionRecording,
       globalAttributes: {
         ...getResource(),
         [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
