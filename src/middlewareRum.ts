@@ -139,11 +139,11 @@ export const MiddlewareRum: MiddlewareRumType = {
 
     let sessionRecording: string | undefined;
     if (config.sessionRecording) {
-      sessionRecording = "true";
+      sessionRecording = 'true';
     } else if (config.sessionRecording === false) {
-      sessionRecording = "false";
+      sessionRecording = 'false';
     } else {
-      sessionRecording = "true";
+      sessionRecording = 'true';
     }
 
     const nativeSdkConf: NativeSdKConfiguration = {
