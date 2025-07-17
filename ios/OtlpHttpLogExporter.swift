@@ -21,7 +21,6 @@ public class OtlpHttpLogExporter : OtlpHttpExporterBase, LogRecordExporter {
   }
   
   public func export(logRecords: [ReadableLogRecord], explicitTimeout: TimeInterval? = nil) -> ExportResult {
-    pendingLogRecords.append(contentsOf: logRecords)
     var sendingLogRecords: [ReadableLogRecord] = []
     
     exporterLock.withLockVoid {
