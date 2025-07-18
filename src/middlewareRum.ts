@@ -146,31 +146,36 @@ export const MiddlewareRum: MiddlewareRumType = {
       sessionRecording = 'true';
     }
 
+    const resourceAttributes = {
+      ...getResource(),
+      [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
+      'project.name': config.projectName,
+      'env': config.deploymentEnvironment,
+      'recording': config.sessionRecording ? '1' : '0',
+    };
+    const attributes = config.globalAttributes || {};
+    ['env', 'name', 'app.version'].forEach((attr) => {
+      if (attributes?.[attr]) {
+        resourceAttributes[attr] = String(attributes[attr]);
+        delete attributes[attr];
+      }
+    });
+
     const nativeSdkConf: NativeSdKConfiguration = {
       target: config.target,
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
       sessionRecording,
-      globalAttributes: {
-        ...getResource(),
-        [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
-        'project.name': config.projectName,
-        'session.id': getSessionId(),
-        ...config.globalAttributes,
-        'deployment.environment': config.deploymentEnvironment,
-        'recording': config.sessionRecording ? '1' : '0',
-      },
+      globalAttributes: resourceAttributes,
     };
 
-    setGlobalAttributes(nativeSdkConf.globalAttributes ?? {});
+    setGlobalAttributes(attributes);
 
     const provider = new WebTracerProvider({
       resource: new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
-        'project.name': config.projectName,
+        ...resourceAttributes,
         'session.id': getSessionId(),
-        ...getResource(),
       }),
     });
     provider.addSpanProcessor(new GlobalAttributeAppender());

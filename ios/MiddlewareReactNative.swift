@@ -32,13 +32,10 @@ class MiddlewareReactNative: NSObject {
             reject("error", "Missing account key", nil)
             return
         }
-        var targetTrace = target!
-        targetTrace += "/v1/traces"
-        
-        var targetLogs = target! + "/v1/logs"
+        let targetTrace = target! + "/v1/traces"        
+        let targetLogs = target! + "/v1/logs"
         
         self.globalAttributes = config["globalAttributes"] as! [String: Any]
-        globalAttributes["mw.account_key"] = String(accountKey!)
         self.newGlobalAttributes = Globals.convertToAttributeValue(dictionary: globalAttributes)
 
         otlpTraceExporter = OtlpHttpTraceExporter(
@@ -103,7 +100,7 @@ class MiddlewareReactNative: NSObject {
     
     @objc(export:withResolver:withRejecter:)
     func export(spans: Array<Dictionary<String, Any>>, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        resolve(otlpTraceExporter?.export(spans: OtelTransform.toOtelSpans(spans: spans, attributes: self.globalAttributes)))
+        resolve(otlpTraceExporter?.export(spans: OtelTransform.toOtelSpans(spans: spans)))
     }
     
     @objc(nativeCrash)
