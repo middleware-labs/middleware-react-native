@@ -11,7 +11,7 @@ func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [Stri
     var startupSpan = newSpan(name: "CrashReportingInit")
     globalAttributes = attributes
     startupSpan.settingResource(Resource(attributes: globalAttributes))
-    var attributes: [String: AttributeValue] = globalAttributes
+    var attributes: [String: AttributeValue] = [:]
     attributes["component"] = AttributeValue("appstart")
     defer {
         endSpan(exporter: spanExporter!, startupSpan)

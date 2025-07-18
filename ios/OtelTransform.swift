@@ -74,11 +74,11 @@ extension OtelSpan {
 }
 
 struct OtelTransform {
-    static func toOtelSpans(spans: [Dictionary<String, Any>], attributes: [String: Any]) -> [SpanData] {
-        return spans.map { toOtelSpan(otelSpan: $0, globalAttributes: attributes) }
+    static func toOtelSpans(spans: [Dictionary<String, Any>]) -> [SpanData] {
+        return spans.map { toOtelSpan(otelSpan: $0) }
     }
     
-    static func toOtelSpan(otelSpan: Dictionary<String, Any>, globalAttributes: [String: Any]) -> SpanData {
+    static func toOtelSpan(otelSpan: Dictionary<String, Any>) -> SpanData {
         let parentId = otelSpan["parentSpanId"] as? String
         let traceId = otelSpan["traceId"] as? String ?? "00000000000000000000000000000000"
         let spanId = otelSpan["spanId"] as? String ?? "0000000000000000"
@@ -86,11 +86,14 @@ struct OtelTransform {
         let events = otelSpan["events"] as? [Dictionary<String, Any>] ?? []
         let status = otelSpan["status"] as? Dictionary<String, Any> ?? [:]
         let jsTags = otelSpan["attributes"] as? Dictionary<String, Any> ?? [:]
+        let resource = otelSpan["resource"] as? Dictionary<String, Any> ?? [:]
+        let resourceAttrs = resource["_attributes"] as? Dictionary<String, Any> ?? [:]
         let startTime = anyToTimestamp(otelSpan["startTime"])
         let endTime = anyToTimestamp(otelSpan["endTime"])
         
         var attributes: [String: AttributeValue] = [:]
-        
+        var resourceAttributes: [String: AttributeValue] = [:]
+
         for t in jsTags {
             switch t.value {
             case is String:
@@ -106,26 +109,26 @@ struct OtelTransform {
             }
         }
         
-        for t in globalAttributes {
+        for t in resourceAttrs {
             switch t.value {
             case is String:
-                attributes[t.key] = AttributeValue(t.value as! String)
+                resourceAttributes[t.key] = AttributeValue(t.value as! String)
             case is Double:
-                attributes[t.key] = AttributeValue((t.value as! Double).description)
+                resourceAttributes[t.key] = AttributeValue((t.value as! Double).description)
             case is Bool:
-                attributes[t.key] = AttributeValue((t.value as! Bool).description)
+                resourceAttributes[t.key] = AttributeValue((t.value as! Bool).description)
             case is Int:
-                attributes[t.key] = AttributeValue((t.value as! Int).description)
+                resourceAttributes[t.key] = AttributeValue((t.value as! Int).description)
             default:
                 break
             }
         }
         
-        attributes[ResourceAttributes.deviceModelName.rawValue] = AttributeValue(Device.current.description as String)
+        resourceAttributes[ResourceAttributes.deviceModelName.rawValue] = AttributeValue(Device.current.description as String)
         let bundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         let bundleShortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let appVersion = bundleShortVersion ?? bundleVersion
-        attributes["app.version"] = AttributeValue(appVersion!)
+        resourceAttributes["app.version"] = AttributeValue(appVersion!)
         
         var newEvents: [SpanData.Event] = []
         if(events.count > 0) {
@@ -142,7 +145,7 @@ struct OtelTransform {
         return SpanData(traceId: TraceId(fromHexString: traceId),
                         spanId: SpanId(id: UInt64(spanId, radix: 16) ?? 0),
                         parentSpanId: parentId != nil ? SpanId(id: UInt64(parentId!, radix: 16) ?? 0) : nil,
-                        resource: Resource(attributes: attributes),
+                        resource: Resource(attributes: resourceAttributes),
                         name: name,
                         kind: transformKind(otelSpan["kind"] as? Int ?? 0),
                         startTime: startTime,
