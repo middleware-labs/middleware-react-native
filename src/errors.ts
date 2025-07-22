@@ -24,6 +24,7 @@ export const reportError = (error: any, isFatal?: boolean) => {
     'component': 'error',
     'event.type': 'error',
     'type': 'reactNativeError',
+    'error.type': 'reactNativeError',
   };
 
   if (error.stack && useful(error.stack)) {
