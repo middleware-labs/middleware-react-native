@@ -1,5 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
-import type { Attributes } from '@opentelemetry/api';
+import { trace, type Attributes } from '@opentelemetry/api';
 
 export const LINKING_ERROR =
   `The package '@middleware.io/middleware-react-native' doesn't seem to be linked. Make sure: \n\n` +
@@ -7,6 +7,7 @@ export const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
+const tracer = trace.getTracer('logs');
 const MiddlewareReactNative = NativeModules.MiddlewareReactNative
   ? NativeModules.MiddlewareReactNative
   : new Proxy(
@@ -65,17 +66,30 @@ export const testNativeAnr = () => {
 };
 
 export const info = (message: String) => {
+  recordLog(message as string, 'info');
   MiddlewareReactNative.info(message);
 };
 
 export const error = (message: String) => {
+  recordLog(message as string, 'error');
   MiddlewareReactNative.error(message);
 };
 
 export const warn = (message: String) => {
+  recordLog(message as string, 'warn');
   MiddlewareReactNative.warn(message);
 };
 
 export const debug = (message: String) => {
+  recordLog(message as string, 'debug');
   MiddlewareReactNative.debug(message);
+};
+
+const recordLog = (message: string, level: string) => {
+  const span = tracer.startSpan(message, {
+    attributes: {
+      'event.type': level,
+    },
+  });
+  span.end();
 };

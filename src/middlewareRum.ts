@@ -1,36 +1,48 @@
 import {
-  DiagConsoleLogger,
-  DiagLogLevel,
   context,
   diag,
+  DiagConsoleLogger,
+  DiagLogLevel,
   trace,
   type Attributes,
   type Span,
 } from '@opentelemetry/api';
-import { _globalThis } from '@opentelemetry/core';
+import {
+  _globalThis,
+  CompositePropagator,
+  W3CBaggagePropagator,
+  W3CTraceContextPropagator,
+} from '@opentelemetry/core';
+import { registerInstrumentations } from '@opentelemetry/instrumentation';
+import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
+import type { FetchError } from '@opentelemetry/instrumentation-fetch/build/src/types';
+import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
+import shimmer from '@opentelemetry/instrumentation/build/src/shimmer';
+import { B3InjectEncoding, B3Propagator } from '@opentelemetry/propagator-b3';
+import { Resource } from '@opentelemetry/resources';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
-import {
-  initializeNativeSdk,
-  setNativeSessionId,
-  testNativeCrash,
-  type AppStartInfo,
-  type NativeSdKConfiguration,
-  info,
-  warn,
-  debug,
-  error,
-  testNativeAnr,
-} from './native';
-import { Resource } from '@opentelemetry/resources';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 import { LOCATION_LATITUDE, LOCATION_LONGITUDE } from './constants';
 import { instrumentErrors, reportError } from './errors';
 import ReacNativeSpanExporter from './exporting';
-import { getResource, setGlobalAttributes } from './globalAttributes';
-import { _generatenewSessionId, getSessionId } from './session';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import { instrumentXHR } from './xhr';
 import GlobalAttributeAppender from './globalAttributeAppender';
+import { getResource, setGlobalAttributes } from './globalAttributes';
+import {
+  debug,
+  error,
+  info,
+  initializeNativeSdk,
+  setNativeSessionId,
+  testNativeAnr,
+  testNativeCrash,
+  warn,
+  type AppStartInfo,
+  type NativeSdKConfiguration,
+} from './native';
+import { captureTraceParent } from './serverTiming';
+import { _generatenewSessionId, getSessionId } from './session';
+import { headerCapture, jsonToString } from './utils';
 
 export interface ReactNativeConfiguration {
   target: string;
@@ -49,12 +61,18 @@ export interface ReactNativeConfiguration {
   /** Sets attributes added to every Span. */
   globalAttributes?: Attributes;
   tracePropagationTargets?: Array<string | RegExp>;
+  tracePropagationFormat?: string;
+  networkInstrumentation?: boolean;
   /**
    * URLs that partially match any regex in ignoreUrls will not be traced.
    * In addition, URLs that are _exact matches_ of strings in ignoreUrls will
    * also not be traced.
    */
   ignoreUrls?: Array<string | RegExp>;
+  /**
+   * Headers that should be ignored during tracing.
+   */
+  ignoreHeaders?: Set<string>;
 }
 
 export interface MiddlewareRumType {
@@ -192,11 +210,39 @@ export const MiddlewareRum: MiddlewareRumType = {
       new BatchSpanProcessor(new ReacNativeSpanExporter())
     );
 
-    provider.register({});
+    if (config.tracePropagationFormat === 'w3c') {
+      provider.register({
+        propagator: new CompositePropagator({
+          propagators: [
+            new W3CBaggagePropagator(),
+            new W3CTraceContextPropagator(),
+          ],
+        }),
+      });
+    } else if (config.tracePropagationFormat === 'b3') {
+      provider.register({
+        propagator: new CompositePropagator({
+          propagators: [
+            new B3Propagator(),
+            new B3Propagator({ injectEncoding: B3InjectEncoding.MULTI_HEADER }),
+          ],
+        }),
+      });
+    } else {
+      provider.register({
+        propagator: new CompositePropagator({
+          propagators: [
+            new W3CBaggagePropagator(),
+            new W3CTraceContextPropagator(),
+            new B3Propagator(),
+            new B3Propagator({ injectEncoding: B3InjectEncoding.MULTI_HEADER }),
+          ],
+        }),
+      });
+    }
+
     this.provider = provider;
     const clientInitEnd = Date.now();
-
-    instrumentXHR({ ignoreUrls: config.ignoreUrls });
     instrumentErrors();
 
     const nativeInit = Date.now();
@@ -207,6 +253,161 @@ export const MiddlewareRum: MiddlewareRumType = {
       nativeSdkConf.projectName,
       nativeSdkConf.target
     );
+
+    const DEFAULT_IGNORE_URLS: (string | RegExp)[] | undefined = [
+      `${config.target}/v1/metrics`,
+      `${config.target}/v1/traces`,
+      `${config.target}/v1/logs`,
+      `${config.target}/v1/rum`,
+      ...(config.ignoreUrls ?? []),
+    ];
+
+    // The React Native implementation of fetch is simply a polyfill on top of XMLHttpRequest:
+    // https://github.com/facebook/react-native/blob/7ccc5934d0f341f9bc8157f18913a7b340f5db2d/packages/react-native/Libraries/Network/fetch.js#L17
+    // Because of this when making requests using `fetch` there will an additional span created for the underlying
+    // request made with XMLHttpRequest. Since in this demo calls to /api/ are made using fetch, turn off
+    // instrumentation for that path to avoid the extra spans.
+    const xhrInstrumentation = new XMLHttpRequestInstrumentation({
+      propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
+      clearTimingResources: false,
+      ignoreUrls: DEFAULT_IGNORE_URLS,
+      applyCustomAttributesOnSpan: (span: Span, xhr: XMLHttpRequest) => {
+        if (span) {
+          xhr.addEventListener('readystatechange', function () {
+            if (xhr.readyState === xhr.OPENED) {
+              shimmer.wrap(xhr, 'setRequestHeader', (original) => {
+                return (header, value) => {
+                  headerCapture(
+                    'request',
+                    [header],
+                    config.ignoreHeaders
+                  )(span, () => value);
+                  return original.call(this, header, value);
+                };
+              });
+              shimmer.wrap(xhr, 'open', (original) => {
+                return (method, url) => {
+                  span.updateName(`HTTP ${method.toUpperCase()} ${url}`);
+                  return original.call(this, method, url);
+                };
+              });
+              shimmer.wrap(xhr, 'send', (original) => {
+                return (body) => {
+                  if (body) {
+                    span.setAttribute('http.request.body', body.toString());
+                  }
+                  return original.call(this, body);
+                };
+              });
+            } else if (xhr.readyState === xhr.DONE) {
+              const headers = xhr
+                .getAllResponseHeaders()
+                .split('\r\n')
+                .reduce((result: Record<string, string>, current) => {
+                  let [name, value] = current.split(': ');
+                  if (name && value) {
+                    result[name] = value;
+                  }
+                  return result;
+                }, {} as Record<string, string>);
+              headerCapture(
+                'response',
+                Object.keys(headers),
+                config.ignoreHeaders
+              )(span, (header) => headers[header]);
+              try {
+                span.setAttribute('http.response.body', xhr.responseText);
+              } catch (e) {
+                // ignore (DOMException if responseType is not the empty string or "text")
+              }
+              shimmer.unwrap(xhr, 'setRequestHeader');
+              shimmer.unwrap(xhr, 'send');
+            }
+          });
+
+          // don't care about success/failure, just want to see response headers if they exist
+          xhr.addEventListener('readystatechange', function () {
+            if (xhr.readyState === xhr.HEADERS_RECEIVED) {
+              const headers = xhr.getAllResponseHeaders().toLowerCase();
+              if (headers.indexOf('server-timing') !== -1) {
+                const st = xhr.getResponseHeader('server-timing');
+                if (st !== null) {
+                  captureTraceParent(st, span);
+                }
+              }
+            }
+          });
+
+          span.setAttribute('event.type', 'xhr');
+        }
+      },
+    });
+    const fetchInstrumentation = new FetchInstrumentation({
+      propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
+      clearTimingResources: false,
+      ignoreUrls: DEFAULT_IGNORE_URLS,
+      applyCustomAttributesOnSpan: (
+        span: Span,
+        request: Request | RequestInit,
+        result: Response | FetchError
+      ) => {
+        const r = request as Request;
+        const res = result as RequestInit;
+        // span.updateName(`HTTP ${r.method} ${r.url}`);
+        span.setAttribute('event.type', 'fetch');
+        if (r.headers) {
+          headerCapture(
+            'request',
+            Object.keys(r.headers),
+            config.ignoreHeaders
+          )(span, (header: string) => r.headers.get(header) || '');
+        }
+        if (res.body) {
+          span.setAttribute('http.request.body', res.body.toString());
+        }
+        if (result instanceof Response) {
+          if (result.headers) {
+            const headerNames: string[] = [];
+            result.headers.forEach((_: string, name: string) => {
+              headerNames.push(name);
+            });
+            headerCapture(
+              'response',
+              headerNames,
+              config.ignoreHeaders
+            )(span, (header) => result.headers.get(header) ?? '');
+            const contentType = result.headers.get('Content-Type');
+            const ALLOWED_CONTENT_TYPE = new Set([
+              'application/json',
+              'text/plain',
+              'text/x-component',
+            ]);
+            if (contentType && ALLOWED_CONTENT_TYPE.has(contentType)) {
+              result
+                .clone()
+                .json()
+                .then((response) => {
+                  span.setAttribute(
+                    'http.response.body',
+                    jsonToString(response)
+                  );
+                })
+                .catch(() => {
+                  // Ignore
+                });
+            }
+          }
+        }
+      },
+    });
+
+    if (config.networkInstrumentation) {
+      xhrInstrumentation.disable();
+      fetchInstrumentation.disable();
+    }
+    registerInstrumentations({
+      instrumentations: [xhrInstrumentation, fetchInstrumentation],
+    });
 
     initializeNativeSdk(nativeSdkConf).then((nativeAppStart) => {
       appStartInfo = nativeAppStart;

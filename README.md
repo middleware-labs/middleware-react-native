@@ -94,6 +94,40 @@ MiddlewareRum.setGlobalAttributes({
 });
 ```
 
+### Network instrumentation
+
+To ignore capturing urls pass `Array<String | RegExp>` in `ignoreUrls` key in `ReactNativeConfiguration`
+
+Example: 
+```typescript
+  ignoreUrls: [/^\/api\/facts/, /^\/api\/v1\/users\/.*/],
+```
+
+> Note: By default SDK captures following `Content-type`
+> - `application/json`
+> - `application/text`
+> - `text/x-component`
+ 
+
+
+To redact network headers `Set<String>` in `ignoreHeaders` key in `ReactNativeConfiguration`
+
+Example: 
+```typescript
+ignoreHeaders: new Set(['x-ignored-header']),
+```
+
+_Note: By default `x-access-token` will be readacted._
+
+To disable network instrumentation set `networkInstrumentation: false`
+
+```typescript
+const MiddlewareConfig: ReactNativeConfiguration = {
+    ...
+    networkInstrumentation: false
+};
+```
+
 ### Reporting custom errors
 
 You can report handled errors, exceptions, and messages using the `reportError` function
