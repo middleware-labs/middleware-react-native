@@ -360,7 +360,7 @@ export const MiddlewareRum: MiddlewareRumType = {
             'request',
             Object.keys(r.headers),
             config.ignoreHeaders
-          )(span, (header: string) => r.headers.get(header) || '');
+          )(span, (header: string) => r.headers?.get(header) ?? '');
         }
         if (res.body) {
           span.setAttribute('http.request.body', res.body.toString());
@@ -375,8 +375,8 @@ export const MiddlewareRum: MiddlewareRumType = {
               'response',
               headerNames,
               config.ignoreHeaders
-            )(span, (header) => result.headers.get(header) ?? '');
-            const contentType = result.headers.get('Content-Type');
+            )(span, (header) => result.headers?.get(header) ?? '');
+            const contentType = result.headers?.get('Content-Type');
             const ALLOWED_CONTENT_TYPE = new Set([
               'application/json',
               'text/plain',
