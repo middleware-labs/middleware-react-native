@@ -268,7 +268,7 @@ export const MiddlewareRum: MiddlewareRumType = {
     // request made with XMLHttpRequest. Since in this demo calls to /api/ are made using fetch, turn off
     // instrumentation for that path to avoid the extra spans.
     const xhrInstrumentation = new XMLHttpRequestInstrumentation({
-      propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
+      propagateTraceHeaderCorsUrls: config.tracePropagationTargets ?? [],
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
       applyCustomAttributesOnSpan: (span: Span, xhr: XMLHttpRequest) => {
@@ -337,25 +337,34 @@ export const MiddlewareRum: MiddlewareRumType = {
               }
             }
           });
-
           span.setAttribute('event.type', 'xhr');
         }
       },
     });
     const fetchInstrumentation = new FetchInstrumentation({
-      propagateTraceHeaderCorsUrls: config.tracePropagationTargets,
+      propagateTraceHeaderCorsUrls: config.tracePropagationTargets ?? [],
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
       applyCustomAttributesOnSpan: (
-        span: Span,
+        s: Span | { span: Span; attributes: Attributes; name: string },
         request: Request | RequestInit,
         result: Response | FetchError
       ) => {
         const r = request as Request;
         const res = result as RequestInit;
-        // span.updateName(`HTTP ${r.method} ${r.url}`);
+        const span = s as Span;
+        const httpURL = (
+          s as { span: Span; attributes: Attributes; name: string }
+        ).attributes?.['http.url'];
+        if (httpURL) {
+          span.updateName(
+            `${
+              (s as { span: Span; attributes: Attributes; name: string }).name
+            } ${httpURL}`
+          );
+        }
         span.setAttribute('event.type', 'fetch');
-        if (r.headers) {
+        if (r.headers instanceof Headers) {
           headerCapture(
             'request',
             Object.keys(r.headers),
@@ -366,7 +375,7 @@ export const MiddlewareRum: MiddlewareRumType = {
           span.setAttribute('http.request.body', res.body.toString());
         }
         if (result instanceof Response) {
-          if (result.headers) {
+          if (result.headers instanceof Headers) {
             const headerNames: string[] = [];
             result.headers.forEach((_: string, name: string) => {
               headerNames.push(name);
@@ -375,10 +384,11 @@ export const MiddlewareRum: MiddlewareRumType = {
               'response',
               headerNames,
               config.ignoreHeaders
-            )(span, (header) => result.headers?.get(header) ?? '');
-            const contentType = result.headers?.get('Content-Type');
+            )(span, (header) => (result.headers?.get(header) as string) ?? '');
+            const contentType = result.headers?.get('Content-Type') ?? '';
             const ALLOWED_CONTENT_TYPE = new Set([
               'application/json',
+              'application/json;charset=utf-8',
               'text/plain',
               'text/x-component',
             ]);
