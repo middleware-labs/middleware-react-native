@@ -28,6 +28,22 @@ export default function Home({ navigation }: { navigation: any }) {
       const url =
         'https://raw.githubusercontent.com/middleware-labs/middleware-android/main/README.md';
       await fetch(url);
+      MiddlewareRum.info('RN fetch completed');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const rnFetchPost = async () => {
+    try {
+      const url = 'https://dog-api.kinduff.com/api/facts';
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ dog: 'dog' }),
+      });
     } catch (error) {
       console.error(error);
     }
@@ -76,6 +92,7 @@ export default function Home({ navigation }: { navigation: any }) {
         accessibilityLabel="fetch"
         testID="fetch"
       />
+      <Button title="RN fetch POST" onPress={rnFetchPost} />
       <Button
         title="fetch JSON"
         onPress={fetchJSON}
