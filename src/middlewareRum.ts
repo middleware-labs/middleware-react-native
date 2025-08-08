@@ -337,6 +337,13 @@ export const MiddlewareRum: MiddlewareRumType = {
               }
             }
           });
+          const httpURL = (span as unknown as { attributes: Attributes })
+            ?.attributes?.['http.url'];
+          if (httpURL) {
+            span.updateName(
+              `${(span as unknown as { name: string }).name} ${httpURL}`
+            );
+          }
           span.setAttribute('event.type', 'xhr');
         }
       },
