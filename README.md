@@ -107,8 +107,6 @@ Example:
 > - `application/json`
 > - `application/text`
 > - `text/x-component`
- 
-
 
 To redact network headers `Set<String>` in `ignoreHeaders` key in `ReactNativeConfiguration`
 
@@ -127,6 +125,19 @@ const MiddlewareConfig: ReactNativeConfiguration = {
     networkInstrumentation: false
 };
 ```
+
+### Distributed Tracing
+
+To enable distributed tracing you need to pass backend domains in `tracePropagationTargets` which takes values in `Array<Regex>` 
+
+Example: 
+```typescript
+const MiddlewareConfig: ReactNativeConfiguration = {
+    ...
+    tracePropagationTargets: [/api.example.com/, /anotherapi.example.com/]
+};
+```
+
 
 ### Reporting custom errors
 
