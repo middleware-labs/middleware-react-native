@@ -1,5 +1,6 @@
 import {
   MiddlewareWrapper,
+  startNavigationTracking,
   type ReactNativeConfiguration,
 } from '@middleware.io/middleware-react-native';
 import * as React from 'react';
@@ -11,7 +12,6 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Details from './Details';
 import Home from './Home';
-import { startNavigationTracking } from '../../src/trackNavigation';
 
 const MiddlewareConfig: ReactNativeConfiguration = {
   serviceName: 'Mobile-SDK-iOS',
