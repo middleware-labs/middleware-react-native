@@ -35,6 +35,15 @@ public class OtlpHttpLogExporter : OtlpHttpExporterBase, LogRecordExporter {
     
     var request = createRequest(body: body, endpoint: endpoint)
     request.timeoutInterval = min(explicitTimeout ?? TimeInterval.greatestFiniteMagnitude , config.timeout)
+    if let headers = envVarHeaders {
+        headers.forEach { key, value in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+    } else if let headers = config.headers {
+        headers.forEach { key, value in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+    }
     httpClient.send(request: request) { [weak self] result in
       switch result {
       case .success(_):
@@ -68,7 +77,15 @@ public class OtlpHttpLogExporter : OtlpHttpExporterBase, LogRecordExporter {
       let semaphore = DispatchSemaphore(value: 0)
       var request = createRequest(body: body, endpoint: endpoint)
       request.timeoutInterval = min(explicitTimeout ?? TimeInterval.greatestFiniteMagnitude , config.timeout)
-      
+      if let headers = envVarHeaders {
+          headers.forEach { key, value in
+              request.addValue(value, forHTTPHeaderField: key)
+          }
+      } else if let headers = config.headers {
+          headers.forEach { key, value in
+              request.addValue(value, forHTTPHeaderField: key)
+          }
+      }
       httpClient.send(request: request) { result in
         switch result {
         case .success(_):
