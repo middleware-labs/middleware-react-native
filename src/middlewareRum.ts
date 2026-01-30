@@ -41,7 +41,11 @@ import {
   type NativeSdKConfiguration,
 } from './native';
 import { captureTraceParent } from './serverTiming';
-import { _generatenewSessionId, getSessionId } from './session';
+import {
+  _generatenewSessionId,
+  getSessionId,
+  getSessionStartTime,
+} from './session';
 import { headerCapture, jsonToString } from './utils';
 
 export interface ReactNativeConfiguration {
@@ -194,6 +198,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       resource: new Resource({
         ...resourceAttributes,
         'session.id': getSessionId(),
+        'session.start_time': getSessionStartTime(),
       }),
     });
     provider.addSpanProcessor(new GlobalAttributeAppender());
@@ -201,6 +206,14 @@ export const MiddlewareRum: MiddlewareRumType = {
     Object.defineProperty(provider.resource.attributes, 'session.id', {
       get() {
         return getSessionId();
+      },
+      configurable: true,
+      enumerable: true,
+    });
+
+    Object.defineProperty(provider.resource.attributes, 'session.start_time', {
+      get() {
+        return getSessionStartTime();
       },
       configurable: true,
       enumerable: true,

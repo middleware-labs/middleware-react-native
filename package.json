@@ -1,6 +1,6 @@
 {
   "name": "@middleware.io/middleware-react-native",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Middleware React Native real user monitoring SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

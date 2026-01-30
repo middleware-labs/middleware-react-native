@@ -52,6 +52,10 @@ export function getSessionId() {
   return session.id;
 }
 
+export function getSessionStartTime() {
+  return session.startTime;
+}
+
 function bump() {
   lastActivityTime = Date.now();
   if (sessionLogging) {
