@@ -13,7 +13,8 @@ const platformConstants = (Platform as any).constants;
 export function getResource(): ResourceAttributes {
   let resourceAttrs = {
     [SemanticResourceAttributes.TELEMETRY_SDK_NAME]:
-      '@middleware-labs/middlware-react-native',
+      '@middleware-labs/middleware-react-native',
+    [SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE]: 'webjs',
     [SemanticResourceAttributes.TELEMETRY_SDK_VERSION]: version,
     'mw.rum': 'true',
     'mw.rum.sdk.version': version,

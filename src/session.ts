@@ -3,6 +3,10 @@ import { AppState } from 'react-native';
 import { trace, diag } from '@opentelemetry/api';
 import { setNativeSessionId } from './native';
 
+function syncNativeSession() {
+  setNativeSessionId(session.id, session.startTime);
+}
+
 const idGenerator = new RandomIdGenerator();
 
 interface Session {
@@ -100,7 +104,7 @@ function newSessionId() {
   const previousId = session.id;
   session.startTime = Date.now();
   session.id = idGenerator.generateTraceId();
-  setNativeSessionId(session.id);
+  syncNativeSession();
   if (sessionLogging) {
     diag.debug('Session:newSessionId:', previousId, session.id);
   }

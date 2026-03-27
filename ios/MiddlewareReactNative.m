@@ -19,6 +19,7 @@ RCT_EXTERN_METHOD(setGlobalAttributes:(NSDictionary*)attributes
                   withRejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(setSessionId:(NSString*)sessionId
+                  startTimeMs:(double)startTimeMs
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 

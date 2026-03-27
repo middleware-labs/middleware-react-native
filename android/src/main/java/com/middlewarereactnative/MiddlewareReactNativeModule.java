@@ -3,6 +3,7 @@ package com.middlewarereactnative;
 import static io.middleware.android.sdk.utils.Constants.LOG_TAG;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -45,7 +46,11 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   private final long moduleStartTime;
   private MiddlewareSpanExporter middlewareSpanExporter;
   private String nativeSessionId;
-
+  /** Epoch millis as decimal string; set in setSessionId (matches iOS resource session.start_time). */
+  @Nullable
+  private String nativeSessionStartTimeMs;
+  /** Injected into exported span Resource; JS resource payload does not include app.version. */
+  private String nativeAppVersion;
   private static final String TAG = "MiddlewareReactNative";
 
   public MiddlewareReactNativeModule(ReactApplicationContext reactContext) {
@@ -69,18 +74,31 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     final String sessionRecording = mapReader.getSessionRecording();
     final String deploymentEnvironment = mapReader.getDeploymentEnvironment();
     final ReadableMap globalAttributes = mapReader.getGlobalAttributes();
+    final ReadableMap resourceAttributes = mapReader.getResourceAttributes();
 
     if (target == null || accountKey == null || projectName == null || serviceName == null) {
       reportFailure(promise, "Initialize: cannot construct exporter, target, serviceName, projectName or accountKey missing");
       return;
     }
 
+    final String appVersion = getAppVersion(getReactApplicationContext());
+    final Attributes attributes = attributesFromMap(resourceAttributes);
+    final Attributes globalAttrs = attributesFromMap(globalAttributes);
+    final AttributesBuilder attributesBuilder = attributes.toBuilder();
+    final AttributesBuilder globalAttrsBuilder = globalAttrs.toBuilder();
+    globalAttrsBuilder.put(AttributeKey.stringKey("app.version"), appVersion);
+    attributesBuilder.put(AttributeKey.stringKey("app.version"), appVersion);
+    final Attributes newGlobalAttributes = globalAttrsBuilder.build();
+    final Attributes newResourceAttributes = attributesBuilder.build();
+    nativeAppVersion = appVersion;
+
     MiddlewareBuilder builder = Middleware.builder()
       .setTarget(target)
       .setProjectName(projectName)
       .setServiceName(serviceName)
       .setRumAccessToken(accountKey)
-      .setGlobalAttributes(attributesFromMap(globalAttributes))
+      .setResourceAttributes(newResourceAttributes)
+      .setGlobalAttributes(newGlobalAttributes)
       .setDeploymentEnvironment(deploymentEnvironment)
       .disableActivityLifecycleMonitoring();
 
@@ -105,6 +123,21 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     promise.resolve(appStartInfo);
   }
 
+
+  private String getAppVersion(Context context) {
+    try {
+      // Align with iOS CFBundleShortVersionString: marketing / user-facing version only.
+      String name = context.getPackageManager()
+        .getPackageInfo(context.getPackageName(), 0)
+        .versionName;
+      if (name != null && !name.isEmpty()) {
+        return name;
+      }
+    } catch (Exception e) {
+      // fall through
+    }
+    return "unknown";
+  }
 
   @ReactMethod
   public void nativeCrash() {
@@ -161,7 +194,15 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       Attributes attributes = attributesFromMap(mapReader.getAttributes());
       attributes = attributes.toBuilder().put("session.id", sessionId).build();
       Attributes resourceAttributes = attributesFromMap(mapReader.getResource().getMap("_attributes"));
-      resourceAttributes = resourceAttributes.toBuilder().put("session.id", sessionId).build();
+      String appVer =
+        nativeAppVersion != null ? nativeAppVersion : getAppVersion(getReactApplicationContext());
+      AttributesBuilder resourceBuilder = resourceAttributes.toBuilder()
+        .put("session.id", sessionId)
+        .put("app.version", appVer);
+      if (nativeSessionStartTimeMs != null) {
+        resourceBuilder.put("session.start_time", nativeSessionStartTimeMs);
+      }
+      resourceAttributes = resourceBuilder.build();
       final ReactSpanData spanData = new ReactSpanData(
         spanProperties,
         attributes,
@@ -176,11 +217,17 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setSessionId(String sessionId) {
+  public void setSessionId(String sessionId, double startTimeMs) {
     Middleware middleware = Middleware.getInstance();
+    // JS passes epoch milliseconds (Date.now / getSessionStartTime). Round like iOS Int64(startTimeMs.rounded()).
+    // Never use String.valueOf(double): large millis (~1e12) can render as scientific notation and break parsers.
+    long startMs = Math.round(startTimeMs);
+    String startMsStr = Long.toString(startMs);
     middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), sessionId);
-    middleware.setNativeSessionId(sessionId);
+    middleware.setGlobalAttribute(AttributeKey.stringKey("session.start_time"), startMsStr);
+    middleware.setNativeSession(sessionId, startMsStr);
     this.nativeSessionId = sessionId;
+    this.nativeSessionStartTimeMs = startMsStr;
   }
 
   @ReactMethod
