@@ -174,22 +174,18 @@ export const MiddlewareRum: MiddlewareRumType = {
       'project.name': config.projectName,
       'env': config.deploymentEnvironment,
       'recording': config.sessionRecording ? '1' : '0',
+      'session.id': getSessionId(),
+      'session.start_time': getSessionStartTime(),
     };
     const attributes = config.globalAttributes || {};
-    ['env', 'name', 'app.version'].forEach((attr) => {
-      if (attributes?.[attr]) {
-        resourceAttributes[attr] = String(attributes[attr]);
-        delete attributes[attr];
-      }
-    });
-
     const nativeSdkConf: NativeSdKConfiguration = {
       target: config.target,
       accountKey: config.accountKey,
       serviceName: config.serviceName,
       projectName: config.projectName,
       sessionRecording,
-      globalAttributes: resourceAttributes,
+      globalAttributes: attributes,
+      resourceAttributes: resourceAttributes,
     };
 
     setGlobalAttributes(attributes);
@@ -197,8 +193,6 @@ export const MiddlewareRum: MiddlewareRumType = {
     const provider = new WebTracerProvider({
       resource: new Resource({
         ...resourceAttributes,
-        'session.id': getSessionId(),
-        'session.start_time': getSessionStartTime(),
       }),
     });
     provider.addSpanProcessor(new GlobalAttributeAppender());
@@ -443,7 +437,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       appStartInfo = nativeAppStart;
       appStartInfo.isColdStart = appStartInfo.isColdStart || true;
       appStartInfo.appStart = appStartInfo.appStart || appStartInfo.moduleStart;
-      setNativeSessionId(getSessionId());
+      setNativeSessionId(getSessionId(), getSessionStartTime());
 
       if (config.appStartEnabled) {
         const tracer = provider.getTracer('AppStart');

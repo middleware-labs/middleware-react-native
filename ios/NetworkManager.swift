@@ -45,7 +45,7 @@ class NetworkManager: NSObject {
     }
     
     
-    func sendImages(sessionId: String, images: Data, name: String, completion: @escaping (Bool) -> Void) {
+    func sendImages(sessionId: String, resourceAttributes: [String: Any], images: Data, name: String, completion: @escaping (Bool) -> Void) {
         var request = createRequest(method: "POST", path: IMAGES_URL)
         guard let token = self.token else {
             completion(false)
@@ -56,7 +56,11 @@ class NetworkManager: NSObject {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         var body = Data()
-        let parameters = ["sessionId": sessionId]
+        var parameters = ["sessionId": sessionId]
+        if let jsonData = try? JSONSerialization.data(withJSONObject: resourceAttributes, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            parameters["resourceAttributes"] = jsonString
+        }
         for (key, value) in parameters {
             body.appendString("--\(boundary)\r\n")
             body.appendString("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")

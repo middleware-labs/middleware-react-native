@@ -5,12 +5,14 @@ var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary = RWLocked<[String: String]>(initialValue: [:])
 private var spanExporter: OtlpHttpTraceExporter? = nil
 private var globalAttributes: [String: AttributeValue] = [:]
+private var newResource: Resource? = nil;
 
-func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [String: AttributeValue]) {
+func initializeCrashReporting(exporter: OtlpHttpTraceExporter, resource: Resource, attributes: [String: AttributeValue]) {
     spanExporter = exporter
     var startupSpan = newSpan(name: "CrashReportingInit")
     globalAttributes = attributes
-    startupSpan.settingResource(Resource(attributes: globalAttributes))
+    newResource = resource
+    startupSpan.settingResource(resource)
     var attributes: [String: AttributeValue] = [:]
     attributes["component"] = AttributeValue("appstart")
     defer {
@@ -24,7 +26,6 @@ func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [Stri
         return
     }
     let crashReporter = crashReporter_!
-    updateCrashReportSessionId(Globals.getSessionId())
     let success = crashReporter.enable()
     print("PLCrashReporter enabled: "+success.description)
     if !success {
@@ -56,10 +57,12 @@ func initializeCrashReporting(exporter: OtlpHttpTraceExporter, attributes: [Stri
 
 }
 
-func updateCrashReportSessionId(_ id: String) {
+
+func updateCrashReportSession(_ id: String, _ startTime: String) {
    do {
        customDataDictionary.with_write_access { dict in
-           dict["sessionId"] = id
+           dict["session.id"] = id
+           dict["session.start_time"] = startTime
        }
 
        if TheCrashReporter != nil {
@@ -117,7 +120,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     var span = newSpan(name: exceptionType ?? "unknown")
     var attributes: [String: AttributeValue] = [:]
     span.settingStatus(.error(description: "error"))
-    span.settingResource(Resource(attributes: globalAttributes))
+    span.settingResource(newResource!)
     attributes["component"] = AttributeValue("crash")
     attributes["crash.app.version"] = AttributeValue(
         report.applicationInfo.applicationMarketingVersion)

@@ -1,5 +1,7 @@
 package com.middlewarereactnative;
 
+import java.util.Map;
+
 import com.facebook.react.bridge.ReadableMap;
 
 public class ConfigMapReader extends MapReader {
@@ -38,6 +40,10 @@ public class ConfigMapReader extends MapReader {
     return Keys.GLOBAL_ATTRIBUTES.getMap(map);
   }
 
+  public ReadableMap getResourceAttributes() {
+    return Keys.RESOURCE_ATTRIBUTES.getMap(map);
+  }
+
   private interface Keys {
     StringKey TARGET = new StringKey("target");
     StringKey ACCOUNT_KEY = new StringKey("accountKey");
@@ -46,5 +52,6 @@ public class ConfigMapReader extends MapReader {
     StringKey SESSION_RECORDING = new StringKey("sessionRecording");
     StringKey DEPLOYMENT_ENVIRONMENT = new StringKey("deploymentEnvironment");
     MapKey GLOBAL_ATTRIBUTES = new MapKey("globalAttributes");
+    MapKey RESOURCE_ATTRIBUTES = new MapKey("resourceAttributes");
   }
 }

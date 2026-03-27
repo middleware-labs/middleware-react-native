@@ -24,6 +24,7 @@ export interface NativeSdKConfiguration {
   accountKey: string;
   sessionRecording: string;
   globalAttributes?: object;
+  resourceAttributes?: object;
   serviceName: string;
   projectName: string;
   enableDiskBuffering?: boolean;
@@ -47,8 +48,11 @@ export const exportSpansToNative = (spans: object[]): Promise<null> => {
   return MiddlewareReactNative.export(spans);
 };
 
-export const setNativeSessionId = (id: string): Promise<boolean> => {
-  return MiddlewareReactNative.setSessionId(id);
+export const setNativeSessionId = (
+  id: string,
+  startTimeMs: number
+): Promise<boolean> => {
+  return MiddlewareReactNative.setSessionId(id, startTimeMs);
 };
 
 export const setNativeGlobalAttributes = (
