@@ -168,12 +168,13 @@ export const MiddlewareRum: MiddlewareRumType = {
       sessionRecording = 'true';
     }
 
+    const recordingAttr = sessionRecording === 'true' ? '1' : '0';
     const resourceAttributes = {
       ...getResource(),
       [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
       'project.name': config.projectName,
       'env': config.deploymentEnvironment,
-      'recording': config.sessionRecording ? '1' : '0',
+      'recording': recordingAttr,
       'session.id': getSessionId(),
       'session.start_time': getSessionStartTime(),
     };
