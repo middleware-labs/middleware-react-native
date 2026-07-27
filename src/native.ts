@@ -27,9 +27,15 @@ export interface NativeSdKConfiguration {
   resourceAttributes?: object;
   serviceName: string;
   projectName: string;
-  enableDiskBuffering?: boolean;
-  limitDiskUsageMegabytes?: number;
-  truncationCheckpoint?: number;
+  deploymentEnvironment?: string;
+  sessionSamplingRatio?: number;
+  disableSessionRecordingV3?: boolean;
+  recordingOptions?: {
+    frequency?: string;
+    quality?: string;
+    maskAllTextInputs?: boolean;
+    maskAllImages?: boolean;
+  };
 }
 
 export type AppStartInfo = {
@@ -59,6 +65,19 @@ export const setNativeGlobalAttributes = (
   attributes: Attributes
 ): Promise<boolean> => {
   return MiddlewareReactNative.setGlobalAttributes({ ...attributes });
+};
+
+/**
+ * Pushes the JS route name into the native screen-name store so native tap
+ * spans and the v3 session recording carry it instead of the host
+ * Activity/ViewController class name.
+ */
+export const setNativeScreenName = (name: string) => {
+  try {
+    MiddlewareReactNative.setScreenName(name);
+  } catch (e) {
+    // never let screen tracking break navigation
+  }
 };
 
 export const testNativeCrash = () => {

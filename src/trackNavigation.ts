@@ -1,5 +1,6 @@
 import { LAST_SCREEN_NAME, SCREEN_NAME } from './constants';
 import { setGlobalAttributes } from './globalAttributes';
+import { setNativeScreenName } from './native';
 import { trace, diag, type Tracer } from '@opentelemetry/api';
 
 let currentRouteName: string = 'none';
@@ -33,6 +34,9 @@ export function startNavigationTracking(navigationRef: any) {
 
 function createUiSpan(current: string, previous?: string) {
   setGlobalAttributes({ [SCREEN_NAME]: current });
+  // also drive the native screen-name store so native spans and the v3
+  // session recording carry the JS route name
+  setNativeScreenName(current);
   const span = tracer.startSpan('Created');
   span.setAttribute('component', 'ui');
   span.setAttribute('event.type', 'app_activity');
