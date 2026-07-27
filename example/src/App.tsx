@@ -5,7 +5,6 @@ import {
 } from '@middleware.io/middleware-react-native';
 import * as React from 'react';
 import { Pressable, Text } from 'react-native';
-import Config from 'react-native-config';
 
 import {
   NavigationContainer,
@@ -23,7 +22,7 @@ import RumLabScreen from './screens/RumLabScreen';
 const MiddlewareConfig: ReactNativeConfiguration = {
   serviceName: 'CoffeeCart-ReactNative',
   projectName: 'CoffeeCart-ReactNative',
-  accountKey:  '<target>',
+  accountKey: '<target>',
   target: '<accountKey>',
   sessionRecording: true,
   sessionSamplingRatio: 1.0,
