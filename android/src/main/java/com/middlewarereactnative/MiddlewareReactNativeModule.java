@@ -126,6 +126,25 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     // v3 session recording starts inside build() (sampler-gated); no explicit start needed.
     builder.build((Application) getReactApplicationContext().getApplicationContext());
 
+    // Link the JS-owned session immediately — before the v3 recorder captures
+    // its first frame — so no native telemetry lands under the native
+    // auto-generated session.
+    if (resourceAttributes != null
+      && resourceAttributes.hasKey("session.id")
+      && resourceAttributes.hasKey("session.start_time")) {
+      final String jsSessionId = resourceAttributes.getString("session.id");
+      final String jsStartMs = Long.toString(
+        Math.round(resourceAttributes.getDouble("session.start_time")));
+      if (jsSessionId != null) {
+        Middleware middleware = Middleware.getInstance();
+        middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), jsSessionId);
+        middleware.setGlobalAttribute(AttributeKey.stringKey("session.start_time"), jsStartMs);
+        middleware.setNativeSession(jsSessionId, jsStartMs);
+        this.nativeSessionId = jsSessionId;
+        this.nativeSessionStartTimeMs = jsStartMs;
+      }
+    }
+
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
     WritableMap appStartInfo = Arguments.createMap();
     double appStart = (double) MiddlewarePreferenceProvider.getAppStartTime();

@@ -61,6 +61,15 @@ class MiddlewareReactNative: NSObject {
             _ = builder.recordingOptions(mapRecordingOptions(recordingOptions))
         }
 
+        // Inject the JS-owned session BEFORE build() so the native SDK never
+        // creates its own session (a phantom session would otherwise hold the
+        // pre-injection native telemetry and trigger session.id.change).
+        if let resourceAttributes = config["resourceAttributes"] as? [String: Any],
+           let sessionId = resourceAttributes["session.id"] as? String,
+           let startTimeMs = resourceAttributes["session.start_time"] as? NSNumber {
+            MiddlewareRum.setNativeSession(sessionId, startTimeMs: startTimeMs.doubleValue)
+        }
+
         // v3 session recording starts inside build() (sampler-gated).
         if !builder.build() {
             reject("MiddlewareReactNative Error", "Initialize: MiddlewareRum failed to start", nil)

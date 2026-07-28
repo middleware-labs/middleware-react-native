@@ -1090,7 +1090,6 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - middleware-react-native (from `../..`)
-  - MiddlewareRum (from `../../../middleware-ios`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1145,6 +1144,7 @@ SPEC REPOS:
     - BitByteData
     - DeviceKit
     - fmt
+    - MiddlewareRum
     - PLCrashReporter
     - Reachability
     - SocketRocket
@@ -1164,8 +1164,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   middleware-react-native:
     :path: "../.."
-  MiddlewareRum:
-    :path: "../../../middleware-ios"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1319,6 +1317,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b109bd17979d7993a84da14b1e1fdd8b0ded934a
   Yoga: 4f53dc50008d626fa679c7a1cb4bed898f8c0bde
 
-PODFILE CHECKSUM: b6f79a579a93760d836531cdecdb285d56e1ff48
+PODFILE CHECKSUM: 4d5c450dd208d07f681cab2179a482c80dd4cb07
 
 COCOAPODS: 1.17.0
