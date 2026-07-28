@@ -27,6 +27,9 @@ import java.util.Objects;
 
 import io.middleware.android.sdk.Middleware;
 import io.middleware.android.sdk.builders.MiddlewareBuilder;
+import io.middleware.android.sdk.core.replay.RecordingFrequency;
+import io.middleware.android.sdk.core.replay.RecordingQuality;
+import io.middleware.android.sdk.core.replay.v2.RecordingOptions;
 import io.middleware.android.sdk.exporters.MiddlewareSpanExporter;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -100,17 +103,46 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .setResourceAttributes(newResourceAttributes)
       .setGlobalAttributes(newGlobalAttributes)
       .setDeploymentEnvironment(deploymentEnvironment)
-      .disableActivityLifecycleMonitoring();
+      // JS owns app-start/screen tracking and tap capture; the native
+      // recorders (crash, ANR, network, slow rendering, v3 replay) stay on.
+      .disableActivityLifecycleMonitoring()
+      .disableUIInstrumentation();
 
     if (!Boolean.TRUE.toString().equals(sessionRecording)) {
       builder.disableSessionRecording();
     }
+    if (mapReader.getDisableSessionRecordingV3()) {
+      builder.disableSessionRecordingV3();
+    }
+    final Double samplingRatio = mapReader.getSessionSamplingRatio();
+    if (samplingRatio != null) {
+      builder.setSessionSamplingRatio(samplingRatio);
+    }
+    final ReadableMap recordingOptionsMap = mapReader.getRecordingOptions();
+    if (recordingOptionsMap != null) {
+      builder.setRecordingOptions(recordingOptionsFromMap(recordingOptionsMap));
+    }
 
-    final Middleware middleware = builder.build((Application) getReactApplicationContext().getApplicationContext());
+    // v3 session recording starts inside build() (sampler-gated); no explicit start needed.
+    builder.build((Application) getReactApplicationContext().getApplicationContext());
 
-    if (Boolean.TRUE.toString().equals(sessionRecording)) {
-      middleware.startNativeRecording(getCurrentActivity());
-      Log.d(LOG_TAG, "Middleware Session Recording started");
+    // Link the JS-owned session immediately — before the v3 recorder captures
+    // its first frame — so no native telemetry lands under the native
+    // auto-generated session.
+    if (resourceAttributes != null
+      && resourceAttributes.hasKey("session.id")
+      && resourceAttributes.hasKey("session.start_time")) {
+      final String jsSessionId = resourceAttributes.getString("session.id");
+      final String jsStartMs = Long.toString(
+        Math.round(resourceAttributes.getDouble("session.start_time")));
+      if (jsSessionId != null) {
+        Middleware middleware = Middleware.getInstance();
+        middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), jsSessionId);
+        middleware.setGlobalAttribute(AttributeKey.stringKey("session.start_time"), jsStartMs);
+        middleware.setNativeSession(jsSessionId, jsStartMs);
+        this.nativeSessionId = jsSessionId;
+        this.nativeSessionStartTimeMs = jsStartMs;
+      }
     }
 
     middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
@@ -236,6 +268,16 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     setGlobalAttributes(attributesFromMap);
   }
 
+  /**
+   * Drives the native screen-name store from JS navigation, so native tap
+   * spans and the v3 session recording (screenCustom/href) carry the JS route
+   * name instead of the host ReactActivity class name.
+   */
+  @ReactMethod
+  public void setScreenName(String screenName) {
+    Middleware.getInstance().setScreenName(screenName);
+  }
+
   @ReactMethod
   public void info(String message) {
     Middleware.getInstance().i(TAG, message);
@@ -347,6 +389,44 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       }
     }
     return builder.build();
+  }
+
+  @NonNull
+  private RecordingOptions recordingOptionsFromMap(@NonNull ReadableMap map) {
+    RecordingOptions.Builder options = new RecordingOptions.Builder();
+    String frequency = map.hasKey("frequency") ? map.getString("frequency") : null;
+    if (frequency != null) {
+      switch (frequency.toLowerCase()) {
+        case "high":
+          options.setFrequency(RecordingFrequency.HIGH);
+          break;
+        case "standard":
+          options.setFrequency(RecordingFrequency.STANDARD);
+          break;
+        default:
+          options.setFrequency(RecordingFrequency.LOW);
+      }
+    }
+    String quality = map.hasKey("quality") ? map.getString("quality") : null;
+    if (quality != null) {
+      switch (quality.toLowerCase()) {
+        case "high":
+          options.setQuality(RecordingQuality.HIGH);
+          break;
+        case "standard":
+          options.setQuality(RecordingQuality.MEDIUM);
+          break;
+        default:
+          options.setQuality(RecordingQuality.LOW);
+      }
+    }
+    if (map.hasKey("maskAllTextInputs")) {
+      options.setMaskAllTextInputs(map.getBoolean("maskAllTextInputs"));
+    }
+    if (map.hasKey("maskAllImages")) {
+      options.setMaskAllImages(map.getBoolean("maskAllImages"));
+    }
+    return options.build();
   }
 
   private static void reportFailure(Promise promise, String message) {

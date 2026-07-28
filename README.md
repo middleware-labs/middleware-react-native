@@ -36,6 +36,22 @@ Middleware React Native Real User Monitoring SDK
 
 Middleware React Native for Mobile supports React Native 0.68 and higher.
 
+Since v2.0.0 the SDK wraps the stable Middleware native SDKs
+(`io.github.middleware-labs:android-sdk` 3.0.2+ and the `MiddlewareRum`
+CocoaPod 2.1+), which brings v3 session recording (rrweb replay), native
+crash/ANR reporting, and screen-name linked replays. Native toolchain
+requirements:
+
+- **Android**: `compileSdkVersion` 35+, Kotlin Gradle Plugin **2.0.21+**
+  (pin `classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21")` on
+  React Native < 0.77), `minSdkVersion` 21. If your app still enables
+  Jetifier, add `android.jetifier.ignorelist=jackson-core` to
+  `gradle.properties`.
+- **iOS**: deployment target **13.0+**, CocoaPods (the `MiddlewareRum` pod
+  is pulled automatically). When building pods as static libraries (the
+  default), add `pod 'Reachability', :modular_headers => true` to your
+  Podfile.
+
 The library is also compatible with the following frameworks and libraries:
 
 - Expo framework

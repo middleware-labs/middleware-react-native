@@ -17,7 +17,9 @@ prepare_react_native_project!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+# Flipper is disabled by default: FlipperKit fails to compile on recent
+# Xcode versions. Opt back in with USE_FLIPPER=1 if needed.
+flipper_config = ENV['USE_FLIPPER'] == "1" ? FlipperConfiguration.enabled : FlipperConfiguration.disabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -27,6 +29,10 @@ end
 
 target 'MiddlewareReactNativeExample' do
   config = use_native_modules!
+
+  # MiddlewareRum (Swift) needs module maps for its ObjC dependency when
+  # building as static libraries.
+  pod 'Reachability', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],

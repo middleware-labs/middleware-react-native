@@ -44,6 +44,18 @@ public class ConfigMapReader extends MapReader {
     return Keys.RESOURCE_ATTRIBUTES.getMap(map);
   }
 
+  public ReadableMap getRecordingOptions() {
+    return Keys.RECORDING_OPTIONS.getMap(map);
+  }
+
+  public boolean getDisableSessionRecordingV3() {
+    return map.hasKey("disableSessionRecordingV3") && map.getBoolean("disableSessionRecordingV3");
+  }
+
+  public Double getSessionSamplingRatio() {
+    return map.hasKey("sessionSamplingRatio") ? map.getDouble("sessionSamplingRatio") : null;
+  }
+
   private interface Keys {
     StringKey TARGET = new StringKey("target");
     StringKey ACCOUNT_KEY = new StringKey("accountKey");
@@ -53,5 +65,6 @@ public class ConfigMapReader extends MapReader {
     StringKey DEPLOYMENT_ENVIRONMENT = new StringKey("deploymentEnvironment");
     MapKey GLOBAL_ATTRIBUTES = new MapKey("globalAttributes");
     MapKey RESOURCE_ATTRIBUTES = new MapKey("resourceAttributes");
+    MapKey RECORDING_OPTIONS = new MapKey("recordingOptions");
   }
 }

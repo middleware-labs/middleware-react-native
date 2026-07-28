@@ -75,9 +75,6 @@ android {
 repositories {
   mavenCentral()
   google()
-  maven {
-    url = uri("https://s01.oss.sonatype.org/content/repositories/releases")
-  }
 }
 
 dependencies {
@@ -85,13 +82,15 @@ dependencies {
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
-  implementation 'io.github.middleware-labs:android-sdk:2.0.18-rn'
+  // Stable native SDK (main branch). 3.0.2 adds setScreenName + setResourceAttributes.
+  implementation 'io.github.middleware-labs:android-sdk:3.0.2'
   coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
-  implementation 'io.opentelemetry:opentelemetry-api:1.44.1'
-  implementation 'io.opentelemetry:opentelemetry-sdk:1.44.1'
-  implementation 'io.opentelemetry:opentelemetry-sdk-trace:1.44.1'
-  implementation 'io.opentelemetry:opentelemetry-sdk-logs:1.44.1'
-  implementation 'io.opentelemetry:opentelemetry-sdk-common:1.44.1'
-  implementation 'io.opentelemetry:opentelemetry-exporter-otlp:1.44.1'
+  // Compile-visible OTel for the JS-span reconstruction (SpanData etc.);
+  // runtime classes come transitively from android-sdk. Keep aligned with
+  // the SDK's opentelemetry-bom version.
+  implementation platform('io.opentelemetry:opentelemetry-bom:1.48.0')
+  implementation 'io.opentelemetry:opentelemetry-api'
+  implementation 'io.opentelemetry:opentelemetry-sdk-trace'
+  implementation 'io.opentelemetry:opentelemetry-sdk-common'
 }
 

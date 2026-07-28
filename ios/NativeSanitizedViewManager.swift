@@ -1,6 +1,7 @@
 // Copyright © 2023 Middleware. Licensed under the Apache License, Version 2.0
 
 import Foundation
+import MiddlewareRum
 
 @objc(NativeSanitizedViewManager)
 class NativeSanitizedViewManager: RCTViewManager {
@@ -13,12 +14,15 @@ class NativeSanitizedViewManager: RCTViewManager {
       }
 }
 
-class NativeSanitizedView : UIView {
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-
-        if superview != nil {
-            ScreenshotManager.shared.addSanitizedElement(self)
+/// Children of this view are masked in session recording (v2 blur and v3
+/// black-box alike, via MiddlewareRum's ignored-view registry).
+class NativeSanitizedView: UIView {
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil {
+            MiddlewareRum.addIgnoredView(self)
+        } else {
+            MiddlewareRum.removeIgnoredView(self)
         }
     }
 }

@@ -48,18 +48,40 @@ import {
 } from './session';
 import { headerCapture, jsonToString } from './utils';
 
+export interface RecordingOptions {
+  /** Capture frequency: 'low' (~1 FPS, default) | 'standard' (~3 FPS) | 'high' (10 FPS). */
+  frequency?: 'low' | 'standard' | 'high';
+  /** Image quality of recorded frames. */
+  quality?: 'low' | 'standard' | 'high';
+  /** Mask all text in the recording (secure inputs are always masked). Default true. */
+  maskAllTextInputs?: boolean;
+  /** Mask image content in the recording. Default true. */
+  maskAllImages?: boolean;
+}
+
 export interface ReactNativeConfiguration {
   target: string;
   accountKey: string;
   serviceName: string;
   projectName: string;
   sessionRecording?: boolean;
+  /** Options for v3 session recording (rrweb screenshot events). */
+  recordingOptions?: RecordingOptions;
+  /** Falls back to the legacy (v2) screenshot recorder when true. */
+  disableSessionRecordingV3?: boolean;
+  /** Fraction of sessions to sample for traces + recordings, 0.0–1.0. */
+  sessionSamplingRatio?: number;
   deploymentEnvironment?: string;
   appStartEnabled?: boolean;
+  /** @deprecated never wired to native; will be removed. */
   enableDiskBuffering?: boolean;
+  /** @deprecated never wired to native; will be removed. */
   limitDiskUsageMegabytes?: number;
+  /** @deprecated never wired to native; will be removed. */
   truncationCheckpoint?: number;
+  /** @deprecated never wired to native; will be removed. */
   bufferTimeout?: number;
+  /** @deprecated never wired to native; will be removed. */
   bufferSize?: number;
   debug?: boolean;
   /** Sets attributes added to every Span. */
@@ -91,6 +113,7 @@ export interface MiddlewareRumType {
   reportError: (err: any, isFatal?: boolean) => void;
   setGlobalAttributes: (attributes: Attributes) => void;
   updateLocation: (latitude: number, longitude: number) => void;
+  getSessionId: () => string;
   info: (message: String) => void;
   debug: (message: String) => void;
   warn: (message: String) => void;
@@ -169,12 +192,19 @@ export const MiddlewareRum: MiddlewareRumType = {
     }
 
     const recordingAttr = sessionRecording === 'true' ? '1' : '0';
+    // recordingV3 routes bifrost to the rrweb player; matches the native
+    // SDKs' resource attribute (v3 is on by default when recording is on).
+    const recordingV3Attr =
+      sessionRecording === 'true' && !config.disableSessionRecordingV3
+        ? '1'
+        : '0';
     const resourceAttributes = {
       ...getResource(),
       [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
       'project.name': config.projectName,
       'env': config.deploymentEnvironment,
       'recording': recordingAttr,
+      'recordingV3': recordingV3Attr,
       'session.id': getSessionId(),
       'session.start_time': getSessionStartTime(),
     };
@@ -187,6 +217,18 @@ export const MiddlewareRum: MiddlewareRumType = {
       sessionRecording,
       globalAttributes: attributes,
       resourceAttributes: resourceAttributes,
+      ...(config.deploymentEnvironment !== undefined && {
+        deploymentEnvironment: config.deploymentEnvironment,
+      }),
+      ...(config.sessionSamplingRatio !== undefined && {
+        sessionSamplingRatio: config.sessionSamplingRatio,
+      }),
+      ...(config.disableSessionRecordingV3 !== undefined && {
+        disableSessionRecordingV3: config.disableSessionRecordingV3,
+      }),
+      ...(config.recordingOptions !== undefined && {
+        recordingOptions: config.recordingOptions,
+      }),
     };
 
     setGlobalAttributes(attributes);
@@ -480,6 +522,7 @@ export const MiddlewareRum: MiddlewareRumType = {
   reportError: reportError,
   setGlobalAttributes: setGlobalAttributes,
   updateLocation: updateLocation,
+  getSessionId: getSessionId,
   info: info,
   error: error,
   debug: debug,
