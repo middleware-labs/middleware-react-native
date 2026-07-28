@@ -105,6 +105,12 @@ jobs:
     runs-on: macos-latest
     env:
       TURBO_CACHE_DIR: .turbo/ios
+      # The runner image exports TOOLCHAINS=com.apple.dt.toolchain.Metal.*, which
+      # points TOOLCHAIN_DIR at an unmounted Metal cryptex. Xcode then looks for the
+      # Swift back-compat archives (libswiftCompatibility56.a, ...) there instead of
+      # in XcodeDefault.xctoolchain, and the app fails to link with undefined
+      # __swift_FORCE_LOAD_$_swiftCompatibility56 symbols.
+      TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
     steps:
       - name: Checkout
         uses: actions/checkout@v3
