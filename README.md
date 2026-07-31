@@ -193,6 +193,55 @@ const MiddlewareConfig: ReactNativeConfiguration = {
 };
 ```
 
+#### Recording options
+
+Tune how the recording is captured with `recordingOptions`:
+
+```js
+const MiddlewareConfig: ReactNativeConfiguration = {
+    // ...
+    sessionRecording: true,
+    recordingOptions: {
+        frequency: 'standard',   // 'low' (~1 fps, default) | 'standard' | 'high'
+        quality: 'standard',     // 'low' | 'standard' (default) | 'high'
+        maskAllTextInputs: true, // default true
+        maskAllImages: true,     // default true
+    },
+    // Fraction of sessions that get recorded (0.0 - 1.0). Defaults to 1.0.
+    sessionSamplingRatio: 1.0,
+    // Fall back to the legacy (v2) screenshot recorder. v3 (rrweb replay) is the default.
+    disableSessionRecordingV3: false,
+};
+```
+
+#### Starting and stopping recording at runtime
+
+Recording can be controlled after initialization — useful when you only want to
+record a specific flow:
+
+```js
+import { MiddlewareRum } from '@middleware.io/middleware-react-native';
+
+await MiddlewareRum.startRecording(); // -> boolean: recording is running
+await MiddlewareRum.stopRecording();  // -> boolean: recording was stopped
+await MiddlewareRum.isRecording();    // -> boolean
+```
+
+Both calls are **sticky**: they survive session rotation and override the session
+sampler, so recording stays in the state you asked for until you change it again.
+
+`startRecording()` also overrides `sessionRecording: false`, which lets you keep
+recording off by default and turn it on only where you need it:
+
+```js
+MiddlewareRum.init({ ...config, sessionRecording: false });
+
+// later, e.g. when the user enters the checkout flow
+await MiddlewareRum.startRecording();
+// ...
+await MiddlewareRum.stopRecording();
+```
+
 #### Sanitizing views in session recording
 
 Views will get blurred hiding sensitive information in session recording.

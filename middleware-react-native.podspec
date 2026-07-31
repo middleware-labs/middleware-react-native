@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   # Stable native SDK (2.1+ adds setNativeSession + exportRawSpans); brings
   # PLCrashReporter/DeviceKit/SwiftProtobuf/SWCompression/Reachability transitively.
-  s.dependency "MiddlewareRum", "~> 2.1"
+  s.dependency "MiddlewareRum", "~> 2.2"
 
   # Don't install the dependencies when we run `pod install` in the old architecture.
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then

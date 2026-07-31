@@ -262,6 +262,29 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     this.nativeSessionStartTimeMs = startMsStr;
   }
 
+  /**
+   * Starts session recording, overriding both {@code sessionRecording: false} and the
+   * session sampler. Sticky until stopRecording is called.
+   */
+  @ReactMethod
+  public void startRecording(Promise promise) {
+    promise.resolve(Middleware.getInstance().startRecording());
+  }
+
+  /**
+   * Stops session recording. Sticky across session rotation until startRecording.
+   */
+  @ReactMethod
+  public void stopRecording(Promise promise) {
+    Middleware.getInstance().stopRecording();
+    promise.resolve(!Middleware.getInstance().isRecording());
+  }
+
+  @ReactMethod
+  public void isRecording(Promise promise) {
+    promise.resolve(Middleware.getInstance().isRecording());
+  }
+
   @ReactMethod
   public void setGlobalAttributes(ReadableMap attributeMap) {
     Attributes attributesFromMap = attributesFromMap(attributeMap);

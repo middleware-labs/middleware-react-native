@@ -25,6 +25,15 @@ RCT_EXTERN_METHOD(setSessionId:(NSString*)sessionId
 
 RCT_EXTERN_METHOD(setScreenName:(NSString*)name)
 
+RCT_EXTERN_METHOD(startRecording:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(stopRecording:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(isRecording:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(debug:(NSString*)message
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)

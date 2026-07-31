@@ -61,6 +61,30 @@ export default function RumLabScreen() {
       },
     ],
     ['Update location', () => MiddlewareRum.updateLocation(23.03, 72.58)],
+    [
+      'Start recording',
+      () => {
+        MiddlewareRum.startRecording().then((started) =>
+          Alert.alert('Session recording', started ? 'started' : 'not started')
+        );
+      },
+    ],
+    [
+      'Stop recording',
+      () => {
+        MiddlewareRum.stopRecording().then((stopped) =>
+          Alert.alert('Session recording', stopped ? 'stopped' : 'not stopped')
+        );
+      },
+    ],
+    [
+      'Is recording?',
+      () => {
+        MiddlewareRum.isRecording().then((recording) =>
+          Alert.alert('Session recording', recording ? 'running' : 'stopped')
+        );
+      },
+    ],
   ];
 
   return (

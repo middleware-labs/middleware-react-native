@@ -106,6 +106,40 @@ class MiddlewareReactNative: NSObject {
         }
     }
 
+    /// Starts session recording, overriding both `sessionRecording: false` and the
+    /// session sampler. Sticky until `stopRecording` is called.
+    @objc(startRecording:withRejecter:)
+    func startRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        resolve(onMainSync {
+            MiddlewareRum.startRecording()
+            return MiddlewareRum.isRecording()
+        })
+    }
+
+    /// Stops session recording. Sticky across session rotation until `startRecording`.
+    @objc(stopRecording:withRejecter:)
+    func stopRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        resolve(onMainSync {
+            MiddlewareRum.stopRecording()
+            return !MiddlewareRum.isRecording()
+        })
+    }
+
+    @objc(isRecording:withRejecter:)
+    func isRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        resolve(MiddlewareRum.isRecording())
+    }
+
+    /// MiddlewareRum applies recording state on the main thread, but RN runs module
+    /// methods on its own serial queue. Hop to main and wait so the promise resolves
+    /// with the settled state instead of a stale one.
+    private func onMainSync<T>(_ work: () -> T) -> T {
+        if Thread.isMainThread {
+            return work()
+        }
+        return DispatchQueue.main.sync(execute: work)
+    }
+
     @objc(setGlobalAttributes:withResolver:withRejecter:)
     func setGlobalAttributes(attributes: NSDictionary, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         MiddlewareRum.setGlobalAttributes((attributes as? [String: Any]) ?? [:])
