@@ -67,6 +67,18 @@ export const setNativeGlobalAttributes = (
   return MiddlewareReactNative.setGlobalAttributes({ ...attributes });
 };
 
+export const startNativeRecording = (): Promise<boolean> => {
+  return MiddlewareReactNative.startRecording();
+};
+
+export const stopNativeRecording = (): Promise<boolean> => {
+  return MiddlewareReactNative.stopRecording();
+};
+
+export const isNativeRecording = (): Promise<boolean> => {
+  return MiddlewareReactNative.isRecording();
+};
+
 /**
  * Pushes the JS route name into the native screen-name store so native tap
  * spans and the v3 session recording carry it instead of the host

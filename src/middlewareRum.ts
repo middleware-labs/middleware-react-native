@@ -33,7 +33,10 @@ import {
   error,
   info,
   initializeNativeSdk,
+  isNativeRecording,
   setNativeSessionId,
+  startNativeRecording,
+  stopNativeRecording,
   testNativeAnr,
   testNativeCrash,
   warn,
@@ -114,6 +117,21 @@ export interface MiddlewareRumType {
   setGlobalAttributes: (attributes: Attributes) => void;
   updateLocation: (latitude: number, longitude: number) => void;
   getSessionId: () => string;
+  /**
+   * Starts session recording, overriding both `sessionRecording: false` and the
+   * session sampler. Sticky: recording keeps running across session rotations
+   * until `stopRecording()` is called.
+   *
+   * @returns whether recording is running after the call.
+   */
+  startRecording: () => Promise<boolean>;
+  /**
+   * Stops session recording. Sticky: recording stays off across session
+   * rotations until `startRecording()` is called.
+   */
+  stopRecording: () => Promise<boolean>;
+  /** Whether session recording is currently running. */
+  isRecording: () => Promise<boolean>;
   info: (message: String) => void;
   debug: (message: String) => void;
   warn: (message: String) => void;
@@ -128,11 +146,34 @@ const DEFAULT_CONFIG = {
 let appStartInfo: AppStartInfo | null = null;
 let isInitialized = false;
 
+// Live recording state, mirrored onto the provider resource so exported spans
+// always carry the current `recording`/`recordingV3` values. Recording can be
+// toggled at runtime, and these attributes are what tell the backend a session
+// has a replay to play back.
+let isRecordingActive = false;
+let isRecordingV3Configured = true;
+
 const updateLocation = (latitude: number, longitude: number) => {
   setGlobalAttributes({
     [LOCATION_LATITUDE]: latitude,
     [LOCATION_LONGITUDE]: longitude,
   });
+};
+
+const startRecording = async (): Promise<boolean> => {
+  const started = await startNativeRecording();
+  if (started) {
+    isRecordingActive = true;
+  }
+  return started;
+};
+
+const stopRecording = async (): Promise<boolean> => {
+  const stopped = await stopNativeRecording();
+  if (stopped) {
+    isRecordingActive = false;
+  }
+  return stopped;
 };
 
 export const MiddlewareRum: MiddlewareRumType = {
@@ -190,6 +231,9 @@ export const MiddlewareRum: MiddlewareRumType = {
     } else {
       sessionRecording = 'true';
     }
+
+    isRecordingActive = sessionRecording === 'true';
+    isRecordingV3Configured = !config.disableSessionRecordingV3;
 
     const recordingAttr = sessionRecording === 'true' ? '1' : '0';
     // recordingV3 routes bifrost to the rrweb player; matches the native
@@ -251,6 +295,24 @@ export const MiddlewareRum: MiddlewareRumType = {
     Object.defineProperty(provider.resource.attributes, 'session.start_time', {
       get() {
         return getSessionStartTime();
+      },
+      configurable: true,
+      enumerable: true,
+    });
+
+    // Read live so startRecording()/stopRecording() are reflected on every
+    // exported span rather than frozen at the value configured at init.
+    Object.defineProperty(provider.resource.attributes, 'recording', {
+      get() {
+        return isRecordingActive ? '1' : '0';
+      },
+      configurable: true,
+      enumerable: true,
+    });
+
+    Object.defineProperty(provider.resource.attributes, 'recordingV3', {
+      get() {
+        return isRecordingActive && isRecordingV3Configured ? '1' : '0';
       },
       configurable: true,
       enumerable: true,
@@ -523,6 +585,9 @@ export const MiddlewareRum: MiddlewareRumType = {
   setGlobalAttributes: setGlobalAttributes,
   updateLocation: updateLocation,
   getSessionId: getSessionId,
+  startRecording: startRecording,
+  stopRecording: stopRecording,
+  isRecording: isNativeRecording,
   info: info,
   error: error,
   debug: debug,
