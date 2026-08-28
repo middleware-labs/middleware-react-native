@@ -103,4 +103,75 @@ describe('ReacNativeSpanExporter routing', () => {
       new Exporter(OTLP).export([makeSpan()], () => {})
     ).not.toThrow();
   });
+
+  describe('after a failed native initialize', () => {
+    /** Loads exporting + native together so init state is shared. */
+    function loadWithNative(nativeModule: object) {
+      let mods: any;
+      jest.isolateModules(() => {
+        jest.doMock('react-native', () => ({
+          NativeModules: { MiddlewareReactNative: nativeModule },
+          Platform: { OS: 'android', select: (o: any) => o.default },
+        }));
+        mods = {
+          Exporter: require('../exporting').default,
+          native: require('../native'),
+        };
+      });
+      return mods;
+    }
+
+    const CONFIG = { target: 't', accountKey: 'k' } as any;
+
+    it('routes to OTLP once native initialize has rejected', async () => {
+      // Reproduces the real failure: the module IS linked, but initialize
+      // threw ("Method addObserver must be called on the main thread"), so
+      // the native span exporter was never created.
+      const { Exporter, native } = loadWithNative({
+        initialize: jest
+          .fn()
+          .mockRejectedValue(
+            new Error('Method addObserver must be called on the main thread')
+          ),
+        export: jest.fn().mockResolvedValue(null),
+      });
+
+      expect(native.isNativeExporterUsable()).toBe(true); // pending
+      await native.initializeNativeSdk({} as any);
+      expect(native.isNativeExporterUsable()).toBe(false); // failed
+
+      const result = await new Promise<ExportResult>((resolve) =>
+        new Exporter(CONFIG).export([makeSpan()], resolve)
+      );
+      expect(result.code).toBe(ExportResultCode.SUCCESS);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('still resolves app-start info so the AppStart span is produced', async () => {
+      const { native } = loadWithNative({
+        initialize: jest.fn().mockRejectedValue(new Error('boom')),
+      });
+      const info = await native.initializeNativeSdk({} as any);
+      expect(typeof info.moduleStart).toBe('number');
+      expect(info.isColdStart).toBe(true);
+    });
+
+    it('keeps using native after a successful initialize', async () => {
+      const nativeExport = jest.fn().mockResolvedValue(null);
+      const { Exporter, native } = loadWithNative({
+        initialize: jest
+          .fn()
+          .mockResolvedValue({ moduleStart: 1, isColdStart: true }),
+        export: nativeExport,
+      });
+      await native.initializeNativeSdk({} as any);
+      expect(native.isNativeExporterUsable()).toBe(true);
+
+      await new Promise<ExportResult>((resolve) =>
+        new Exporter(CONFIG).export([makeSpan()], resolve)
+      );
+      expect(nativeExport).toHaveBeenCalledTimes(1);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+  });
 });

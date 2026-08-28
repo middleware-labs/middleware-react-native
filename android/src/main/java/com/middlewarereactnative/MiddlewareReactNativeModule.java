@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
@@ -123,36 +124,61 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       builder.setRecordingOptions(recordingOptionsFromMap(recordingOptionsMap));
     }
 
-    // v3 session recording starts inside build() (sampler-gated); no explicit start needed.
-    builder.build((Application) getReactApplicationContext().getApplicationContext());
-
-    // Link the JS-owned session immediately — before the v3 recorder captures
-    // its first frame — so no native telemetry lands under the native
-    // auto-generated session.
+    // Read the JS session out of the ReadableMap *before* hopping threads: the
+    // map is owned by the bridge and is only valid for the duration of this
+    // call, so it must not be touched from the posted Runnable.
+    final String jsSessionId;
+    final String jsStartMs;
     if (resourceAttributes != null
       && resourceAttributes.hasKey("session.id")
-      && resourceAttributes.hasKey("session.start_time")) {
-      final String jsSessionId = resourceAttributes.getString("session.id");
-      final String jsStartMs = Long.toString(
+      && resourceAttributes.hasKey("session.start_time")
+      && resourceAttributes.getString("session.id") != null) {
+      jsSessionId = resourceAttributes.getString("session.id");
+      jsStartMs = Long.toString(
         Math.round(resourceAttributes.getDouble("session.start_time")));
-      if (jsSessionId != null) {
-        Middleware middleware = Middleware.getInstance();
-        middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), jsSessionId);
-        middleware.setGlobalAttribute(AttributeKey.stringKey("session.start_time"), jsStartMs);
-        middleware.setNativeSession(jsSessionId, jsStartMs);
-        this.nativeSessionId = jsSessionId;
-        this.nativeSessionStartTimeMs = jsStartMs;
-      }
+    } else {
+      jsSessionId = null;
+      jsStartMs = null;
     }
 
-    middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
-    WritableMap appStartInfo = Arguments.createMap();
-    double appStart = (double) MiddlewarePreferenceProvider.getAppStartTime();
-    AppStartTracker appStartTracker = AppStartTracker.getInstance();
-    appStartInfo.putDouble("appStart", appStart);
-    appStartInfo.putDouble("moduleStart", (double) this.moduleStartTime);
-    appStartInfo.putBoolean("isColdStart", appStartTracker.isColdStart());
-    promise.resolve(appStartInfo);
+    // Middleware.build() registers a ProcessLifecycleOwner observer, and
+    // androidx.lifecycle's LifecycleRegistry enforces the main thread —
+    // off it, addObserver throws "Method addObserver must be called on the
+    // main thread", initialization dies, middlewareSpanExporter is never
+    // assigned, and every later export() is rejected. @ReactMethod runs on
+    // the NativeModules thread, so hop explicitly.
+    UiThreadUtil.runOnUiThread(() -> {
+      try {
+        // v3 session recording starts inside build() (sampler-gated); no explicit start needed.
+        builder.build((Application) getReactApplicationContext().getApplicationContext());
+
+        // Link the JS-owned session immediately — before the v3 recorder captures
+        // its first frame — so no native telemetry lands under the native
+        // auto-generated session.
+        if (jsSessionId != null) {
+          Middleware middleware = Middleware.getInstance();
+          middleware.setGlobalAttribute(AttributeKey.stringKey("session.id"), jsSessionId);
+          middleware.setGlobalAttribute(AttributeKey.stringKey("session.start_time"), jsStartMs);
+          middleware.setNativeSession(jsSessionId, jsStartMs);
+          this.nativeSessionId = jsSessionId;
+          this.nativeSessionStartTimeMs = jsStartMs;
+        }
+
+        middlewareSpanExporter = Middleware.getInstance().getMiddlewareRum().getSpanExporter();
+        WritableMap appStartInfo = Arguments.createMap();
+        double appStart = (double) MiddlewarePreferenceProvider.getAppStartTime();
+        AppStartTracker appStartTracker = AppStartTracker.getInstance();
+        appStartInfo.putDouble("appStart", appStart);
+        appStartInfo.putDouble("moduleStart", (double) this.moduleStartTime);
+        appStartInfo.putBoolean("isColdStart", appStartTracker.isColdStart());
+        promise.resolve(appStartInfo);
+      } catch (Throwable t) {
+        // On the NativeModules thread RN turned a throw into a promise
+        // rejection; on the UI thread an uncaught throw would kill the app.
+        Log.e(TAG, "Initialize: MiddlewareRum failed to start", t);
+        reportFailure(promise, "Initialize: " + t);
+      }
+    });
   }
 
 
@@ -268,7 +294,13 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void startRecording(Promise promise) {
-    promise.resolve(Middleware.getInstance().startRecording());
+    UiThreadUtil.runOnUiThread(() -> {
+      try {
+        promise.resolve(Middleware.getInstance().startRecording());
+      } catch (Throwable t) {
+        reportFailure(promise, "startRecording: " + t);
+      }
+    });
   }
 
   /**
@@ -276,8 +308,14 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void stopRecording(Promise promise) {
-    Middleware.getInstance().stopRecording();
-    promise.resolve(!Middleware.getInstance().isRecording());
+    UiThreadUtil.runOnUiThread(() -> {
+      try {
+        Middleware.getInstance().stopRecording();
+        promise.resolve(!Middleware.getInstance().isRecording());
+      } catch (Throwable t) {
+        reportFailure(promise, "stopRecording: " + t);
+      }
+    });
   }
 
   @ReactMethod
