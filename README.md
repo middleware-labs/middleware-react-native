@@ -129,10 +129,19 @@ console.log('Middleware native linked:', MiddlewareRum.isNativeAvailable());
 ```
 
 `false` means you are on Expo Go, or running a binary built before the package
-was added — rebuild with `npx expo run:android` / `run:ios`. In that state the
-SDK keeps working in a degraded mode: **traces are still sent**, straight from
-JS over OTLP/HTTP, while crash/ANR reporting and session recording stay off.
-Set `debug: true` in your configuration to see the reason on the console.
+was added — rebuild with `npx expo run:android` / `run:ios`.
+
+The SDK falls back to sending traces from JS over OTLP/HTTP in two cases: the
+native module isn't linked, or native initialization failed. Either way
+**traces still reach Middleware**, while crash/ANR reporting and session
+recording stay off until the native side is healthy. Native failures are
+logged with their cause, for example:
+
+```
+ERROR [MiddlewareRum] native initialize failed: Method addObserver must be called on the main thread
+```
+
+Set `debug: true` in your configuration to also see per-export detail.
 
 ### Usage
 

@@ -23,9 +23,24 @@ const MiddlewareReactNative = NativeModules.MiddlewareReactNative ?? null;
 
 let warnedMissing = false;
 
-/** Whether the native SDK is present. Drives the exporter choice at init. */
+/** Whether the native SDK is present in the binary. */
 export const isNativeSdkAvailable = (): boolean =>
   MiddlewareReactNative !== null;
+
+type NativeInitState = 'pending' | 'ok' | 'failed';
+let nativeInitState: NativeInitState = 'pending';
+
+/**
+ * Whether spans should still be handed to the native pipeline.
+ *
+ * Goes false once native initialization has definitively failed: the native
+ * span exporter is only created inside a successful `initialize`, so after a
+ * failure every `export` call is rejected and the spans are lost. Stays true
+ * while init is still pending, so early batches keep the native path rather
+ * than splitting across two transports at startup.
+ */
+export const isNativeExporterUsable = (): boolean =>
+  isNativeSdkAvailable() && nativeInitState !== 'failed';
 
 function reportMissingNativeModule(): void {
   if (warnedMissing) {
@@ -98,9 +113,13 @@ export type AppStartInfo = {
 export const initializeNativeSdk = (
   config: NativeSdKConfiguration
 ): Promise<AppStartInfo> =>
-  callNative<AppStartInfo>('initialize', (n) => n.initialize(config), {
-    moduleStart: Date.now(),
-    isColdStart: true,
+  callNative<AppStartInfo | null>(
+    'initialize',
+    (n) => n.initialize(config),
+    null
+  ).then((info) => {
+    nativeInitState = info === null ? 'failed' : 'ok';
+    return info ?? { moduleStart: Date.now(), isColdStart: true };
   });
 
 /** Resolves to false when the spans were not handed off to the native SDK. */

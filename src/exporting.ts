@@ -5,7 +5,7 @@ import {
   hrTimeToNanoseconds,
 } from '@opentelemetry/core';
 import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
-import { exportSpansToNative, isNativeSdkAvailable } from './native';
+import { exportSpansToNative, isNativeExporterUsable } from './native';
 import OtlpHttpTraceExporter, {
   type OtlpExporterOptions,
 } from './otlpTraceExporter';
@@ -33,13 +33,14 @@ export default class ReacNativeSpanExporter implements SpanExporter {
     spans: ReadableSpan[],
     resultCallback: (result: ExportResult) => void
   ): void {
-    if (!isNativeSdkAvailable()) {
+    if (!isNativeExporterUsable()) {
       if (this.fallback) {
         if (!this.loggedFallback) {
           this.loggedFallback = true;
           diag.warn(
-            '[MiddlewareRum] native module unavailable — exporting spans ' +
-              'directly over OTLP/HTTP from JS.'
+            '[MiddlewareRum] native pipeline unavailable (module missing or ' +
+              'initialize failed) — exporting spans directly over OTLP/HTTP ' +
+              'from JS.'
           );
         }
         this.fallback.export(spans, resultCallback);
@@ -47,7 +48,7 @@ export default class ReacNativeSpanExporter implements SpanExporter {
         resultCallback({
           code: ExportResultCode.FAILED,
           error: new Error(
-            'MiddlewareRum: native module unavailable and no OTLP fallback configured'
+            'MiddlewareRum: native pipeline unavailable and no OTLP fallback configured'
           ),
         });
       }

@@ -16,7 +16,9 @@ import MiddlewareRum
 class MiddlewareReactNative: NSObject {
 
     @objc(initialize:withResolver:withRejecter:)
-    func initialize(config: NSDictionary, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    func initialize(config: NSDictionary,
+                    resolve: @escaping RCTPromiseResolveBlock,
+                    reject: @escaping RCTPromiseRejectBlock) {
         guard let target = config["target"] as? String,
               let accountKey = config["accountKey"] as? String,
               let serviceName = config["serviceName"] as? String,
@@ -61,27 +63,38 @@ class MiddlewareReactNative: NSObject {
             _ = builder.recordingOptions(mapRecordingOptions(recordingOptions))
         }
 
-        // Inject the JS-owned session BEFORE build() so the native SDK never
-        // creates its own session (a phantom session would otherwise hold the
-        // pre-injection native telemetry and trigger session.id.change).
-        if let resourceAttributes = config["resourceAttributes"] as? [String: Any],
-           let sessionId = resourceAttributes["session.id"] as? String,
-           let startTimeMs = resourceAttributes["session.start_time"] as? NSNumber {
-            MiddlewareRum.setNativeSession(sessionId, startTimeMs: startTimeMs.doubleValue)
-        }
-
-        // v3 session recording starts inside build() (sampler-gated).
-        if !builder.build() {
-            reject("MiddlewareReactNative Error", "Initialize: MiddlewareRum failed to start", nil)
-            return
-        }
-
+        // sysctl-derived, so it is unaffected by the dispatch below.
         let appStart = ((try? processStartTime()) ?? Date()).timeIntervalSince1970 * 1000
-        resolve([
-            "appStart": appStart,
-            "moduleStart": appStart,
-            "isColdStart": true,
-        ] as [String: Any])
+
+        // build() registers application/notification observers and starts the
+        // v3 recorder, all of which UIKit requires on the main thread. React
+        // Native dispatches module methods on its own queue (and, under
+        // bridgeless, straight from the JS thread), so hop explicitly —
+        // otherwise initialization dies with "Method addObserver must be
+        // called on the main thread" and every later export is rejected by an
+        // exporter that was never created.
+        onMain {
+            // Inject the JS-owned session BEFORE build() so the native SDK never
+            // creates its own session (a phantom session would otherwise hold the
+            // pre-injection native telemetry and trigger session.id.change).
+            if let resourceAttributes = config["resourceAttributes"] as? [String: Any],
+               let sessionId = resourceAttributes["session.id"] as? String,
+               let startTimeMs = resourceAttributes["session.start_time"] as? NSNumber {
+                MiddlewareRum.setNativeSession(sessionId, startTimeMs: startTimeMs.doubleValue)
+            }
+
+            // v3 session recording starts inside build() (sampler-gated).
+            guard builder.build() else {
+                reject("MiddlewareReactNative Error", "Initialize: MiddlewareRum failed to start", nil)
+                return
+            }
+
+            resolve([
+                "appStart": appStart,
+                "moduleStart": appStart,
+                "isColdStart": true,
+            ] as [String: Any])
+        }
     }
 
     @objc(export:withResolver:withRejecter:)
@@ -109,35 +122,42 @@ class MiddlewareReactNative: NSObject {
     /// Starts session recording, overriding both `sessionRecording: false` and the
     /// session sampler. Sticky until `stopRecording` is called.
     @objc(startRecording:withRejecter:)
-    func startRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        resolve(onMainSync {
+    func startRecording(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        onMain {
             MiddlewareRum.startRecording()
-            return MiddlewareRum.isRecording()
-        })
+            resolve(MiddlewareRum.isRecording())
+        }
     }
 
     /// Stops session recording. Sticky across session rotation until `startRecording`.
     @objc(stopRecording:withRejecter:)
-    func stopRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        resolve(onMainSync {
+    func stopRecording(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        onMain {
             MiddlewareRum.stopRecording()
-            return !MiddlewareRum.isRecording()
-        })
+            resolve(!MiddlewareRum.isRecording())
+        }
     }
 
     @objc(isRecording:withRejecter:)
-    func isRecording(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        resolve(MiddlewareRum.isRecording())
+    func isRecording(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        onMain {
+            resolve(MiddlewareRum.isRecording())
+        }
     }
 
-    /// MiddlewareRum applies recording state on the main thread, but RN runs module
-    /// methods on its own serial queue. Hop to main and wait so the promise resolves
-    /// with the settled state instead of a stale one.
-    private func onMainSync<T>(_ work: () -> T) -> T {
+    /// Runs `work` on the main thread, where MiddlewareRum registers its observers
+    /// and drives the recorder. React Native runs module methods on its own queue.
+    ///
+    /// Deliberately async rather than `DispatchQueue.main.sync`: under bridgeless
+    /// these methods can be invoked straight from the JS thread, and a synchronous
+    /// hop deadlocks whenever the main thread is itself waiting on JS. The promise
+    /// still resolves with the settled state because it resolves inside the hop.
+    private func onMain(_ work: @escaping () -> Void) {
         if Thread.isMainThread {
-            return work()
+            work()
+        } else {
+            DispatchQueue.main.async(execute: work)
         }
-        return DispatchQueue.main.sync(execute: work)
     }
 
     @objc(setGlobalAttributes:withResolver:withRejecter:)
