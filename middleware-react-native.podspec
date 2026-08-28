@@ -16,23 +16,34 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/*.{h,m,mm,swift}"
 
-  s.dependency "React-Core"
   # Stable native SDK (2.1+ adds setNativeSession + exportRawSpans); brings
   # PLCrashReporter/DeviceKit/SwiftProtobuf/SWCompression/Reachability transitively.
   s.dependency "MiddlewareRum", "~> 2.2"
 
-  # Don't install the dependencies when we run `pod install` in the old architecture.
-  if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
-    s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
-    s.pod_target_xcconfig    = {
-        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
-        "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
-        "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
-    }
-    s.dependency "React-Codegen"
-    s.dependency "RCT-Folly"
-    s.dependency "RCTRequired"
-    s.dependency "RCTTypeSafety"
-    s.dependency "ReactCommon/turbomodule/core"
-  end    
+  # React dependencies. `install_modules_dependencies` (react_native_pods.rb,
+  # RN >= 0.71) wires the right pods for whichever architecture the host app
+  # builds with, and tracks upstream renames — notably `React-Codegen` became
+  # `ReactCodegen` in RN 0.75, so the old hand-rolled new-arch branch below
+  # fails `pod install` on RN >= 0.75 (Expo SDK 52+) with
+  # "Unable to find a specification for `React-Codegen`".
+  if respond_to?(:install_modules_dependencies, true)
+    install_modules_dependencies(s)
+  else
+    s.dependency "React-Core"
+
+    # Don't install the dependencies when we run `pod install` in the old architecture.
+    if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+      s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+      s.pod_target_xcconfig    = {
+          "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+          "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+          "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+      }
+      s.dependency "React-Codegen"
+      s.dependency "RCT-Folly"
+      s.dependency "RCTRequired"
+      s.dependency "RCTTypeSafety"
+      s.dependency "ReactCommon/turbomodule/core"
+    end
+  end
 end

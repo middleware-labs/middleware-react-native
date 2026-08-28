@@ -34,6 +34,7 @@ import {
   info,
   initializeNativeSdk,
   isNativeRecording,
+  isNativeSdkAvailable,
   setNativeSessionId,
   startNativeRecording,
   stopNativeRecording,
@@ -136,6 +137,13 @@ export interface MiddlewareRumType {
   debug: (message: String) => void;
   warn: (message: String) => void;
   error: (message: String) => void;
+  /**
+   * Whether the native module is linked into the running binary. False means
+   * crash/ANR reporting and session recording are off and traces are being
+   * sent from JS over OTLP/HTTP — typically Expo Go, or a build that predates
+   * adding the package.
+   */
+  isNativeAvailable: () => boolean;
 }
 
 const DEFAULT_CONFIG = {
@@ -318,8 +326,15 @@ export const MiddlewareRum: MiddlewareRumType = {
       enumerable: true,
     });
 
+    // The OTLP options are only used if the native module is missing; on a
+    // normal build the native SDK still owns the pipeline.
     provider.addSpanProcessor(
-      new BatchSpanProcessor(new ReacNativeSpanExporter())
+      new BatchSpanProcessor(
+        new ReacNativeSpanExporter({
+          target: config.target,
+          accountKey: config.accountKey,
+        })
+      )
     );
 
     if (config.tracePropagationFormat === 'w3c') {
@@ -538,43 +553,48 @@ export const MiddlewareRum: MiddlewareRumType = {
       instrumentations: [xhrInstrumentation, fetchInstrumentation],
     });
 
-    initializeNativeSdk(nativeSdkConf).then((nativeAppStart) => {
-      appStartInfo = nativeAppStart;
-      appStartInfo.isColdStart = appStartInfo.isColdStart || true;
-      appStartInfo.appStart = appStartInfo.appStart || appStartInfo.moduleStart;
-      setNativeSessionId(getSessionId(), getSessionStartTime());
+    initializeNativeSdk(nativeSdkConf)
+      .then((nativeAppStart) => {
+        appStartInfo = nativeAppStart;
+        appStartInfo.isColdStart = appStartInfo.isColdStart || true;
+        appStartInfo.appStart =
+          appStartInfo.appStart || appStartInfo.moduleStart;
+        setNativeSessionId(getSessionId(), getSessionStartTime());
 
-      if (config.appStartEnabled) {
-        const tracer = provider.getTracer('AppStart');
-        const nativeInitEnd = Date.now();
+        if (config.appStartEnabled) {
+          const tracer = provider.getTracer('AppStart');
+          const nativeInitEnd = Date.now();
 
-        this.appStartSpan = tracer.startSpan('AppStart', {
-          startTime: appStartInfo.appStart,
-          attributes: {
-            'component': 'appstart',
-            'event.type': 'app_activity',
-            'start.type': appStartInfo.isColdStart ? 'cold' : 'warm',
-          },
-        });
+          this.appStartSpan = tracer.startSpan('AppStart', {
+            startTime: appStartInfo.appStart,
+            attributes: {
+              'component': 'appstart',
+              'event.type': 'app_activity',
+              'start.type': appStartInfo.isColdStart ? 'cold' : 'warm',
+            },
+          });
 
-        const ctx = trace.setSpan(context.active(), this.appStartSpan);
+          const ctx = trace.setSpan(context.active(), this.appStartSpan);
 
-        context.with(ctx, () => {
-          tracer
-            .startSpan('MiddlewareRum.nativeInit', { startTime: nativeInit })
-            .end(nativeInitEnd);
-          tracer
-            .startSpan('MiddlewareRum.jsInit', { startTime: clientInit })
-            .end(clientInitEnd);
-        });
+          context.with(ctx, () => {
+            tracer
+              .startSpan('MiddlewareRum.nativeInit', { startTime: nativeInit })
+              .end(nativeInitEnd);
+            tracer
+              .startSpan('MiddlewareRum.jsInit', { startTime: clientInit })
+              .end(clientInitEnd);
+          });
 
-        if (this.appStartEnd !== null) {
-          diag.debug('AppStart: using manual end');
-          MiddlewareRum.debug('AppStart: using manual end');
-          this.appStartSpan.end(this.appStartEnd);
+          if (this.appStartEnd !== null) {
+            diag.debug('AppStart: using manual end');
+            MiddlewareRum.debug('AppStart: using manual end');
+            this.appStartSpan.end(this.appStartEnd);
+          }
         }
-      }
-    });
+      })
+      .catch((e: any) => {
+        diag.error(`MiddlewareRum: native init failed: ${e?.message ?? e}`);
+      });
     isInitialized = true;
     return this;
   },
@@ -588,6 +608,7 @@ export const MiddlewareRum: MiddlewareRumType = {
   startRecording: startRecording,
   stopRecording: stopRecording,
   isRecording: isNativeRecording,
+  isNativeAvailable: isNativeSdkAvailable,
   info: info,
   error: error,
   debug: debug,

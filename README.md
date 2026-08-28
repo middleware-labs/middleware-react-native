@@ -54,14 +54,85 @@ requirements:
 
 The library is also compatible with the following frameworks and libraries:
 
-- Expo framework
-- React Navigation 5 and 6
+- Expo (SDK 52+, via a development build — see below)
+- React Navigation 5, 6 and 7
 
 ### Installation
 
 ```sh
 yarn add @middleware.io/middleware-react-native
 ```
+
+### Expo
+
+This SDK contains custom native code, so **it cannot run in Expo Go** — Expo Go
+ships a fixed native binary and has no way to load the Middleware native SDKs.
+You need a [development build](https://docs.expo.dev/develop/development-builds/introduction/).
+
+Add the config plugin to `app.json` / `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": ["@middleware.io/middleware-react-native"]
+  }
+}
+```
+
+Then create a development build:
+
+```sh
+npx expo prebuild --clean     # regenerate ios/ and android/ with the plugin applied
+npx expo run:android          # or: npx expo run:ios
+```
+
+For EAS, `eas build --profile development` picks the plugin up automatically.
+
+The plugin applies the native requirements that a managed project can't set on
+its own:
+
+| Change | Why |
+| --- | --- |
+| `android.jetifier.ignorelist=jackson-core` | Jetifier fails on the `jackson-core` inside `android-sdk` 3.x |
+| Kotlin Gradle Plugin >= 2.0.21 | `android-sdk` 3.x is compiled with Kotlin 2.0.21 metadata |
+| `compileSdkVersion` >= 35 | required by `android-sdk` 3.x (an already-higher value is left alone) |
+| iOS deployment target >= 13.0 | minimum for the `MiddlewareRum` pod |
+| `pod 'Reachability', :modular_headers => true` | Reachability ships no modulemap, so Swift can't import it under static libraries (skipped when the app uses `use_frameworks!`) |
+
+Options, if you need to override a default:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      ["@middleware.io/middleware-react-native", {
+        "kotlinVersion": "2.0.21",
+        "compileSdkVersion": 35,
+        "iosDeploymentTarget": "13.0",
+        "jetifierIgnorelist": true,
+        "reachabilityModularHeaders": true
+      }]
+    ]
+  }
+}
+```
+
+#### Checking that the native SDK is actually linked
+
+If spans stop flowing, the first thing to check is whether the native module
+made it into the binary:
+
+```typescript
+import { MiddlewareRum } from '@middleware.io/middleware-react-native';
+
+console.log('Middleware native linked:', MiddlewareRum.isNativeAvailable());
+```
+
+`false` means you are on Expo Go, or running a binary built before the package
+was added — rebuild with `npx expo run:android` / `run:ios`. In that state the
+SDK keeps working in a degraded mode: **traces are still sent**, straight from
+JS over OTLP/HTTP, while crash/ANR reporting and session recording stay off.
+Set `debug: true` in your configuration to see the reason on the console.
 
 ### Usage
 
