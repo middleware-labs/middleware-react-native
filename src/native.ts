@@ -1,23 +1,70 @@
 import { NativeModules, Platform } from 'react-native';
-import { trace, type Attributes } from '@opentelemetry/api';
+import { diag, trace, type Attributes } from '@opentelemetry/api';
 
 export const LINKING_ERROR =
   `The package '@middleware.io/middleware-react-native' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
   '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
+  '- You are not using Expo Go (run `npx expo run:android` / `npx expo run:ios`,\n' +
+  '  or build a custom dev client with EAS — Expo Go cannot load custom native code)\n';
 
 const tracer = trace.getTracer('logs');
-const MiddlewareReactNative = NativeModules.MiddlewareReactNative
-  ? NativeModules.MiddlewareReactNative
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+
+/**
+ * The native module, or null when it isn't linked into the running binary.
+ *
+ * This is deliberately NOT a throwing Proxy: under Expo Go — and any build
+ * where autolinking didn't pick the package up — the very first native call
+ * happens inside `MiddlewareRum.init()` during render, so throwing took down
+ * the whole React tree. Now the JS pipeline stays alive and falls back to
+ * exporting spans over OTLP/HTTP directly (see `otlpTraceExporter.ts`).
+ */
+const MiddlewareReactNative = NativeModules.MiddlewareReactNative ?? null;
+
+let warnedMissing = false;
+
+/** Whether the native SDK is present. Drives the exporter choice at init. */
+export const isNativeSdkAvailable = (): boolean =>
+  MiddlewareReactNative !== null;
+
+function reportMissingNativeModule(): void {
+  if (warnedMissing) {
+    return;
+  }
+  warnedMissing = true;
+  diag.error(
+    '[MiddlewareRum] native module not found — crash/ANR reporting and ' +
+      'session recording are disabled, traces will be sent from JS over ' +
+      'OTLP/HTTP instead.\n' +
+      LINKING_ERROR
+  );
+}
+
+/**
+ * Runs a native call, swallowing both the "not linked" case and any rejection
+ * from the native side. Every native entry point used to be an unguarded
+ * floating promise, so native failures (a rejected `initialize`, a rejected
+ * `export`) were completely invisible.
+ */
+function callNative<T>(
+  method: string,
+  invoke: (native: any) => Promise<T> | T,
+  fallback: T
+): Promise<T> {
+  if (MiddlewareReactNative === null) {
+    reportMissingNativeModule();
+    return Promise.resolve(fallback);
+  }
+  try {
+    return Promise.resolve(invoke(MiddlewareReactNative)).catch((e: any) => {
+      diag.error(`[MiddlewareRum] native ${method} failed: ${e?.message ?? e}`);
+      return fallback;
+    });
+  } catch (e: any) {
+    diag.error(`[MiddlewareRum] native ${method} threw: ${e?.message ?? e}`);
+    return Promise.resolve(fallback);
+  }
+}
 
 export interface NativeSdKConfiguration {
   target: string;
@@ -44,40 +91,45 @@ export type AppStartInfo = {
   isColdStart?: boolean;
 };
 
+/**
+ * Resolves even when the native SDK is missing or rejects, so the JS app-start
+ * span is still produced and `init()` always completes.
+ */
 export const initializeNativeSdk = (
   config: NativeSdKConfiguration
-): Promise<AppStartInfo> => {
-  return MiddlewareReactNative.initialize(config);
-};
+): Promise<AppStartInfo> =>
+  callNative<AppStartInfo>('initialize', (n) => n.initialize(config), {
+    moduleStart: Date.now(),
+    isColdStart: true,
+  });
 
-export const exportSpansToNative = (spans: object[]): Promise<null> => {
-  return MiddlewareReactNative.export(spans);
-};
+/** Resolves to false when the spans were not handed off to the native SDK. */
+export const exportSpansToNative = (spans: object[]): Promise<boolean> =>
+  callNative<boolean>('export', (n) => n.export(spans).then(() => true), false);
 
 export const setNativeSessionId = (
   id: string,
   startTimeMs: number
-): Promise<boolean> => {
-  return MiddlewareReactNative.setSessionId(id, startTimeMs);
-};
+): Promise<boolean> =>
+  callNative('setSessionId', (n) => n.setSessionId(id, startTimeMs), false);
 
 export const setNativeGlobalAttributes = (
   attributes: Attributes
-): Promise<boolean> => {
-  return MiddlewareReactNative.setGlobalAttributes({ ...attributes });
-};
+): Promise<boolean> =>
+  callNative(
+    'setGlobalAttributes',
+    (n) => n.setGlobalAttributes({ ...attributes }),
+    false
+  );
 
-export const startNativeRecording = (): Promise<boolean> => {
-  return MiddlewareReactNative.startRecording();
-};
+export const startNativeRecording = (): Promise<boolean> =>
+  callNative('startRecording', (n) => n.startRecording(), false);
 
-export const stopNativeRecording = (): Promise<boolean> => {
-  return MiddlewareReactNative.stopRecording();
-};
+export const stopNativeRecording = (): Promise<boolean> =>
+  callNative('stopRecording', (n) => n.stopRecording(), false);
 
-export const isNativeRecording = (): Promise<boolean> => {
-  return MiddlewareReactNative.isRecording();
-};
+export const isNativeRecording = (): Promise<boolean> =>
+  callNative('isRecording', (n) => n.isRecording(), false);
 
 /**
  * Pushes the JS route name into the native screen-name store so native tap
@@ -85,39 +137,35 @@ export const isNativeRecording = (): Promise<boolean> => {
  * Activity/ViewController class name.
  */
 export const setNativeScreenName = (name: string) => {
-  try {
-    MiddlewareReactNative.setScreenName(name);
-  } catch (e) {
-    // never let screen tracking break navigation
-  }
+  callNative('setScreenName', (n) => n.setScreenName(name), false);
 };
 
 export const testNativeCrash = () => {
-  MiddlewareReactNative.nativeCrash();
+  callNative('nativeCrash', (n) => n.nativeCrash(), false);
 };
 
 export const testNativeAnr = () => {
-  MiddlewareReactNative.nativeAnr();
+  callNative('nativeAnr', (n) => n.nativeAnr(), false);
 };
 
 export const info = (message: String) => {
   recordLog(message as string, 'info');
-  MiddlewareReactNative.info(message);
+  callNative('info', (n) => n.info(message), false);
 };
 
 export const error = (message: String) => {
   recordLog(message as string, 'error');
-  MiddlewareReactNative.error(message);
+  callNative('error', (n) => n.error(message), false);
 };
 
 export const warn = (message: String) => {
   recordLog(message as string, 'warn');
-  MiddlewareReactNative.warn(message);
+  callNative('warn', (n) => n.warn(message), false);
 };
 
 export const debug = (message: String) => {
   recordLog(message as string, 'debug');
-  MiddlewareReactNative.debug(message);
+  callNative('debug', (n) => n.debug(message), false);
 };
 
 const recordLog = (message: string, level: string) => {

@@ -5,16 +5,67 @@ import {
   hrTimeToNanoseconds,
 } from '@opentelemetry/core';
 import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
-import { exportSpansToNative } from './native';
+import { exportSpansToNative, isNativeSdkAvailable } from './native';
+import OtlpHttpTraceExporter, {
+  type OtlpExporterOptions,
+} from './otlpTraceExporter';
 
+/**
+ * Hands spans to the native SDK, which owns the OTLP pipeline.
+ *
+ * When the native module isn't in the binary (Expo Go, a build made before
+ * the package was added, autolinking miss) it falls back to posting OTLP
+ * straight from JS so traces still reach Middleware. Previously this class
+ * reported SUCCESS unconditionally and dropped the native promise, so a
+ * broken native side looked exactly like a healthy one.
+ */
 export default class ReacNativeSpanExporter implements SpanExporter {
+  private readonly fallback?: OtlpHttpTraceExporter;
+  private loggedFallback = false;
+
+  constructor(otlpOptions?: OtlpExporterOptions) {
+    if (otlpOptions) {
+      this.fallback = new OtlpHttpTraceExporter(otlpOptions);
+    }
+  }
+
   export(
     spans: ReadableSpan[],
     resultCallback: (result: ExportResult) => void
   ): void {
-    exportSpansToNative(spans.map(this.toNativeSpan));
+    if (!isNativeSdkAvailable()) {
+      if (this.fallback) {
+        if (!this.loggedFallback) {
+          this.loggedFallback = true;
+          diag.warn(
+            '[MiddlewareRum] native module unavailable — exporting spans ' +
+              'directly over OTLP/HTTP from JS.'
+          );
+        }
+        this.fallback.export(spans, resultCallback);
+      } else {
+        resultCallback({
+          code: ExportResultCode.FAILED,
+          error: new Error(
+            'MiddlewareRum: native module unavailable and no OTLP fallback configured'
+          ),
+        });
+      }
+      return;
+    }
 
-    resultCallback({ code: ExportResultCode.SUCCESS });
+    exportSpansToNative(spans.map(this.toNativeSpan)).then((handedOff) => {
+      resultCallback(
+        handedOff
+          ? { code: ExportResultCode.SUCCESS }
+          : {
+              code: ExportResultCode.FAILED,
+              error: new Error(
+                'MiddlewareRum: native exporter rejected the span batch'
+              ),
+            }
+      );
+    });
   }
 
   toNativeSpan(span: ReadableSpan): object {
@@ -56,7 +107,6 @@ export default class ReacNativeSpanExporter implements SpanExporter {
    * Shutdown the exporter.
    */
   shutdown(): Promise<void> {
-    //FIXME this._sendSpans([]);
-    return Promise.resolve();
+    return this.fallback?.shutdown() ?? Promise.resolve();
   }
 }
