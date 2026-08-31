@@ -93,4 +93,3 @@ dependencies {
   implementation 'io.opentelemetry:opentelemetry-sdk-trace'
   implementation 'io.opentelemetry:opentelemetry-sdk-common'
 }
-
