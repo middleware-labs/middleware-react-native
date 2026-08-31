@@ -556,10 +556,25 @@ export const MiddlewareRum: MiddlewareRumType = {
     initializeNativeSdk(nativeSdkConf)
       .then((nativeAppStart) => {
         appStartInfo = nativeAppStart;
-        appStartInfo.isColdStart = appStartInfo.isColdStart || true;
-        appStartInfo.appStart =
-          appStartInfo.appStart || appStartInfo.moduleStart;
+        appStartInfo.isColdStart = appStartInfo.isColdStart ?? false;
         setNativeSessionId(getSessionId(), getSessionStartTime());
+
+        // `appStart` and `moduleStart` are both latched in the native process
+        // (a static field set at class load / native module construction), so
+        // a process that outlives its JS context reports a start time from an
+        // earlier session. Backdating the AppStart span to it rewrites the
+        // session's start on the backend, which derives SessionStart from
+        // min(span timestamp) — a 15-minute session then reads as however long
+        // the process has been alive. Never let AppStart precede its session.
+        const sessionStart = getSessionStartTime();
+        const nativeAppStartTime =
+          appStartInfo.appStart || appStartInfo.moduleStart;
+        if (nativeAppStartTime < sessionStart) {
+          appStartInfo.appStart = sessionStart;
+          appStartInfo.isColdStart = false;
+        } else {
+          appStartInfo.appStart = nativeAppStartTime;
+        }
 
         if (config.appStartEnabled) {
           const tracer = provider.getTracer('AppStart');
