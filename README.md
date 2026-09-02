@@ -224,15 +224,34 @@ const MiddlewareConfig: ReactNativeConfiguration = {
 
 ### Distributed Tracing
 
-To enable distributed tracing you need to pass backend domains in `tracePropagationTargets` which takes values in `Array<Regex>` 
+End-to-end tracing links a RUM session to the backend traces it caused, so you can open a slow
+screen in the session explorer and see the server spans behind it.
 
-Example: 
+It works by trace-context propagation: the SDK creates a client span for each outgoing request and
+injects the W3C `traceparent` header. Your instrumented backend continues that same trace, and
+Middleware correlates the two by trace ID.
+
+**This is on by default and requires no code.** Every request made through `fetch` or
+`XMLHttpRequest` is traced and carries trace headers.
+
+To keep your trace IDs off third-party APIs, narrow propagation to your own domains with
+`tracePropagationTargets`, which takes `Array<string | RegExp>`:
+
 ```typescript
 const MiddlewareConfig: ReactNativeConfiguration = {
     ...
     tracePropagationTargets: [/api.example.com/, /anotherapi.example.com/]
 };
 ```
+
+Requests to other hosts are still timed and still appear in the session — they just travel
+without trace headers. An explicit empty array disables propagation entirely.
+
+Prefer regexes: a `RegExp` entry is matched against the URL, but a plain `string` entry has to
+equal the whole URL exactly, so `'api.example.com'` matches nothing.
+
+By default both W3C (`traceparent`) and B3 headers are sent. Use `tracePropagationFormat: 'w3c'`
+or `'b3'` to send only one.
 
 
 ### Reporting custom errors

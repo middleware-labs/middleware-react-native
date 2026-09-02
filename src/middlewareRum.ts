@@ -90,8 +90,16 @@ export interface ReactNativeConfiguration {
   debug?: boolean;
   /** Sets attributes added to every Span. */
   globalAttributes?: Attributes;
+  /**
+   * Decides which outbound requests carry `traceparent`. Defaults to every URL; narrow it to
+   * keep your trace ids off third-party hosts. An explicit empty array disables propagation.
+   *
+   * A `RegExp` entry is matched against the URL, but a `string` entry must equal the whole URL
+   * exactly — prefer regexes, e.g. `[/api\.example\.com/]`.
+   */
   tracePropagationTargets?: Array<string | RegExp>;
   tracePropagationFormat?: string;
+  /** Set to `false` to disable fetch/XHR instrumentation. Enabled by default. */
   networkInstrumentation?: boolean;
   /**
    * URLs that partially match any regex in ignoreUrls will not be traced.
@@ -381,6 +389,13 @@ export const MiddlewareRum: MiddlewareRumType = {
       nativeSdkConf.target
     );
 
+    // Propagate to every host unless the caller narrows it, matching the browser and native
+    // SDKs. Otel only falls back to same-origin when this is empty, and React Native has no
+    // `location` for that fallback to match against — so an empty list here would mean no
+    // request carries `traceparent` at all.
+    const tracePropagationTargets: (string | RegExp)[] =
+      config.tracePropagationTargets ?? [/.*/];
+
     const DEFAULT_IGNORE_URLS: (string | RegExp)[] | undefined = [
       `${config.target}/v1/metrics`,
       `${config.target}/v1/traces`,
@@ -395,7 +410,7 @@ export const MiddlewareRum: MiddlewareRumType = {
     // request made with XMLHttpRequest. Since in this demo calls to /api/ are made using fetch, turn off
     // instrumentation for that path to avoid the extra spans.
     const xhrInstrumentation = new XMLHttpRequestInstrumentation({
-      propagateTraceHeaderCorsUrls: config.tracePropagationTargets ?? [],
+      propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
       applyCustomAttributesOnSpan: (span: Span, xhr: XMLHttpRequest) => {
@@ -476,7 +491,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       },
     });
     const fetchInstrumentation = new FetchInstrumentation({
-      propagateTraceHeaderCorsUrls: config.tracePropagationTargets ?? [],
+      propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
       applyCustomAttributesOnSpan: (
@@ -545,7 +560,9 @@ export const MiddlewareRum: MiddlewareRumType = {
       },
     });
 
-    if (config.networkInstrumentation) {
+    // `networkInstrumentation: false` turns it off, which is what the README documents.
+    // Anything else, including leaving it unset, keeps it on.
+    if (config.networkInstrumentation === false) {
       xhrInstrumentation.disable();
       fetchInstrumentation.disable();
     }
