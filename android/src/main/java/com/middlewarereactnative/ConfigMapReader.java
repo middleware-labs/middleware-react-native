@@ -48,10 +48,6 @@ public class ConfigMapReader extends MapReader {
     return Keys.RECORDING_OPTIONS.getMap(map);
   }
 
-  public boolean getDisableSessionRecordingV3() {
-    return map.hasKey("disableSessionRecordingV3") && map.getBoolean("disableSessionRecordingV3");
-  }
-
   public Double getSessionSamplingRatio() {
     return map.hasKey("sessionSamplingRatio") ? map.getDouble("sessionSamplingRatio") : null;
   }

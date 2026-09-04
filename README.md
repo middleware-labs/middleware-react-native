@@ -37,8 +37,8 @@ Middleware React Native Real User Monitoring SDK
 Middleware React Native for Mobile supports React Native 0.68 and higher.
 
 Since v2.0.0 the SDK wraps the stable Middleware native SDKs
-(`io.github.middleware-labs:android-sdk` 3.0.2+ and the `MiddlewareRum`
-CocoaPod 2.1+), which brings v3 session recording (rrweb replay), native
+(`io.github.middleware-labs:android-sdk` 3.1.4+ and the `MiddlewareRum`
+CocoaPod 2.2.2+), which brings v3 session recording (rrweb replay), native
 crash/ANR reporting, and screen-name linked replays. Native toolchain
 requirements:
 
@@ -308,8 +308,6 @@ const MiddlewareConfig: ReactNativeConfiguration = {
     },
     // Fraction of sessions that get recorded (0.0 - 1.0). Defaults to 1.0.
     sessionSamplingRatio: 1.0,
-    // Fall back to the legacy (v2) screenshot recorder. v3 (rrweb replay) is the default.
-    disableSessionRecordingV3: false,
 };
 ```
 

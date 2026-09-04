@@ -91,7 +91,6 @@ export interface NativeSdKConfiguration {
   projectName: string;
   deploymentEnvironment?: string;
   sessionSamplingRatio?: number;
-  disableSessionRecordingV3?: boolean;
   recordingOptions?: {
     frequency?: string;
     quality?: string;

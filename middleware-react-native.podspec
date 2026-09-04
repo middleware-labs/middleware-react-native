@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 
   # Stable native SDK (2.1+ adds setNativeSession + exportRawSpans); brings
   # PLCrashReporter/DeviceKit/SwiftProtobuf/SWCompression/Reachability transitively.
-  s.dependency "MiddlewareRum", "~> 2.2"
+  s.dependency "MiddlewareRum", "~> 2.2.2"
 
   # React dependencies. `install_modules_dependencies` (react_native_pods.rb,
   # RN >= 0.71) wires the right pods for whichever architecture the host app

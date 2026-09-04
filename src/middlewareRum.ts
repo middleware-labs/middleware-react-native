@@ -69,10 +69,8 @@ export interface ReactNativeConfiguration {
   serviceName: string;
   projectName: string;
   sessionRecording?: boolean;
-  /** Options for v3 session recording (rrweb screenshot events). */
+  /** Options for session recording (rrweb screenshot events). */
   recordingOptions?: RecordingOptions;
-  /** Falls back to the legacy (v2) screenshot recorder when true. */
-  disableSessionRecordingV3?: boolean;
   /** Fraction of sessions to sample for traces + recordings, 0.0–1.0. */
   sessionSamplingRatio?: number;
   deploymentEnvironment?: string;
@@ -163,11 +161,10 @@ let appStartInfo: AppStartInfo | null = null;
 let isInitialized = false;
 
 // Live recording state, mirrored onto the provider resource so exported spans
-// always carry the current `recording`/`recordingV3` values. Recording can be
-// toggled at runtime, and these attributes are what tell the backend a session
-// has a replay to play back.
+// always carry the current `recording` value. Recording can be toggled at
+// runtime, and this attribute is what tells the backend a session has a replay
+// to play back.
 let isRecordingActive = false;
-let isRecordingV3Configured = true;
 
 const updateLocation = (latitude: number, longitude: number) => {
   setGlobalAttributes({
@@ -249,22 +246,14 @@ export const MiddlewareRum: MiddlewareRumType = {
     }
 
     isRecordingActive = sessionRecording === 'true';
-    isRecordingV3Configured = !config.disableSessionRecordingV3;
 
     const recordingAttr = sessionRecording === 'true' ? '1' : '0';
-    // recordingV3 routes bifrost to the rrweb player; matches the native
-    // SDKs' resource attribute (v3 is on by default when recording is on).
-    const recordingV3Attr =
-      sessionRecording === 'true' && !config.disableSessionRecordingV3
-        ? '1'
-        : '0';
     const resourceAttributes = {
       ...getResource(),
       [SemanticResourceAttributes.SERVICE_NAME]: config.serviceName,
       'project.name': config.projectName,
       'env': config.deploymentEnvironment,
       'recording': recordingAttr,
-      'recordingV3': recordingV3Attr,
       'session.id': getSessionId(),
       'session.start_time': getSessionStartTime(),
     };
@@ -282,9 +271,6 @@ export const MiddlewareRum: MiddlewareRumType = {
       }),
       ...(config.sessionSamplingRatio !== undefined && {
         sessionSamplingRatio: config.sessionSamplingRatio,
-      }),
-      ...(config.disableSessionRecordingV3 !== undefined && {
-        disableSessionRecordingV3: config.disableSessionRecordingV3,
       }),
       ...(config.recordingOptions !== undefined && {
         recordingOptions: config.recordingOptions,
@@ -321,14 +307,6 @@ export const MiddlewareRum: MiddlewareRumType = {
     Object.defineProperty(provider.resource.attributes, 'recording', {
       get() {
         return isRecordingActive ? '1' : '0';
-      },
-      configurable: true,
-      enumerable: true,
-    });
-
-    Object.defineProperty(provider.resource.attributes, 'recordingV3', {
-      get() {
-        return isRecordingActive && isRecordingV3Configured ? '1' : '0';
       },
       configurable: true,
       enumerable: true,
