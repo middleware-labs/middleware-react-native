@@ -13,10 +13,12 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.73.1)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - middleware-react-native (2.1.0):
-    - MiddlewareRum (~> 2.2)
+  - middleware-react-native (2.1.6):
+    - glog
+    - MiddlewareRum (~> 2.2.2)
+    - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - MiddlewareRum (2.2.0):
+  - MiddlewareRum (2.2.2):
     - DeviceKit (~> 5.4)
     - PLCrashReporter (~> 1.11)
     - Reachability (~> 3.7)
@@ -1264,8 +1266,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: df0ebe69acd14ce0be0269cf75b6e338a727259b
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  middleware-react-native: 6052a2e9035f41589a46a89e742c09f2af1511e4
-  MiddlewareRum: 898c83793cc710d68d8b124d6a9e1be1095153a4
+  middleware-react-native: f075d12bae4af81059b646ae2c2be033de2ac42b
+  MiddlewareRum: c7287f0a65cbe83a043ae5d0f433d6563b74fab8
   PLCrashReporter: db59ef96fa3d25f3650040d02ec2798cffee75f2
   RCT-Folly: cd21f1661364f975ae76b3308167ad66b09f53f5
   RCTRequired: 6dda55e483f75d2b43781d8ad5bd7df276a50981
@@ -1317,6 +1319,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b109bd17979d7993a84da14b1e1fdd8b0ded934a
   Yoga: 4f53dc50008d626fa679c7a1cb4bed898f8c0bde
 
-PODFILE CHECKSUM: a820c5f655f7733be8c7de79270e7241d08295e7
+PODFILE CHECKSUM: 4d5c450dd208d07f681cab2179a482c80dd4cb07
 
 COCOAPODS: 1.17.0
