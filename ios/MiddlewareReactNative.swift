@@ -56,9 +56,6 @@ class MiddlewareReactNative: NSObject {
         if (config["sessionRecording"] as? String) != "true" {
             _ = builder.disableRecording()
         }
-        if config["disableSessionRecordingV3"] as? Bool == true {
-            _ = builder.disableSessionRecordingV3()
-        }
         if let recordingOptions = config["recordingOptions"] as? [String: Any] {
             _ = builder.recordingOptions(mapRecordingOptions(recordingOptions))
         }

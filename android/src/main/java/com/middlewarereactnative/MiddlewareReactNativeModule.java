@@ -112,9 +112,6 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     if (!Boolean.TRUE.toString().equals(sessionRecording)) {
       builder.disableSessionRecording();
     }
-    if (mapReader.getDisableSessionRecordingV3()) {
-      builder.disableSessionRecordingV3();
-    }
     final Double samplingRatio = mapReader.getSessionSamplingRatio();
     if (samplingRatio != null) {
       builder.setSessionSamplingRatio(samplingRatio);

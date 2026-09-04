@@ -83,7 +83,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   // Stable native SDK (main branch). 3.1.0 adds startRecording/stopRecording/isRecording.
-  implementation 'io.github.middleware-labs:android-sdk:3.1.2'
+  implementation 'io.github.middleware-labs:android-sdk:3.1.4'
   coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
   // Compile-visible OTel for the JS-span reconstruction (SpanData etc.);
   // runtime classes come transitively from android-sdk. Keep aligned with
