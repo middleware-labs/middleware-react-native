@@ -38,7 +38,7 @@ Middleware React Native for Mobile supports React Native 0.68 and higher.
 
 Since v2.0.0 the SDK wraps the stable Middleware native SDKs
 (`io.github.middleware-labs:android-sdk` 3.1.4+ and the `MiddlewareRum`
-CocoaPod 2.2.2+), which brings v3 session recording (rrweb replay), native
+CocoaPod 2.2.3+), which brings v3 session recording (rrweb replay), native
 crash/ANR reporting, and screen-name linked replays. Native toolchain
 requirements:
 
