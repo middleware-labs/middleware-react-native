@@ -388,6 +388,11 @@ export const MiddlewareRum: MiddlewareRumType = {
     // request made with XMLHttpRequest. Since in this demo calls to /api/ are made using fetch, turn off
     // instrumentation for that path to avoid the extra spans.
     const xhrInstrumentation = new XMLHttpRequestInstrumentation({
+      // Emit the current HTTP semantic conventions (url.full,
+      // http.request.method, http.response.status_code, server.address) instead
+      // of the deprecated http.url / http.method / http.status_code the
+      // instrumentation defaults to. 'http' sends the new names only.
+      semconvStabilityOptIn: 'http',
       propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
@@ -458,7 +463,7 @@ export const MiddlewareRum: MiddlewareRumType = {
             }
           });
           const httpURL = (span as unknown as { attributes: Attributes })
-            ?.attributes?.['http.url'];
+            ?.attributes?.['url.full'];
           if (httpURL) {
             span.updateName(
               `${(span as unknown as { name: string }).name} ${httpURL}`
@@ -469,6 +474,8 @@ export const MiddlewareRum: MiddlewareRumType = {
       },
     });
     const fetchInstrumentation = new FetchInstrumentation({
+      // Same as XHR above: current HTTP semantic conventions only.
+      semconvStabilityOptIn: 'http',
       propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
@@ -482,7 +489,7 @@ export const MiddlewareRum: MiddlewareRumType = {
         const span = s as Span;
         const httpURL = (
           s as { span: Span; attributes: Attributes; name: string }
-        ).attributes?.['http.url'];
+        ).attributes?.['url.full'];
         if (httpURL) {
           span.updateName(
             `${

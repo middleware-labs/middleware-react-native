@@ -1,4 +1,14 @@
 {
   "extends": "./tsconfig",
-  "exclude": ["example"]
+  // `exclude` replaces the base rather than adding to it, so the base entries
+  // are repeated here. Tests are excluded so the published package carries no
+  // declarations for them: those are what collided with the sources.
+  "exclude": [
+    "node_modules",
+    "lib",
+    "example",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }

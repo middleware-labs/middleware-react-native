@@ -21,10 +21,14 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import io.middleware.android.sdk.Middleware;
 import io.middleware.android.sdk.builders.MiddlewareBuilder;
@@ -47,6 +51,18 @@ import io.opentelemetry.sdk.trace.data.StatusData;
 @ReactModule(name = MiddlewareReactNativeModule.NAME)
 public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
   public static final String NAME = "MiddlewareReactNative";
+  /**
+   * Numeric attributes that semantic conventions define as integers. JS has no
+   * integer type, so every number crossing the bridge would otherwise be
+   * exported as a double (a status of 200 arriving as 200.0). The JS
+   * instrumentation sends the current HTTP names; http.status_code stays for
+   * any JS bundle still on the deprecated ones.
+   */
+  private static final Set<String> INTEGER_ATTRIBUTE_KEYS =
+      Collections.unmodifiableSet(
+          new HashSet<>(
+              Arrays.asList(
+                  "http.response.status_code", "server.port", "http.status_code")));
   private final long moduleStartTime;
   private MiddlewareSpanExporter middlewareSpanExporter;
   private String nativeSessionId;
@@ -439,7 +455,7 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       if (value instanceof String) {
         builder.put(entry.getKey(), (String) value);
       } else if (value instanceof Number) {
-        if ("http.status_code".equals(entry.getKey())) {
+        if (INTEGER_ATTRIBUTE_KEYS.contains(entry.getKey())) {
           builder.put(entry.getKey(), ((Number) value).intValue());
         } else {
           builder.put(entry.getKey(), ((Number) value).doubleValue());
