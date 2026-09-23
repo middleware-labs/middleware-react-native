@@ -2,6 +2,7 @@ package com.middlewarereactnative;
 
 import static io.middleware.android.sdk.utils.Constants.LOG_TAG;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
@@ -163,7 +164,14 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     UiThreadUtil.runOnUiThread(() -> {
       try {
         // v3 session recording starts inside build() (sampler-gated); no explicit start needed.
-        builder.build((Application) getReactApplicationContext().getApplicationContext());
+        // JS calls this after the host Activity has already resumed, so the recorder
+        // never sees the onActivityResumed it attaches on; given only the Application
+        // it would capture nothing until the app is backgrounded and reopened. Passing
+        // the Activity seeds the recorder's current activity.
+        Activity activity = getReactApplicationContext().getCurrentActivity();
+        builder.build(activity != null
+          ? activity
+          : (Application) getReactApplicationContext().getApplicationContext());
 
         // Link the JS-owned session immediately — before the v3 recorder captures
         // its first frame — so no native telemetry lands under the native
