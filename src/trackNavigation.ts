@@ -22,7 +22,8 @@ export function startNavigationTracking(navigationRef: any) {
     navigationRef.addListener('state', () => {
       const previous = currentRouteName;
       const route = navigationRef.getCurrentRoute();
-      if (route) {
+      // 'state' also fires for param-only updates; those are not a new view.
+      if (route && route.name !== previous) {
         currentRouteName = route.name;
         createUiSpan(currentRouteName, previous);
       }
@@ -37,9 +38,11 @@ function createUiSpan(current: string, previous?: string) {
   // also drive the native screen-name store so native spans and the v3
   // session recording carry the JS route name
   setNativeScreenName(current);
-  const span = tracer.startSpan('Created');
+  // `screen_view` is the mobile counterpart of the browser's `pageview`.
+  const span = tracer.startSpan(current);
   span.setAttribute('component', 'ui');
-  span.setAttribute('event.type', 'app_activity');
+  span.setAttribute('event.type', 'screen_view');
+  span.setAttribute(SCREEN_NAME, current);
   if (previous) {
     span.setAttribute(LAST_SCREEN_NAME, previous);
   }

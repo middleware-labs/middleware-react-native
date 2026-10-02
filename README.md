@@ -303,8 +303,8 @@ const MiddlewareConfig: ReactNativeConfiguration = {
     recordingOptions: {
         frequency: 'standard',   // 'low' (~1 fps, default) | 'standard' | 'high'
         quality: 'standard',     // 'low' | 'standard' (default) | 'high'
-        maskAllTextInputs: true, // default true
-        maskAllImages: true,     // default true
+        maskAllTextInputs: true, // default false (masks all text and WebViews)
+        maskAllImages: true,     // default false (masks images and WebViews)
     },
     // Fraction of sessions that get recorded (0.0 - 1.0). Defaults to 1.0.
     sessionSamplingRatio: 1.0,
