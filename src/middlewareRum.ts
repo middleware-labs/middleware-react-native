@@ -498,12 +498,17 @@ export const MiddlewareRum: MiddlewareRumType = {
           );
         }
         span.setAttribute('event.type', 'fetch');
-        if (r.headers instanceof Headers) {
+        if (r.headers) {
+          const requestHeaders = new Headers(r.headers);
+          const requestHeaderNames: string[] = [];
+          requestHeaders.forEach((_: string, name: string) => {
+            requestHeaderNames.push(name);
+          });
           headerCapture(
             'request',
-            Object.keys(r.headers),
+            requestHeaderNames,
             config.ignoreHeaders
-          )(span, (header: string) => r.headers?.get(header) ?? '');
+          )(span, (header) => requestHeaders.get(header as string) ?? '');
         }
         if (res.body) {
           span.setAttribute('http.request.body', res.body.toString());
