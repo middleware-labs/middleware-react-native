@@ -485,7 +485,6 @@ export const MiddlewareRum: MiddlewareRumType = {
         result: Response | FetchError
       ) => {
         const r = request as Request;
-        const res = result as RequestInit;
         const span = s as Span;
         const httpURL = (
           s as { span: Span; attributes: Attributes; name: string }
@@ -505,8 +504,9 @@ export const MiddlewareRum: MiddlewareRumType = {
             config.ignoreHeaders
           )(span, (header: string) => r.headers?.get(header) ?? '');
         }
-        if (res.body) {
-          span.setAttribute('http.request.body', res.body.toString());
+        const requestBody = (request as RequestInit).body;
+        if (requestBody) {
+          span.setAttribute('http.request.body', requestBody.toString());
         }
         if (result instanceof Response) {
           if (result.headers instanceof Headers) {
