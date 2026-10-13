@@ -1,8 +1,12 @@
 package com.middlewarereactnative;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 
 public class ConfigMapReader extends MapReader {
   private final ReadableMap map;
@@ -52,6 +56,35 @@ public class ConfigMapReader extends MapReader {
     return map.hasKey("sessionSamplingRatio") ? map.getDouble("sessionSamplingRatio") : null;
   }
 
+  public boolean getCaptureNetworkHeaders() {
+    return Boolean.TRUE.equals(Keys.CAPTURE_NETWORK_HEADERS.get(map));
+  }
+
+  public boolean getCaptureResponseBodies() {
+    return Boolean.TRUE.equals(Keys.CAPTURE_RESPONSE_BODIES.get(map));
+  }
+
+  /** Lowercase header names; empty when unset. */
+  public List<String> getIgnoreHeaders() {
+    final List<String> headers = new ArrayList<>();
+    if (!map.hasKey("ignoreHeaders") || map.getType("ignoreHeaders") != ReadableType.Array) {
+      return headers;
+    }
+    final ReadableArray array = map.getArray("ignoreHeaders");
+    if (array == null) {
+      return headers;
+    }
+    for (int i = 0; i < array.size(); i++) {
+      if (array.getType(i) == ReadableType.String) {
+        final String header = array.getString(i);
+        if (header != null) {
+          headers.add(header.toLowerCase(Locale.ROOT));
+        }
+      }
+    }
+    return headers;
+  }
+
   private interface Keys {
     StringKey TARGET = new StringKey("target");
     StringKey ACCOUNT_KEY = new StringKey("accountKey");
@@ -62,5 +95,7 @@ public class ConfigMapReader extends MapReader {
     MapKey GLOBAL_ATTRIBUTES = new MapKey("globalAttributes");
     MapKey RESOURCE_ATTRIBUTES = new MapKey("resourceAttributes");
     MapKey RECORDING_OPTIONS = new MapKey("recordingOptions");
+    BooleanKey CAPTURE_NETWORK_HEADERS = new BooleanKey("captureNetworkHeaders");
+    BooleanKey CAPTURE_RESPONSE_BODIES = new BooleanKey("captureResponseBodies");
   }
 }

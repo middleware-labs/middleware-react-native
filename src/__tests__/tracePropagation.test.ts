@@ -10,21 +10,24 @@ type Captured = {
   xhr: any[];
   fetch: any[];
   disabled: string[];
+  native: any[];
 };
 
 function loadRum() {
-  const captured: Captured = { xhr: [], fetch: [], disabled: [] };
+  const captured: Captured = { xhr: [], fetch: [], disabled: [], native: [] };
   let rum: any;
 
   jest.isolateModules(() => {
     jest.doMock('../native', () => {
       const stubs: Record<string, any> = {
         __esModule: true,
-        initializeNativeSdk: jest
-          .fn()
-          .mockImplementation(() =>
-            Promise.resolve({ moduleStart: Date.now(), isColdStart: true })
-          ),
+        initializeNativeSdk: jest.fn().mockImplementation((conf: any) => {
+          captured.native.push(conf);
+          return Promise.resolve({
+            moduleStart: Date.now(),
+            isColdStart: true,
+          });
+        }),
         isNativeSdkAvailable: jest.fn().mockReturnValue(false),
         isNativeExporterUsable: jest.fn().mockReturnValue(false),
         isNativeRecording: jest.fn().mockResolvedValue(false),
@@ -140,5 +143,42 @@ describe('networkInstrumentation flag', () => {
 
   it('leaves them enabled when unset', () => {
     expect(targetsFrom({}).disabled).toEqual([]);
+  });
+});
+
+describe('network capture options', () => {
+  const init = (config: Record<string, unknown>) => {
+    const { rum, captured } = loadRum();
+    rum.init({ ...CONFIG, ...config });
+    return captured;
+  };
+
+  it('passes capture off and no ignored headers to native by default', () => {
+    const { native, xhr } = init({});
+    expect(native[0]).toMatchObject({
+      captureNetworkHeaders: false,
+      captureResponseBodies: false,
+      ignoreHeaders: [],
+    });
+    expect(xhr[0].captureNetworkHeaders).toBe(false);
+  });
+
+  it('passes the flags and lowercase ignoreHeaders to native', () => {
+    const { native, xhr } = init({
+      captureNetworkHeaders: true,
+      captureResponseBodies: true,
+      ignoreHeaders: new Set(['Authorization', 'X-Custom']),
+    });
+    expect(native[0]).toMatchObject({
+      captureNetworkHeaders: true,
+      captureResponseBodies: true,
+      ignoreHeaders: ['authorization', 'x-custom'],
+    });
+    expect(xhr[0].captureNetworkHeaders).toBe(true);
+  });
+
+  it('accepts ignoreHeaders as an array', () => {
+    const { native } = init({ ignoreHeaders: ['Cookie'] });
+    expect(native[0].ignoreHeaders).toEqual(['cookie']);
   });
 });

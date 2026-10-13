@@ -33,10 +33,16 @@ class MiddlewareReactNative: NSObject {
             .rumAccessToken(accountKey)
             .serviceName(serviceName)
             .projectName(projectName)
-            // JS owns app-start/screen tracking and tap capture; native
-            // crash/network/slow-rendering/v3-recording stay on.
+            // JS owns app-start/screen tracking, tap capture and network
+            // spans; native crash/slow-rendering/v3-recording stay on.
             .disableUIInstrumentation()
             .disableAppLifcycleInstrumentation()
+            // Native URLSession swizzling also sees React Native's fetch/XHR
+            // (RCTHTTPRequestHandler's NSURLSession), which the JS
+            // instrumentation already traces, so every request got a second,
+            // native span. The capture flags only apply to native network
+            // spans, so they are not passed through here.
+            .disableNetworkMonitoring()
 
         if let environment = config["deploymentEnvironment"] as? String {
             _ = builder.deploymentEnvironment(environment)

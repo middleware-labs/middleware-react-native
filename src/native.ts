@@ -91,6 +91,14 @@ export interface NativeSdKConfiguration {
   projectName: string;
   deploymentEnvironment?: string;
   sessionSamplingRatio?: number;
+  /**
+   * Used by Android only (android-sdk 3.2.0+); the iOS bridge turns native
+   * network monitoring off, since the JS instrumentation traces RN's requests.
+   */
+  captureNetworkHeaders: boolean;
+  captureResponseBodies: boolean;
+  /** Lowercase header names. */
+  ignoreHeaders: string[];
   recordingOptions?: {
     frequency?: string;
     quality?: string;
