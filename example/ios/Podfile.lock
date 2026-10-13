@@ -13,12 +13,12 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.73.1)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - middleware-react-native (2.2.0):
+  - middleware-react-native (2.3.0):
     - glog
-    - MiddlewareRum (~> 2.2.6)
+    - MiddlewareRum (~> 2.3.0)
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - MiddlewareRum (2.2.6):
+  - MiddlewareRum (2.3.0):
     - DeviceKit (~> 5.4)
     - PLCrashReporter (~> 1.11)
     - Reachability (~> 3.7)
@@ -1266,8 +1266,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: df0ebe69acd14ce0be0269cf75b6e338a727259b
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
-  middleware-react-native: 1d5046bb3f30869ec63dc6e724147cd11c264b93
-  MiddlewareRum: 8b17d9674e145805463bb2400146c1b535ff07f8
+  middleware-react-native: bf6d82523bb77b5ec070018c1be75c6ac51c9ed6
+  MiddlewareRum: eb263cbb3da6dce5cda225f7d8cdbc72c8e09bf4
   PLCrashReporter: db59ef96fa3d25f3650040d02ec2798cffee75f2
   RCT-Folly: cd21f1661364f975ae76b3308167ad66b09f53f5
   RCTRequired: 6dda55e483f75d2b43781d8ad5bd7df276a50981

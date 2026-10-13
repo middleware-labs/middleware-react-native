@@ -199,19 +199,46 @@ Example:
   ignoreUrls: [/^\/api\/facts/, /^\/api\/v1\/users\/.*/],
 ```
 
-> Note: By default SDK captures following `Content-type`
-> - `application/json`
-> - `application/text`
-> - `text/x-component`
+#### Capturing headers and response bodies
 
-To redact network headers `Set<String>` in `ignoreHeaders` key in `ReactNativeConfiguration`
+Network spans carry the method, URL, status and timings. Headers and response
+bodies are **not captured by default** — turn them on separately:
 
-Example: 
+| Option | Default | Captures |
+| --- | --- | --- |
+| `captureNetworkHeaders` | `false` | Request and response headers, as `http.request.header.<name>` / `http.response.header.<name>` (lowercase, `-` → `_`). Also links the span to your backend trace from a `Server-Timing: traceparent;desc="…"` response header. |
+| `captureResponseBodies` | `false` | Response bodies, as `http.response.body`, only when the `Content-Type` is `application/json`, `*+json` (e.g. `application/problem+json`) or `text/plain`. Truncated to 64 KiB. |
+
 ```typescript
-ignoreHeaders: new Set(['x-ignored-header']),
+const MiddlewareConfig: ReactNativeConfiguration = {
+    ...
+    captureNetworkHeaders: true,
+    captureResponseBodies: true,
+};
 ```
 
-_Note: By default `x-access-token` will be readacted._
+Request bodies are never captured.
+
+This package depends on **Android `android-sdk` 3.2.0+** and **iOS
+`MiddlewareRum` 2.3.0+**. React Native's requests are traced by the JS
+instrumentation only: native URLSession tracing is turned off on iOS, so each
+request produces one span. As a result, requests made directly by native code
+(native modules, third-party native SDKs, images loaded by `<Image>`) are not
+traced on iOS. On Android the settings are passed to the native SDK, where they
+apply to HTTP traced through its OkHttp call factory.
+
+> **Changed in 2.3.0:** earlier versions recorded request headers,
+> response headers, request bodies and response bodies on every request.
+> Set the options above to keep capturing headers or response bodies.
+
+To leave specific headers out, list them in `ignoreHeaders` (case-insensitive;
+a `Set` or an array):
+
+```typescript
+ignoreHeaders: new Set(['Authorization', 'x-ignored-header']),
+```
+
+_Note: `x-access-token` is always masked._
 
 To disable network instrumentation set `networkInstrumentation: false`
 

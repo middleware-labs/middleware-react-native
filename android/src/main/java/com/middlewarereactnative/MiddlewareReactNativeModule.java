@@ -133,6 +133,13 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
     if (samplingRatio != null) {
       builder.setSessionSamplingRatio(samplingRatio);
     }
+    // Requires android-sdk 3.2.0. These only govern HTTP traced through
+    // Middleware.createRumOkHttpCallFactory, which React Native's own OkHttp
+    // client is not; RN fetch/XHR capture happens in JS with the same settings.
+    builder
+      .setCaptureNetworkHeaders(mapReader.getCaptureNetworkHeaders())
+      .setCaptureResponseBodies(mapReader.getCaptureResponseBodies())
+      .setIgnoreHeaders(mapReader.getIgnoreHeaders());
     final ReadableMap recordingOptionsMap = mapReader.getRecordingOptions();
     if (recordingOptionsMap != null) {
       builder.setRecordingOptions(recordingOptionsFromMap(recordingOptionsMap));

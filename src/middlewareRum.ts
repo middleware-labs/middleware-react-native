@@ -15,9 +15,6 @@ import {
 } from '@opentelemetry/core';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
-import type { FetchError } from '@opentelemetry/instrumentation-fetch/build/src/types';
-import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
-import shimmer from '@opentelemetry/instrumentation/build/src/shimmer';
 import { B3InjectEncoding, B3Propagator } from '@opentelemetry/propagator-b3';
 import { Resource } from '@opentelemetry/resources';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
@@ -44,13 +41,17 @@ import {
   type AppStartInfo,
   type NativeSdKConfiguration,
 } from './native';
-import { captureTraceParent } from './serverTiming';
+import {
+  createFetchAttributeHook,
+  createXhrAttributeHook,
+  MiddlewareXHRInstrumentation,
+  resolveNetworkCaptureOptions,
+} from './networkCapture';
 import {
   _generatenewSessionId,
   getSessionId,
   getSessionStartTime,
 } from './session';
-import { headerCapture, jsonToString } from './utils';
 
 export interface RecordingOptions {
   /** Capture frequency: 'low' (~1 FPS, default) | 'standard' (~3 FPS) | 'high' (10 FPS). */
@@ -106,9 +107,24 @@ export interface ReactNativeConfiguration {
    */
   ignoreUrls?: Array<string | RegExp>;
   /**
-   * Headers that should be ignored during tracing.
+   * Record request and response headers on fetch/XHR spans as
+   * `http.request.header.<name>` / `http.response.header.<name>` (lowercase,
+   * `-` replaced by `_`; `x-access-token` is masked), and link spans to the
+   * backend trace from a `Server-Timing: traceparent` response header.
+   * Default `false`.
    */
-  ignoreHeaders?: Set<string>;
+  captureNetworkHeaders?: boolean;
+  /**
+   * Record response bodies on fetch/XHR spans as `http.response.body`, for
+   * `application/json`, `*+json` and `text/plain` responses only, truncated
+   * to 64 KiB. Request bodies are never recorded. Default `false`.
+   */
+  captureResponseBodies?: boolean;
+  /**
+   * Header names (case-insensitive) never recorded, even with
+   * `captureNetworkHeaders` on.
+   */
+  ignoreHeaders?: Set<string> | string[];
 }
 
 export interface MiddlewareRumType {
@@ -258,6 +274,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       'session.start_time': getSessionStartTime(),
     };
     const attributes = config.globalAttributes || {};
+    const networkCapture = resolveNetworkCaptureOptions(config);
     const nativeSdkConf: NativeSdKConfiguration = {
       target: config.target,
       accountKey: config.accountKey,
@@ -266,6 +283,11 @@ export const MiddlewareRum: MiddlewareRumType = {
       sessionRecording,
       globalAttributes: attributes,
       resourceAttributes: resourceAttributes,
+      // Same capture settings as the JS fetch/XHR instrumentation. On iOS the
+      // native URLSession instrumentation also sees React Native's requests.
+      captureNetworkHeaders: networkCapture.captureNetworkHeaders,
+      captureResponseBodies: networkCapture.captureResponseBodies,
+      ignoreHeaders: [...networkCapture.ignoreHeaders],
       ...(config.deploymentEnvironment !== undefined && {
         deploymentEnvironment: config.deploymentEnvironment,
       }),
@@ -387,7 +409,7 @@ export const MiddlewareRum: MiddlewareRumType = {
     // Because of this when making requests using `fetch` there will an additional span created for the underlying
     // request made with XMLHttpRequest. Since in this demo calls to /api/ are made using fetch, turn off
     // instrumentation for that path to avoid the extra spans.
-    const xhrInstrumentation = new XMLHttpRequestInstrumentation({
+    const xhrInstrumentation = new MiddlewareXHRInstrumentation({
       // Emit the current HTTP semantic conventions (url.full,
       // http.request.method, http.response.status_code, server.address) instead
       // of the deprecated http.url / http.method / http.status_code the
@@ -396,82 +418,8 @@ export const MiddlewareRum: MiddlewareRumType = {
       propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
-      applyCustomAttributesOnSpan: (span: Span, xhr: XMLHttpRequest) => {
-        if (span) {
-          xhr.addEventListener('readystatechange', function () {
-            if (xhr.readyState === xhr.OPENED) {
-              shimmer.wrap(xhr, 'setRequestHeader', (original) => {
-                return (header, value) => {
-                  headerCapture(
-                    'request',
-                    [header],
-                    config.ignoreHeaders
-                  )(span, () => value);
-                  return original.call(this, header, value);
-                };
-              });
-              shimmer.wrap(xhr, 'open', (original) => {
-                return (method, url) => {
-                  span.updateName(`HTTP ${method.toUpperCase()} ${url}`);
-                  return original.call(this, method, url);
-                };
-              });
-              shimmer.wrap(xhr, 'send', (original) => {
-                return (body) => {
-                  if (body) {
-                    span.setAttribute('http.request.body', body.toString());
-                  }
-                  return original.call(this, body);
-                };
-              });
-            } else if (xhr.readyState === xhr.DONE) {
-              const headers = xhr
-                .getAllResponseHeaders()
-                .split('\r\n')
-                .reduce((result: Record<string, string>, current) => {
-                  let [name, value] = current.split(': ');
-                  if (name && value) {
-                    result[name] = value;
-                  }
-                  return result;
-                }, {} as Record<string, string>);
-              headerCapture(
-                'response',
-                Object.keys(headers),
-                config.ignoreHeaders
-              )(span, (header) => headers[header]);
-              try {
-                span.setAttribute('http.response.body', xhr.responseText);
-              } catch (e) {
-                // ignore (DOMException if responseType is not the empty string or "text")
-              }
-              shimmer.unwrap(xhr, 'setRequestHeader');
-              shimmer.unwrap(xhr, 'send');
-            }
-          });
-
-          // don't care about success/failure, just want to see response headers if they exist
-          xhr.addEventListener('readystatechange', function () {
-            if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-              const headers = xhr.getAllResponseHeaders().toLowerCase();
-              if (headers.indexOf('server-timing') !== -1) {
-                const st = xhr.getResponseHeader('server-timing');
-                if (st !== null) {
-                  captureTraceParent(st, span);
-                }
-              }
-            }
-          });
-          const httpURL = (span as unknown as { attributes: Attributes })
-            ?.attributes?.['url.full'];
-          if (httpURL) {
-            span.updateName(
-              `${(span as unknown as { name: string }).name} ${httpURL}`
-            );
-          }
-          span.setAttribute('event.type', 'xhr');
-        }
-      },
+      captureNetworkHeaders: networkCapture.captureNetworkHeaders,
+      applyCustomAttributesOnSpan: createXhrAttributeHook(networkCapture),
     });
     const fetchInstrumentation = new FetchInstrumentation({
       // Same as XHR above: current HTTP semantic conventions only.
@@ -479,70 +427,7 @@ export const MiddlewareRum: MiddlewareRumType = {
       propagateTraceHeaderCorsUrls: tracePropagationTargets,
       clearTimingResources: false,
       ignoreUrls: DEFAULT_IGNORE_URLS,
-      applyCustomAttributesOnSpan: (
-        s: Span | { span: Span; attributes: Attributes; name: string },
-        request: Request | RequestInit,
-        result: Response | FetchError
-      ) => {
-        const r = request as Request;
-        const res = result as RequestInit;
-        const span = s as Span;
-        const httpURL = (
-          s as { span: Span; attributes: Attributes; name: string }
-        ).attributes?.['url.full'];
-        if (httpURL) {
-          span.updateName(
-            `${
-              (s as { span: Span; attributes: Attributes; name: string }).name
-            } ${httpURL}`
-          );
-        }
-        span.setAttribute('event.type', 'fetch');
-        if (r.headers instanceof Headers) {
-          headerCapture(
-            'request',
-            Object.keys(r.headers),
-            config.ignoreHeaders
-          )(span, (header: string) => r.headers?.get(header) ?? '');
-        }
-        if (res.body) {
-          span.setAttribute('http.request.body', res.body.toString());
-        }
-        if (result instanceof Response) {
-          if (result.headers instanceof Headers) {
-            const headerNames: string[] = [];
-            result.headers.forEach((_: string, name: string) => {
-              headerNames.push(name);
-            });
-            headerCapture(
-              'response',
-              headerNames,
-              config.ignoreHeaders
-            )(span, (header) => (result.headers?.get(header) as string) ?? '');
-            const contentType = result.headers?.get('Content-Type') ?? '';
-            const ALLOWED_CONTENT_TYPE = new Set([
-              'application/json',
-              'application/json;charset=utf-8',
-              'text/plain',
-              'text/x-component',
-            ]);
-            if (contentType && ALLOWED_CONTENT_TYPE.has(contentType)) {
-              result
-                .clone()
-                .json()
-                .then((response) => {
-                  span.setAttribute(
-                    'http.response.body',
-                    jsonToString(response)
-                  );
-                })
-                .catch(() => {
-                  // Ignore
-                });
-            }
-          }
-        }
-      },
+      applyCustomAttributesOnSpan: createFetchAttributeHook(networkCapture),
     });
 
     // `networkInstrumentation: false` turns it off, which is what the README documents.
