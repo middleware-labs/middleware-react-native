@@ -219,7 +219,7 @@ const MiddlewareConfig: ReactNativeConfiguration = {
 
 Request bodies are never captured.
 
-This package depends on **Android `android-sdk` 3.2.0+** and **iOS
+This package depends on **Android `android-sdk` 3.2.2+** and **iOS
 `MiddlewareRum` 2.3.0+**. React Native's requests are traced by the JS
 instrumentation only: native URLSession tracing is turned off on iOS, so each
 request produces one span. As a result, requests made directly by native code
