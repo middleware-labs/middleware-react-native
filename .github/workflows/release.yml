@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      - name: verify changelog
+        run: python3 scripts/changelog.py check "$VERSION"
+        env:
+          VERSION: ${{ github.event.inputs.version }}
       - name: node
         uses: actions/setup-node@v3
         with:
@@ -34,11 +38,16 @@ jobs:
         env:
           TAG: ${{ github.event.inputs.version }}
 
-      - name: Build Changelog
+      - name: Read release notes from CHANGELOG.md
         id: github_release
-        uses: mikepenz/release-changelog-builder-action@v3
+        run: |
+          {
+            echo 'changelog<<CHANGELOG_EOF'
+            python3 scripts/changelog.py notes "$VERSION"
+            echo 'CHANGELOG_EOF'
+          } >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.inputs.version }}
 
       - name: Create Release
         uses: mikepenz/action-gh-release@v0.2.0-a03
