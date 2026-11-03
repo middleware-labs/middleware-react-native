@@ -16,6 +16,13 @@ Maintaining this file:
 
 ## [Unreleased]
 
+## [2.3.2] - 2026-11-03
+
+### Added
+
+- `slowRenderingDetection` configuration option. Set it to `false` to stop
+  `slowRenders` and `frozenRenders` spans on iOS and Android.
+
 ### Changed
 
 - iOS: requires `MiddlewareRum` 2.3.1 or a newer 2.3.x. Add the Middleware specs

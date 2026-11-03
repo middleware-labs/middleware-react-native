@@ -385,6 +385,17 @@ Views will get blurred hiding sensitive information in session recording.
 </MiddlewareSanitizedView>
 ```
 
+### Slow rendering detection
+
+The native SDK reports `slowRenders` and `frozenRenders` spans. To turn them off, pass `slowRenderingDetection: false`. Relaunch the app for the change to apply, because a JS reload keeps the native settings.
+
+```js
+const MiddlewareConfig: ReactNativeConfiguration = {
+    // ...
+    slowRenderingDetection: false,
+};
+```
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.

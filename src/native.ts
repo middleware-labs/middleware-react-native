@@ -105,6 +105,7 @@ export interface NativeSdKConfiguration {
     maskAllTextInputs?: boolean;
     maskAllImages?: boolean;
   };
+  slowRenderingDetection?: boolean;
 }
 
 export type AppStartInfo = {

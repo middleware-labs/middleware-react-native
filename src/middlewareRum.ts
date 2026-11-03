@@ -125,6 +125,12 @@ export interface ReactNativeConfiguration {
    * `captureNetworkHeaders` on.
    */
   ignoreHeaders?: Set<string> | string[];
+  /**
+   * Set to `false` to stop the native SDK reporting `slowRenders` and
+   * `frozenRenders` spans. Enabled by default. Native settings are read once per
+   * process, so a JS reload does not change this; relaunch the app.
+   */
+  slowRenderingDetection?: boolean;
 }
 
 export interface MiddlewareRumType {
@@ -296,6 +302,9 @@ export const MiddlewareRum: MiddlewareRumType = {
       }),
       ...(config.recordingOptions !== undefined && {
         recordingOptions: config.recordingOptions,
+      }),
+      ...(config.slowRenderingDetection !== undefined && {
+        slowRenderingDetection: config.slowRenderingDetection,
       }),
     };
 
