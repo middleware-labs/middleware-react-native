@@ -50,7 +50,16 @@ requirements:
 - **iOS**: deployment target **13.0+**, CocoaPods (the `MiddlewareRum` pod
   is pulled automatically). When building pods as static libraries (the
   default), add `pod 'Reachability', :modular_headers => true` to your
-  Podfile.
+  Podfile. Also add these sources to the top of `ios/Podfile`:
+
+  ```ruby
+  source 'https://github.com/middleware-labs/cocoapods-specs.git'
+  source 'https://cdn.cocoapods.org/'
+  ```
+
+  CocoaPods trunk stops accepting new pods on December 2, 2026, so new
+  `MiddlewareRum` versions are published to the Middleware repo. Without that
+  source, your app stays on the last version published to trunk.
 
 The library is also compatible with the following frameworks and libraries:
 
