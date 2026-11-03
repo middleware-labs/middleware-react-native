@@ -16,6 +16,8 @@ Maintaining this file:
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-11-03
+
 ### Added
 
 - `slowRenderingDetection` configuration option. Set it to `false` to stop
