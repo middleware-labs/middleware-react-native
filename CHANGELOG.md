@@ -21,6 +21,24 @@ Maintaining this file:
 - `slowRenderingDetection` configuration option. Set it to `false` to stop
   `slowRenders` and `frozenRenders` spans on iOS and Android.
 
+### Changed
+
+- iOS: requires `MiddlewareRum` 2.3.1 or a newer 2.3.x. Add the Middleware specs
+  repo as a source in `ios/Podfile`, as described in the README, then run
+  `pod update MiddlewareRum` in `ios/`. Plain `pod install` fails against a
+  `Podfile.lock` that pins an older version, with an error that wrongly mentions the
+  deployment target. Until 2.3.1 is on CocoaPods trunk, it can't be found without
+  that source.
+
+### Fixed
+
+- iOS: a JS reload no longer doubles `slowRenders` and `frozenRenders` spans, or
+  starts native instrumentation again. Native settings now apply once per process,
+  so relaunch the app to change them.
+- iOS: a frame now has to miss a vsync to count as slow, and these spans report the
+  screen that was showing when the frame was slow. Screen names need
+  `trackNavigation`. Slow-render totals may drop after upgrading.
+
 ## [2.3.1] - 2026-10-28
 
 ### Fixed
