@@ -16,7 +16,7 @@ Maintaining this file:
 
 ## [Unreleased]
 
-## [2.4.0] - 2026-11-03
+## [2.3.2] - 2026-11-03
 
 ### Added
 
