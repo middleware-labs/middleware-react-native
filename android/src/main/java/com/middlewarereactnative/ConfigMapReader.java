@@ -64,6 +64,10 @@ public class ConfigMapReader extends MapReader {
     return Boolean.TRUE.equals(Keys.CAPTURE_RESPONSE_BODIES.get(map));
   }
 
+  public boolean isSlowRenderingDetectionEnabled() {
+    return !Boolean.FALSE.equals(Keys.SLOW_RENDERING_DETECTION.get(map));
+  }
+
   /** Lowercase header names; empty when unset. */
   public List<String> getIgnoreHeaders() {
     final List<String> headers = new ArrayList<>();
@@ -97,5 +101,6 @@ public class ConfigMapReader extends MapReader {
     MapKey RECORDING_OPTIONS = new MapKey("recordingOptions");
     BooleanKey CAPTURE_NETWORK_HEADERS = new BooleanKey("captureNetworkHeaders");
     BooleanKey CAPTURE_RESPONSE_BODIES = new BooleanKey("captureResponseBodies");
+    BooleanKey SLOW_RENDERING_DETECTION = new BooleanKey("slowRenderingDetection");
   }
 }

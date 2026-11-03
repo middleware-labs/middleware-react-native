@@ -16,6 +16,11 @@ Maintaining this file:
 
 ## [Unreleased]
 
+### Added
+
+- `slowRenderingDetection` configuration option. Set it to `false` to stop
+  `slowRenders` and `frozenRenders` spans on iOS and Android.
+
 ## [2.3.1] - 2026-10-28
 
 ### Fixed

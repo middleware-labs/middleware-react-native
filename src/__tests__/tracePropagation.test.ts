@@ -182,3 +182,24 @@ describe('network capture options', () => {
     expect(native[0].ignoreHeaders).toEqual(['cookie']);
   });
 });
+
+describe('slowRenderingDetection', () => {
+  const nativeConfig = (config: Record<string, unknown>) => {
+    const { rum, captured } = loadRum();
+    rum.init({ ...CONFIG, ...config });
+    return captured.native[0];
+  };
+
+  it('leaves the native default in place when unset', () => {
+    expect(nativeConfig({})).not.toHaveProperty('slowRenderingDetection');
+  });
+
+  it('passes an explicit value to native', () => {
+    expect(nativeConfig({ slowRenderingDetection: false })).toMatchObject({
+      slowRenderingDetection: false,
+    });
+    expect(nativeConfig({ slowRenderingDetection: true })).toMatchObject({
+      slowRenderingDetection: true,
+    });
+  });
+});

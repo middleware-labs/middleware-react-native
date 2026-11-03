@@ -140,6 +140,9 @@ public class MiddlewareReactNativeModule extends ReactContextBaseJavaModule {
       .setCaptureNetworkHeaders(mapReader.getCaptureNetworkHeaders())
       .setCaptureResponseBodies(mapReader.getCaptureResponseBodies())
       .setIgnoreHeaders(mapReader.getIgnoreHeaders());
+    if (!mapReader.isSlowRenderingDetectionEnabled()) {
+      builder.disableSlowRenderingDetection();
+    }
     final ReadableMap recordingOptionsMap = mapReader.getRecordingOptions();
     if (recordingOptionsMap != null) {
       builder.setRecordingOptions(recordingOptionsFromMap(recordingOptionsMap));

@@ -65,6 +65,9 @@ class MiddlewareReactNative: NSObject {
         if let recordingOptions = config["recordingOptions"] as? [String: Any] {
             _ = builder.recordingOptions(mapRecordingOptions(recordingOptions))
         }
+        if (config["slowRenderingDetection"] as? Bool) == false {
+            _ = builder.disableSlowRenderingDetection()
+        }
 
         // sysctl-derived, so it is unaffected by the dispatch below.
         let appStart = ((try? processStartTime()) ?? Date()).timeIntervalSince1970 * 1000
